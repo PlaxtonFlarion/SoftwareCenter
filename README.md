@@ -1,3 +1,16 @@
+# Release Center
+
+> **本仓库为发布专用仓库**  
+> 本仓库用于发布软件的正式版本与授权机制相关文件，包含：
+> 
+> - 各平台安装包（如 `.dmg`, `.exe` 等）
+> - 授权说明与激活指南
+> - 公共文档（`README.md`, `LICENSE.md` 等）
+>
+> ⚠️ 本仓库不包含源代码，源项目位于私有仓库。
+
+（后续内容：安装指南、激活流程等）
+
 ## 🔐 使用通行证激活
 
 软件在未激活状态下可正常启动，但**核心功能将被锁定**。用户可通过输入通行证进行激活，以解锁完整功能。
@@ -66,3 +79,96 @@ memrix --active Memrix-XXXX-XXXX-XXXX
 授权文件仅可由官方授权服务器签发，使用 RSA 签名机制保护。每次启动时将验证该文件合法性和有效性。
 
 ---
+
+## ⚡️ 快速开始（Windows）
+
+### 下载并安装
+
+在本页面的发布资源中，下载对应软件的安装包（`.exe` 文件）并按提示完成安装。
+
+示例：
+
+- `Framix-windows-setup-v1.0.0.exe`
+- `Memrix-windows-setup-v1.0.0.exe`
+
+默认安装路径（可选）：
+
+```
+C:\Program Files\<软件名>\
+```
+
+---
+
+### ▶️ 命令行启动
+
+为支持命令行调用，建议将安装目录添加至系统环境变量 `Path`。
+
+命令格式：
+
+```
+<软件命令>           # 启动程序
+<软件命令> -h        # 查看帮助
+<软件命令> --help    # 查看详细参数说明
+```
+
+示例：
+
+```
+framix
+framix --help
+
+memrix
+memrix --help
+```
+
+---
+
+## ⚡️ 快速开始（macOS）
+
+### 安装
+
+打开对应软件的 `.dmg` 安装包，按提示将图标拖入「应用程序」或任意目录。
+
+示例：
+
+- Framix → 拖入 `/Applications/Framix.app`
+- Memrix → 拖入 `/Applications/Memrix.app`
+
+---
+
+### 添加环境变量（可选）
+
+如需在终端中直接运行命令，可将二进制路径添加到系统 `PATH`：
+
+```bash
+# Framix 示例
+echo 'export PATH="/Applications/Framix.app/Contents/MacOS:$PATH"' >> ~/.zshrc
+
+# Memrix 示例
+echo 'export PATH="/Applications/Memrix.app/Contents/MacOS:$PATH"' >> ~/.zshrc
+
+source ~/.zshrc
+```
+
+---
+
+### 授权启动脚本（首次运行前）
+
+```bash
+# Framix
+chmod +x /Applications/Framix.app/Contents/MacOS/framix
+chmod +x /Applications/Framix.app/Contents/MacOS/framix.sh
+
+# Memrix
+chmod +x /Applications/Memrix.app/Contents/MacOS/memrix
+chmod +x /Applications/Memrix.app/Contents/MacOS/memrix.sh
+```
+
+---
+
+### 命令行使用
+
+```bash
+framix --help
+memrix --help
+```
