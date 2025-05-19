@@ -209,9 +209,9 @@ memrix --help
 
 ## 🖥 系统兼容性
 
+- **Windows**：支持 Windows 10 / 11（64 位） 
 - **macOS**：支持 macOS 12.0 及以上版本  
   （原生兼容 Apple Silicon M1 / M2 / M3 与 Intel 芯片架构）
-- **Windows**：支持 Windows 10 / 11（64 位）
 
 ---
 
