@@ -64,6 +64,7 @@ memrix --active Memrix-XXXX-XXXX-XXXX
   "castle": "B6D74E7C-1A2B-4C77-9A2D-XXXXXXXXXXXX",
   "expire": "2025-12-31T23:59:59Z",
   "issued": "2025-05-01T10:21:00Z",
+  "issued_at": "2025-05-01T10:18:00Z",
   "license_id": "18e9f7b5-1023-4aa7-9e45-bbd2d95d51d2"
 }
 ```
@@ -73,7 +74,8 @@ memrix --active Memrix-XXXX-XXXX-XXXX
 - `code`：激活码（通行证）本体  
 - `castle`：绑定的设备唯一标识符  
 - `expire`：该激活码的有效截止时间（UTC）  
-- `issued`：授权签发时间（UTC）  
+- `issued`：验证授权时间（UTC）
+- `issued_at`：授权签发时间（UTC）    
 - `license_id`：授权记录唯一编号（可用于后台查询与审计）
 
 授权文件仅可由官方授权服务器签发，使用 RSA 签名机制保护。每次启动时将验证该文件合法性和有效性。
