@@ -28,7 +28,7 @@ framix --apply Framix-XXXX-XXXX-XXXX
 ```
 
 ```
-memrix --active Memrix-XXXX-XXXX-XXXX
+memrix --apply Memrix-XXXX-XXXX-XXXX
 ```
 
 ---
