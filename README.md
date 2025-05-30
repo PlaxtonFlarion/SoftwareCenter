@@ -163,7 +163,7 @@ Windows 出于安全考虑，对所有未知来源的可执行文件都会提示
 
 如需在终端中直接运行命令，可将二进制路径添加到系统 `PATH`：
 
-```bash
+```
 # Framix 示例
 echo 'export PATH="/Applications/Framix.app/Contents/MacOS:$PATH"' >> ~/.zshrc
 
@@ -177,7 +177,7 @@ source ~/.zshrc
 
 ### 授权启动脚本（首次运行前）
 
-```bash
+```
 # Framix
 chmod +x /Applications/Framix.app/Contents/MacOS/framix
 chmod +x /Applications/Framix.app/Contents/MacOS/framix.sh
