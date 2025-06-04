@@ -54,7 +54,7 @@ memrix --apply Memrix-XXXX-XXXX-XXXX
 
 ### .lic 授权文件说明
 
-激活成功后，系统将在本地生成一个授权文件（如：`.framix_signature.lic` 或 `.memrix_signature.lic`），其内容采用 Base64 编码，并由签名保护，不可伪造或篡改。
+激活成功后，系统将在本地生成一个授权文件（如：`framix_signature.lic` 或 `memrix_signature.lic`），其内容采用 Base64 编码，并由签名保护，不可伪造或篡改。
 
 授权结构示例（解码后的 JSON 格式）：
 
