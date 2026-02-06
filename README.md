@@ -31,6 +31,10 @@ framix --apply Framix-XXXX-XXXX-XXXX
 memrix --apply Memrix-XXXX-XXXX-XXXX
 ```
 
+```
+mind --apply Memrix-XXXX-XXXX-XXXX
+```
+
 ---
 
 ### 授权机制说明
@@ -54,7 +58,7 @@ memrix --apply Memrix-XXXX-XXXX-XXXX
 
 ### .lic 授权文件说明
 
-激活成功后，系统将在本地生成一个授权文件（如：`framix_signature.lic` 或 `memrix_signature.lic`），其内容采用 Base64 编码，并由签名保护，不可伪造或篡改。
+激活成功后，系统将在本地生成一个授权文件（如：`framix_signature.lic` 或 `memrix_signature.lic` 或 `mind_signature.lic`），其内容采用 Base64 编码，并由签名保护，不可伪造或篡改。
 
 授权结构示例（解码后的 JSON 格式）：
 
@@ -96,6 +100,7 @@ memrix --apply Memrix-XXXX-XXXX-XXXX
 
 - `Framix-windows-setup-v1.0.0.exe`
 - `Memrix-windows-setup-v1.0.0.exe`
+- `Mind-windows-setup-v1.0.0.exe`
 
 默认安装路径（可选）：
 
@@ -156,6 +161,7 @@ Windows 出于安全考虑，对所有未知来源的可执行文件都会提示
 
 - Framix → 拖入 `/Applications/Framix.app`
 - Memrix → 拖入 `/Applications/Memrix.app`
+- Mind → 拖入 `/Applications/Mind.app`
 
 ---
 
@@ -169,6 +175,9 @@ echo 'export PATH="/Applications/Framix.app/Contents/MacOS:$PATH"' >> ~/.zshrc
 
 # Memrix 示例
 echo 'export PATH="/Applications/Memrix.app/Contents/MacOS:$PATH"' >> ~/.zshrc
+
+# Mind 示例
+echo 'export PATH="/Applications/Mind.app/Contents/MacOS:$PATH"' >> ~/.zshrc
 
 source ~/.zshrc
 ```
@@ -185,6 +194,10 @@ chmod +x /Applications/Framix.app/Contents/MacOS/framix.sh
 # Memrix
 chmod +x /Applications/Memrix.app/Contents/MacOS/memrix
 chmod +x /Applications/Memrix.app/Contents/MacOS/memrix.sh
+
+# Mind
+chmod +x /Applications/Mind.app/Contents/MacOS/mind
+chmod +x /Applications/Mind.app/Contents/MacOS/mind.sh
 ```
 
 ---
@@ -228,6 +241,9 @@ framix --help
 memrix
 memrix -h
 memrix --help
+
+mind -h
+mind --help
 ```
 
 ---
