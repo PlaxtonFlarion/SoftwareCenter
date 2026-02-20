@@ -466,13 +466,13 @@ GPU 推理容器集群
 产品特性：
 
 - 自动化巡检与设备操作能力，自研性能工具体系
-- 画帧秀，媒体处理与帧级流水线[Framix](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Framix)
-- 记忆星核，多维性能采集与结构化[Memrix](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Memrix)
+- [Framix :: 画帧秀](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Framix)，媒体处理与帧级流水线
+- [Memrix :: 记忆星核](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Memrix)，多维性能采集与结构化
 - [授权与配置闭环](https://github.com/PlaxtonFlarion/SoftwareCenter)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## 13. 合作与支持 🤝
+## 13. 合作与支持
 
 如需技术合作、定制能力或企业级部署支持，请通过邮箱联系作者。
 
@@ -480,7 +480,7 @@ GPU 推理容器集群
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## 14. 许可说明 📜
+## 14. 许可说明
 
 当前仓库包含 `GPL-3.0` 授权文本（见 `LICENSE.md`）。  
 如发布产物或常量中存在其他授权声明，请以 `LICENSE.md` 为准。
