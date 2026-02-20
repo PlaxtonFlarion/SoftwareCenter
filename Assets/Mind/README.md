@@ -1,3 +1,9 @@
+# 🚀 Mind :: 代理思维
+
+![LOGO](https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_readme.png)
+
+---
+
 # 🏆 项目简介 · Mind :: 代理思维
 
 > 项目代号：Mind  
@@ -428,6 +434,10 @@ GPU 推理容器集群
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## 10. 构建与发布
+
+![LOGO](https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_license.png)
+
+---
 
 交付形态：`mind` 可执行文件，`Helix` 随包交付。
 
