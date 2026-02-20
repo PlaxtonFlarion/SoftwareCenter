@@ -435,7 +435,7 @@ GPU 推理容器集群
 
 ## 10. 构建与发布
 
-![LOGO](https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_license.png)
+![LOGO](https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_compile.png)
 
 ---
 
