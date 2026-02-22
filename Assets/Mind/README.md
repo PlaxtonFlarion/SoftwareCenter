@@ -274,6 +274,150 @@ mind --plan "打开App，等待3秒，返回桌面"
 
 ---
 
+## 循环模式
+
+除了 `mind --chat | --fast | --plan` 的一次性命令模式外，Mind 还支持 **循环交互模式**（REPL）。  
+该模式下会持续读取用户输入，并在 **CHAT / FAST / PLAN** 三种互斥状态之间切换执行。
+
+### 启动与提示
+
+进入循环后，终端会显示当前模式与正在使用的 `<model>`：
+
+- 顶部 banner 会随模式变化：Chat / Fast / Plan
+- 每轮输入提示：`ready 输入目标或 /help`
+
+> `mind_loop()` 会为一次会话生成 `cid/sid` 并贯穿本轮交互，用于链路追踪与调用元数据。
+
+### 指令索引
+
+在任意模式下输入 `/help` 可查看指令索引：
+
+- `/help, /h`：指令索引（用法/示例/约定）
+- `/license, /lic`：授权许可（License/特性）
+- `/subscription, /sub`：订阅信息（授权状态/到期）
+- `/quit, /q, quit, exit`：安全退出（断开会话）
+- `/model <name>`：引擎切换（选择推理内核）
+- `/apikey <key>`：凭证更新（替换访问密钥 / Token）
+- `/again N <goal>`：复现回放（目标 × N 次）**仅在 PLAN 模式生效**
+- `/chat`：切换到对话模式（CHAT）
+- `/fast`：切换到性能模式（FAST）
+- `/plan`：切换到编排模式（PLAN）
+
+### 三种互斥运行状态（交互态）
+
+循环模式内部有一个状态机：`CHAT` / `FAST` / `PLAN`，同一时刻只会处于其中一个状态。
+
+| 状态   | 说明           | 选择指令    |
+|------|--------------|---------|
+| CHAT | 对话驱动（流式，多轮）  | `/chat` |
+| FAST | 性能执行（高吞吐路径）  | `/fast` |
+| PLAN | 编排执行（确定性步骤链） | `/plan` |
+
+切换时会输出类似：
+
+- `Exchange → Chat`
+- `Exchange → Fast`
+- `Exchange → Plan`
+
+### `/again` 循环复现（仅 PLAN）
+
+`/again` 只在 **PLAN** 状态下生效，用于把一个目标重复执行 N 次（用于复现、回放、稳定性验证）：
+
+```
+/plan
+/again 5 打开App，等待3秒，返回桌面
+```
+
+行为语义：
+
+- 仅当 **tag == PLAN** 且命中 `/again N <goal>` 时生效
+- 实际发送给执行器的 message 会被改写为：`<goal>，循环 N 次`
+- 如果不在 PLAN 状态输入 `/again ...`，会被当作普通文本目标处理（不会进入循环语义）
+
+### `/model` 引擎切换（带候选提示）
+/model gpt-4o-mini
+
+当输入无效或缺失时，会打印候选列表（示例）：
+
+- `llama-3.3-70b-versatile`
+- `openai/gpt-oss-120b`
+- `gpt-4o-mini`
+- `deepseek-chat`
+
+并输出形如：`model invalid: /model <...>` 的错误提示。
+
+> 切换成功后，本轮循环后续调用均使用新的 `model`。
+
+### `/apikey` 凭证更新（带格式提示）
+当输入无效或缺失时，会打印可接受的格式提示（示例）：
+
+- `sk-...   (API Key)`
+- `gsk_...  (API Key)`
+- `ds-...   (API Key)`
+- `<token>  (Pure token)`
+
+并输出形如：`apikey invalid: /apikey <...>` 的错误提示。
+
+> 切换成功后，本轮循环后续调用均使用新的 `apikey`。
+
+### `/license` 与 `/subscription`
+
+- `/license`（或 `/lic`）：展示授权许可信息页（License/特性）
+- `/subscription`（或 `/sub`）：读取本地 License 文件并执行校验流程（授权状态 / 到期信息）
+
+> `/subscription` 会调用本地授权验证（例如 `authorize.verify_license(<lic_file>)`），适合快速确认当前机器的授权是否有效。
+
+### 退出
+
+任意时刻输入以下任一指令即可安全退出循环：
+```
+/quit
+/q
+quit
+exit
+```
+
+---
+
+## 命令行兼容参数
+
+Mind 提供两项“兼容参数”用于增强 **报告归档命名空间** 与 **调试可观测性**。
+
+### `--gravity <tag>`：引力协议（Gravity Protocol）
+
+为本次运行设置 **引力标签（gravity tag）**，用于确定日志/报告的 **落盘根目录命名空间**：
+
+- 同一 `tag` 的多次运行会被聚合到同一命名空间（便于按项目/版本/场景归档）
+- 适用于：回归批次、灰度组、特性分支、实验编号、设备分组等
+
+示例：
+
+```
+# 将本次执行的日志/报告归档到同一 gravity 命名空间
+mind --plan "打开设置，等待2秒，然后截图" --gravity TEST_202602
+
+# 性能批次归档（同标签可聚合多轮压测产物）
+mind --fast "开始录屏...结束录屏，执行5次" --gravity Perfermance_Baseline_v1
+```
+
+### `--reflection`：反射协议（Reflection Protocol）
+
+开启 详细调试视角，输出运行轨迹与关键决策信息（用于定位“为什么这么做”）：
+- 打印：关键分支选择、执行路径、路由与决策依据（更丰富的 trace / debug 视角）
+- 适用于：PoC 调试、工具链问题定位、计划偏航分析、线上回归异常复盘
+
+```
+# 开启详细运行轨迹输出（建议与 plan 联用）
+mind --plan "打开App，等待3秒，返回桌面" --reflection
+
+# 性能模式下查看采样/链路细节（用于异常定位）
+mind --fast "开始录屏...结束录屏，执行5次" --gravity Perf_v3 --reflection
+```
+
+建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
+
+---
+
 ## 异步调用示例（Python / Java）
 
 通过自然语言描述自动化步骤，异步调用 `mind --plan`：
