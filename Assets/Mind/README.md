@@ -625,6 +625,91 @@ mind --fast "开始录屏...结束录屏，执行5次" --gravity Perf_v3 --refle
 
 建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
 
+### `--file <path>`：卷宗协议（Pack Protocol / File Drive）
+
+从文件中读取多条自然语言用例，并按选定协议批量执行：
+
+- 支持 `.md/.txt`
+- 可与 `--chat/--fast/--plan` 组合：指定批跑使用的主序协议
+- 若仅传 `--file` 未指定协议，默认按 `--plan` 批跑
+
+用例文件格式（内嵌说明）：
+
+`--file` 采用“自然语言块”作为用例单元：每个用例是一段文本，按 `---` 分隔。
+
+- **分隔符**：单独一行 `---`（去掉空白后等于 `---`）用于分隔用例块
+- **元信息（可选）**：每个用例块顶部可写多行 `# key: value`
+  - 常用：`# name: xxx`（用于 `--pattern` 正则筛选）
+  - 其它字段也允许：`# tag: xxx`、`# owner: xxx` 等（会被解析进 meta）
+- **正文**：元信息之后的所有内容，作为该用例的自然语言目标（交给 chat/fast/plan 执行）
+- **空行**：块首尾空行会被自动忽略；正文为空的块会被跳过
+
+示例：
+```
+默认按 plan 批跑
+mind –file pack.md
+
+指定用 chat 协议批跑
+mind –chat –file pack.md
+
+指定用 fast 协议批跑（可叠加 gravity / reflection）
+mind –fast –file pack.md –gravity Perf_v1 –reflection
+```
+
+用例文件样例（2 条）：
+
+```
+# name: open_home
+打开 抖音
+等待 3 秒
+回到桌面
+---
+
+# name: quick_shot
+打开 相机
+等待 1 秒
+截图
+回到桌面
+```
+
+一行写法（同样有效）：
+```
+# name: open_home
+打开 抖音，等待 3 秒，回到桌面
+---
+
+# name: quick_shot
+打开 相机，等待 1 秒，截图，回到桌面
+```
+
+### --repeat <N>：回声协议（Repeat Protocol）
+
+重复执行整份 --file 中的用例列表 N 次：
+- 默认 1
+- 适用于：稳定性回归、偶现问题复现、压力/长稳批跑
+
+示例：
+```
+# 将 pack.md 全量重复执行 3 次
+mind --plan --file pack.md --repeat 3
+```
+
+### --pattern <REGEX>：棱镜协议（Pattern Protocol）
+
+通过正则表达式筛选要执行的用例（匹配用例的 name 字段）：
+- 未指定时默认执行全部
+- 仅对 --file 批跑生效
+- 建议给用例块写 # name: xxx，方便筛选
+
+示例：
+```
+# 只跑 name 命中 open 的用例
+mind --plan --file pack.md --pattern "open"
+
+# 跑 name 命中 open 或 shot 的用例
+mind --plan --file pack.md --pattern "open|shot"
+```
+
 ---
 
 ## ⭐️ 自研性能工具接口层
