@@ -682,6 +682,38 @@ mind –fast –file pack.md –gravity Perf_v1 –reflection
 打开 相机，等待 1 秒，截图，回到桌面
 ```
 
+进阶：三层前后置（可选）
+- loop_prefix/loop_suffix：整个批跑的前置/后置（仅执行一次）
+- round_prefix/round_suffix：每一轮的前置/后置（每轮执行一次）
+- global_prefix/global_suffix：每条用例的默认前置/后置（每条执行一次）
+- prefix/suffix：单条用例的前置/后置（存在则覆盖 global_*）
+```
+# loop_prefix:
+# [LP] 批跑开始前：环境准备（一次）
+# loop_suffix:
+# [LS] 批跑结束后：环境清理（一次）
+# round_prefix:
+# [RP] 每轮开始：统一初始化（每轮一次）
+# round_suffix:
+# [RS] 每轮结束：统一收尾（每轮一次）
+# global_prefix:
+# [GP] 每条前置：通用准备（每条一次）
+# global_suffix:
+# [GS] 每条后置：通用收尾（每条一次）
+---
+
+# name: case_001
+# prefix:
+# [P1] 仅本条前置：覆盖 global_prefix
+# suffix:
+# [S1] 仅本条后置：覆盖 global_suffix
+这里是用例正文（自然语言目标）。
+---
+
+# name: case_002
+这里是用例正文（未写 prefix/suffix，将使用 global_prefix/global_suffix）。
+```
+
 ### --repeat <N>：回声协议（Repeat Protocol）
 
 重复执行整份 --file 中的用例列表 N 次：
