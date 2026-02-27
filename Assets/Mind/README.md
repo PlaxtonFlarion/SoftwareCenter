@@ -680,18 +680,31 @@ mind –fast –file pack.md –gravity Perf_v1 –reflection
 
 # name: quick_shot
 打开 相机，等待 1 秒，截图，回到桌面
+---
 ```
 
 进阶：三层前后置（可选）
-- cfg 块必须以 ` ```cfg` 开始，并以独立一行 ` ``` ` 结束
-- cfg 多行字段推荐用 `key: |`（缩进块），或用 `key: <<<` ... `>>>`（超长文本）
-- 用例仍然用 `---` 分隔；用例 meta 仍使用 `# key: value`（支持 `# prefix:` / `# suffix:` 多行）
-- loop_prefix/loop_suffix：整个批跑的前置/后置（仅执行一次）
-- round_prefix/round_suffix：每一轮的前置/后置（每轮执行一次）
-- global_prefix/global_suffix：每条用例的默认前置/后置（每条执行一次）
-- prefix/suffix：单条用例的前置/后置（存在则覆盖 global_*）
 
-````
+格式约定：
+- 顶部可包含一个 ` ```cfg ` 配置块：必须以 ` ```cfg` 开始，并以独立一行 ` ``` ` 结束
+- cfg 多行字段推荐两种写法：
+  - `key: |`（缩进块，适合中等长度）
+  - `key: <<<` ... `>>>`（超长文本，适合规则说明）
+- 用例仍用 `---` 分隔；每个用例块顶部支持 meta：`# key: value`
+  - 支持多行 meta：`# key:` 后跟多行 `# ...`
+  - 常用：`# name:` / `# prefix:` / `# suffix:` / `# rule_suffix:`
+
+前后置层级：
+- loop_prefix / loop_suffix：整个批跑的前置/后置（仅执行一次）
+- round_prefix / round_suffix：每一轮的前置/后置（每轮执行一次）
+- global_prefix / global_suffix：每条用例的默认前置/后置（每条执行一次）
+- prefix / suffix：单条用例的前置/后置（存在则覆盖对应 global_*）
+
+规则后置（增强版后置，可选）：
+- global_rule_suffix：全局默认的“规则后置”（写在 cfg 块中；自由文本，用于证据/断言/打分等增强规则）
+- rule_suffix：单条用例的“规则后置”（写在用例 meta 中；存在则覆盖 global_rule_suffix）
+
+``````
 ```cfg
 loop_prefix: |
   [LP] 批跑开始前：环境准备（一次）
@@ -707,6 +720,12 @@ global_prefix: |
   [GP] 每条前置：通用准备（每条一次）
 global_suffix: |
   [GS] 每条后置：通用收尾（每条一次）
+  
+ global_rule_suffix: <<<
+【证据/断言/评分（自由文本）】
+- 这里随便写规则：截图策略、UI断言描述、评分说明等
+- 执行层暂时不需要解析结构，也可以直接作为“增强后置说明”附加给模型
+>>>
 ```
 
 # name: case_001
@@ -714,17 +733,21 @@ global_suffix: |
 # [P1] 仅本条前置：覆盖 global_prefix
 # suffix:
 # [S1] 仅本条后置：覆盖 global_suffix
+# rule_suffix:
+# <<< 
+# 这里写本条的“规则后置”（覆盖 global_rule_suffix）
+# >>>
 这里是用例正文（自然语言目标）。
 ---
 
 # name: case_002
-这里是用例正文（未写 prefix/suffix，将使用 global_prefix/global_suffix）。
+这里是用例正文（未写 prefix/suffix/rule_suffix，将使用 global_prefix/global_suffix/global_rule_suffix）。
 ---
-````
+``````
 
 超长文本示例：
 
-````
+``````
 ```cfg
 global_prefix: <<<
 【占位符/填充字段规则（示例）】
@@ -734,7 +757,7 @@ global_suffix: <<<
 【占位符/填充字段规则（示例）】
 >>>
 ```
-````
+``````
 
 ### --repeat <N>：回声协议（Repeat Protocol）
 
