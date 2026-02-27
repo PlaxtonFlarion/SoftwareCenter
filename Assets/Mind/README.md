@@ -683,24 +683,31 @@ mind –fast –file pack.md –gravity Perf_v1 –reflection
 ```
 
 进阶：三层前后置（可选）
+- cfg 块必须以 ` ```cfg` 开始，并以独立一行 ` ``` ` 结束
+- cfg 多行字段推荐用 `key: |`（缩进块），或用 `key: <<<` ... `>>>`（超长文本）
+- 用例仍然用 `---` 分隔；用例 meta 仍使用 `# key: value`（支持 `# prefix:` / `# suffix:` 多行）
 - loop_prefix/loop_suffix：整个批跑的前置/后置（仅执行一次）
 - round_prefix/round_suffix：每一轮的前置/后置（每轮执行一次）
 - global_prefix/global_suffix：每条用例的默认前置/后置（每条执行一次）
 - prefix/suffix：单条用例的前置/后置（存在则覆盖 global_*）
+
+````
+```cfg
+loop_prefix: |
+  [LP] 批跑开始前：环境准备（一次）
+loop_suffix: |
+  [LS] 批跑结束后：环境清理（一次）
+
+round_prefix: |
+  [RP] 每轮开始：统一初始化（每轮一次）
+round_suffix: |
+  [RS] 每轮结束：统一收尾（每轮一次）
+
+global_prefix: |
+  [GP] 每条前置：通用准备（每条一次）
+global_suffix: |
+  [GS] 每条后置：通用收尾（每条一次）
 ```
-# loop_prefix:
-# [LP] 批跑开始前：环境准备（一次）
-# loop_suffix:
-# [LS] 批跑结束后：环境清理（一次）
-# round_prefix:
-# [RP] 每轮开始：统一初始化（每轮一次）
-# round_suffix:
-# [RS] 每轮结束：统一收尾（每轮一次）
-# global_prefix:
-# [GP] 每条前置：通用准备（每条一次）
-# global_suffix:
-# [GS] 每条后置：通用收尾（每条一次）
----
 
 # name: case_001
 # prefix:
@@ -712,7 +719,22 @@ mind –fast –file pack.md –gravity Perf_v1 –reflection
 
 # name: case_002
 这里是用例正文（未写 prefix/suffix，将使用 global_prefix/global_suffix）。
+---
+````
+
+超长文本示例：
+
+````
+```cfg
+global_prefix: <<<
+【占位符/填充字段规则（示例）】
+>>>
+
+global_suffix: <<<
+【占位符/填充字段规则（示例）】
+>>>
 ```
+````
 
 ### --repeat <N>：回声协议（Repeat Protocol）
 
