@@ -32,7 +32,7 @@ memrix --apply Memrix-XXXX-XXXX-XXXX
 ```
 
 ```
-mind --apply Memrix-XXXX-XXXX-XXXX
+mind --apply Mind-XXXX-XXXX-XXXX
 ```
 
 ---
