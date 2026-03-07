@@ -328,7 +328,7 @@ Mind 有两种运行方式：
 - **命令行模式**：每条命令执行一次任务，适合脚本/CI
 - **交互式模式**：进入循环交互，可在 chat/fast/plan 间随时切换，适合探索与调试
 
-### 1) 命令行运行（One-shot）
+### 1) 命令行运行 (One-shot)
 ```
 # 对话
 mind --chat "你好，介绍一下系统能力"
@@ -338,9 +338,18 @@ mind --fast "开始录屏，打开App，等待3秒，返回桌面，结束录屏
 
 # 编排
 mind --plan "打开设置，等待 2 秒，然后截图看看有什么"
+
+# HTTP 接口
+mind --chat --file http.md
+
+# SSE 事件流采样
+mind --chat --file sse.md
+
+# WebSocket 连接与收发
+mind --chat --file ws.md
 ```
 
-### 2) 交互式运行（REPL）
+### 2) 交互式运行 (REPL)
 启动 REPL：
 ```
 mind
@@ -750,7 +759,6 @@ global_suffix: |
 ``````
 
 超长文本示例：
-
 ``````
 ```cfg
 global_prefix: <<<
@@ -765,6 +773,77 @@ global_rule_suffix: <<<
 【占位符/填充字段规则（示例）】
 >>>
 ```
+``````
+
+超长文件样例：
+``````
+```cfg
+global_prefix: <<<
+base_url = http://127.0.0.1:18080
+time_out = 10
+concurrency = 2
+>>>
+```
+
+# name: http
+请求 /http 来验证解析与 ok 判定。
+
+payload = {
+    "kind": "json"
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "http"
+# - detail.response.status == 200
+# - detail.response.body_json 不为空（能解析 JSON）
+# - detail.response.body_json.ok == true
+# >>>
+---
+
+# name: sse
+从 /sse 拉取前 5 条事件，并验证 event/id/data 字段齐全（coalesce=true 以覆盖粘包场景）。
+
+payload = {
+    "max_events": 5, 
+    "interval_ms": 20, 
+    "coalesce": true
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - step.type == "sse"
+# - step.ok == true
+# - step.detail.status == 200
+# - step.detail.events 为数组，长度 == 5
+# - events[i] 结构：
+#  - 有 event 字段（字符串；hello/message/done 之一）
+#  - 有 id 字段（字符串/数字皆可，最终应可 stringify）
+#  - 有 data 字段（字符串；可被 json.loads 成对象更佳，但不强制）
+# - 若 coalesce=true：仍应能稳定拿到 5 条（说明 buffer split 正常）
+# >>>
+---
+
+# name: ws
+连接 ws://127.0.0.1:18080/ws，依次发送 ping 与 close，收集最多 10 条消息并做断言。
+
+payload = {
+    "sends": ["ping", "close"]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - step.type == "ws"
+# - step.ok == true
+# - step.detail.messages 为数组，至少包含：
+#   - "hello"（服务端 accept 后的首条）
+#   - "echo:ping"（发送 ping 后的回声）
+#   - "closing"（发送 close 后的关闭前提示；可有可无）
+# - 若返回里有 error 字段：
+#   - 在 ok==true 时 error 应为 null/None/空
+# >>>
+---
 ``````
 
 ### --repeat <N>：回声协议（参数兼容）
