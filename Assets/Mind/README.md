@@ -10,6 +10,26 @@
 
 ---
 
+- **[快速开始](#-快速开始-quick-start)**
+- **[命令行参数](#-命令行参数-cli-arguments)**
+- **[自研性能工具接口层](#-自研性能工具接口层-in-house-performance-tooling)**
+  - **[Framix - 画帧秀](#framix--画帧秀--framix-interface-)**
+  - **[Memrix - 记忆星核](#memrix--记忆星核--memrix-interface-)**
+- **[性能实战教学](#-性能实战教学-performance-playbook)**
+  - **[E2E 耗时、ASR 首字上屏、VAD 尾字上屏、流式 tokens/s](#e2e-耗时asr-首字上屏vad-尾字上屏流式-tokenss)**
+  - **[Android 内存基线](#android-内存基线)**
+  - **[Android 内存泄漏](#android-内存泄漏)**
+  - **[Android 流畅度](#android-流畅度)**
+  - **[Android Monkey](#android-monkey)**
+- **[接口实战教学](#-接口实战教学-api-playbook)**
+  - **[Http](#http-接口实战)**
+  - **[SSE](#sse-接口实战)**
+  - **[WS](#websocket-接口实战)**
+  - **[GraphQL](#graphql-接口实战)**
+- **[构建发布](#-构建发布-build--release)**
+
+---
+
 ## 🏆 项目简介 (Project Overview)
 
 **Mind** 把「一句话意图」拆成可执行步骤，并自动编排调用 **MCP 工具**：  
@@ -94,19 +114,25 @@ Tools: automator / bench / common / media
 ### 4) 执行闭环与证据链
 执行闭环：
 ```
-模型流输出
+模型流式生成意图
    ↓
-tool_call
+Tool Call 触发执行动作
    ↓
-Mind 调度
+Mind 任务中枢完成全局调度
    ↓
-执行层处理
+Arguments 增强链完成参数补强、纠偏与约束注入
    ↓
-增强链处理
+Helix 执行底座完成真实环境落地
    ↓
-tool_result 回填
+Enhancer 对执行结果进行结构化增强与证据封装
    ↓
-模型继续生成
+多模态管线接管文件、视频、音频、图像等异构输入
+   ↓
+推理集群完成表征、检索、重排与视觉分析
+   ↓
+Tool Result 作为高质量证据回流模型上下文
+   ↓
+模型基于最新状态继续生成、决策与闭环推进
 ```
 
 证据链体系（执行即留痕，结果可审计）：
@@ -896,7 +922,7 @@ mind --plan --file pack.md --pattern "open|shot"
 它不是附属功能，而是 Mind 的“第二条生命线”：  
 端侧执行负责“把事做成”，性能接口层负责“把事做稳、做快、做得可证明”。
 
-### Framix · 画帧秀 (Framix Interface)
+### [Framix · 画帧秀 (Framix Interface)](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Framix)
 **Framix** 专注 **视觉驱动的端到端耗时**：用画面真值对齐链路时序，把“体感卡不卡”翻译成可量化的时间线。
 - **视觉 E2E 真值**：基于关键帧/状态变化定义起止点，避免埋点缺失或口径漂移  
 - **端侧链路采集**：贴近设备真实表现，覆盖渲染、动效、加载、遮罩、跳转等肉眼可见路径  
@@ -906,7 +932,7 @@ mind --plan --file pack.md --pattern "open|shot"
 
 > Framix 的爆点：把“感觉慢”变成“证据链上的慢”，把 E2E 性能从玄学拉回工程。
 
-### Memrix · 记忆星核 (Memrix Interface)
+### [Memrix · 记忆星核 (Memrix Interface)](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Memrix)
 **Memrix** 专注 **Android 性能数据采集与稳定性量化**：把资源变化从“某次偶现”升级为“可回归的趋势结论”。
 - **多指标覆盖**：内存、流畅度、IO 等关键指标统一采集与落盘  
 - **长稳压友好**：支持高频采样与长时间运行，适配性能模式的吞吐路径  
@@ -924,6 +950,1289 @@ mind --plan --file pack.md --pattern "open|shot"
 
 > 结论：这不是两个工具接口，这是一个“性能事实系统”：  
 > 用视觉锚定真值，用指标解释原因，用回归保证不再复发。
+
+---
+
+## ⭐️ 性能实战教学 (Performance Playbook)
+
+### E2E 耗时、ASR 首字上屏、VAD 尾字上屏、流式 tokens/s
+``````
+```cfg
+loop_suffix: |
+  生成视频帧阶段报告
+  
+round_suffix: |
+  Framix 分析视频帧
+>>>
+```
+
+# name: performance-001
+  开始录屏，打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送，等待回复完成，结束录屏，执行3次
+---
+``````
+
+运行命令
+```
+mind --plan --file example.md
+```
+
+### Android 内存基线
+``````
+```cfg
+loop_suffix: |
+  生成分层内存测试报告
+
+round_prefix: |
+  开始采集内存
+  
+round_suffix: |
+  结束采集内存
+>>>
+```
+
+# name: performance-001
+  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送
+---
+``````
+
+运行命令
+```
+mind --plan --repeat 3 --file example.md
+```
+
+### Android 内存泄漏
+``````
+```cfg
+loop_suffix: |
+  生成内存测试报告
+
+round_prefix: |
+  开始采集内存
+  
+round_suffix: |
+  结束采集内存
+>>>
+```
+
+# name: performance-001
+  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送，执行10次
+---
+``````
+
+运行命令
+```
+mind --plan --file example.md
+```
+
+### Android 流畅度
+``````
+```cfg
+loop_suffix: |
+  生成流畅度测试报告
+
+round_prefix: |
+  开始采集流畅度
+  
+round_suffix: |
+  结束采集流畅度
+>>>
+```
+
+# name: performance-001
+  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送，执行5次
+---
+``````
+
+运行命令
+```
+mind --plan --file example.md
+```
+
+### Android Monkey
+运行命令 - example - 01
+```
+mind --chat "对 com.example.app 做一次 Monkey 随机事件注入测试，固定 seed 为 42，事件间隔 150 毫秒，触摸事件占 65%，滑动事件占 20%，导航事件占 10%，总事件数 10000。测试前先清理 logcat，测试过程中持续采集日志，并按异常关键词降噪保留关键 tail，最后输出执行结果和日志证据。""
+```
+
+运行命令 - example - 02
+```
+mind --chat "Run a Monkey random event injection test on com.example.app with seed 42, throttle 150 ms, 65% touch events, 20% motion events, 10% navigation events, and 10000 total events. Clear logcat before the test, keep a live logcat capture during execution, filter noise by exception-related keywords, and return the execution result with key log evidence at the end."
+```
+
+运行命令 - example - 03
+```
+mind --chat "com.example.app に対して Monkey ランダムイベント注入テストを実行してください。seed は 42、イベント間隔は 150ms、touch 65%、motion 20%、nav 10%、総イベント数は 10000 です。実行前に logcat をクリアし、実行中は logcat を継続取得して、異常系キーワードでノイズを抑えた重要な tail を残し、最後に実行結果とログ証跡を返してください。"
+```
+
+---
+
+## ⭐️ 接口实战教学 (API Playbook)
+
+### Http 接口实战
+Mock 接口
+```python
+from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.responses import JSONResponse
+
+app = FastAPI(title="HTTP Mock")
+
+
+@app.post("/http-upload")
+async def mock_http_upload(
+    note: str = Form(""),
+    file: UploadFile = File(...)
+) -> JSONResponse:
+    # 只验证“收到文件”，不做实际处理
+    content = await file.read()
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "type": "http",
+            "data": {
+                "note": note,
+                "file": {
+                    "filename": file.filename,
+                    "content_type": file.content_type,
+                    "size": len(content)
+                }
+            }
+        },
+        status_code=200
+    )
+
+
+if __name__ == "__main__":
+    pass
+```
+
+启动
+```
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+运行命令
+```
+mind --chat --file http.md
+```
+
+Http 文件上传 + 提取 + 断言
+``````
+# name: http_upload
+请求 /http-upload 来验证 HTTP 文件上传、提取与断言。
+
+payload = {
+    "method": "POST",
+    "url": "http://127.0.0.1:8000/http-upload",
+    "form": {
+        "note": "upload-check"
+    },
+    "files": [
+        {
+            "field": "file",
+            "filename": "demo.txt",
+            "content_type": "text/plain",
+            "text": "hello nexus upload"
+        }
+    ],
+    "extract": {
+        "note": "response.body_json.data.note",
+        "filename": "response.body_json.data.file.filename",
+        "mime": "response.body_json.data.file.content_type",
+        "size": "response.body_json.data.file.size"
+    },
+    "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.body_json.ok", "op": "eq", "value": True},
+        {"path": "response.body_json.type", "op": "eq", "value": "http"},
+        {"path": "response.body_json.data.note", "op": "eq", "value": "upload-check"},
+        {"path": "response.body_json.data.file.filename", "op": "eq", "value": "demo.txt"},
+        {"path": "response.body_json.data.file.content_type", "op": "eq", "value": "text/plain"},
+        {"path": "response.body_json.data.file.size", "op": "gt", "value": 0}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "http"
+# - detail.response.status == 200
+# - detail.response.body_json.ok == true
+# - detail.response.body_json.type == "http"
+# - detail.response.body_json.data.note == "upload-check"
+# - detail.response.body_json.data.file.filename == "demo.txt"
+# - detail.response.body_json.data.file.content_type == "text/plain"
+# - detail.response.body_json.data.file.size > 0
+# - detail.extract.note == "upload-check"
+# - detail.extract.filename == "demo.txt"
+# - detail.extract.mime == "text/plain"
+# - detail.extract.size > 0
+# >>>
+---
+``````
+
+运行结果
+``````
+Mind :: 2026-03-10 01:18:48.787 | DEBUG    | Chat Streaming
+我将使用 nexus_http 工具来执行这个 HTTP 文件上传请求，并进行提取与断言验证。
+nexus_http {'payload': {'method': 'POST', 'url': 'http://127.0.0.1:8000/http-upload', 'form': {'note': 'upload-check'}, 'files': [{'field': 'file', 'filename': 'demo.txt', 'content_type': 'text/plain', 'text': 'hello nexus upload'}], 'extract': {'note': 'response.body_json.data.note', 'filename': 'response.body_json.data.file.filename', 'mime': 'response.body_json.data.file.content_type', 'size': 'response.body_json.data.file.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.body_json.ok', 'op': 'eq', 'value': True}, {'path': 'response.body_json.type', 'op': 'eq', 'value': 'http'}, {'path': 'response.body_json.data.note', 'op': 'eq', 'value': 'upload-check'}, {'path': 'response.body_json.data.file.filename', 'op': 'eq', 'value': 'demo.txt'}, {'path': 'response.body_json.data.file.content_type', 'op': 'eq', 'value': 'text/plain'}, {'path': 'response.body_json.data.file.size', 'op': 'gt', 'value': 0}]}}
+
+tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=72
+agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773076744990
+
+nexus_http ok=True
+## HTTP 文件上传验证结果
+
+✅ **所有验证条件全部通过**，HTTP 文件上传功能正常工作。
+
+### 执行摘要
+- **工具**: nexus_http
+- **总请求数**: 1
+- **成功**: 1
+- **失败**: 0
+- **耗时**: 72ms
+
+### 验证结果详情
+
+#### 1. 响应状态验证 ✅
+- `response.status == 200` ✅ (实际: 200)
+
+#### 2. 响应体结构验证 ✅
+- `response.body_json.ok == true` ✅ (实际: true)
+- `response.body_json.type == "http"` ✅ (实际: "http")
+
+#### 3. 表单数据验证 ✅
+- `response.body_json.data.note == "upload-check"` ✅ (实际: "upload-check")
+
+#### 4. 文件上传验证 ✅
+- `response.body_json.data.file.filename == "demo.txt"` ✅ (实际: "demo.txt")
+- `response.body_json.data.file.content_type == "text/plain"` ✅ (实际: "text/plain")
+- `response.body_json.data.file.size > 0` ✅ (实际: 18)
+
+#### 5. 字段提取验证 ✅
+- `detail.extract.note == "upload-check"` ✅ (实际: "upload-check")
+- `detail.extract.filename == "demo.txt"` ✅ (实际: "demo.txt")
+- `detail.extract.mime == "text/plain"` ✅ (实际: "text/plain")
+- `detail.extract.size > 0` ✅ (实际: 18)
+
+### 断言统计
+- **总断言数**: 7
+- **通过断言**: 7
+- **失败断言**: 0
+- **断言通过率**: 100%
+
+### 服务器响应详情
+```json
+{
+  "ok": true,
+  "type": "http",
+  "data": {
+    "note": "upload-check",
+    "file": {
+      "filename": "demo.txt",
+      "content_type": "text/plain",
+      "size": 18
+    }
+  }
+}
+```
+
+### 结论
+HTTP 文件上传功能完全符合预期，所有验证条件均满足：
+1. ✅ 文件上传成功（demo.txt，18字节）
+2. ✅ 表单字段正确传递（note: upload-check）
+3. ✅ 响应状态码正确（200）
+4. ✅ 响应结构完整（ok, type, data）
+5. ✅ 字段提取功能正常
+6. ✅ 断言验证全部通过
+
+**验证通过** - HTTP 文件上传接口工作正常，支持 multipart/form-data 格式的文件上传与表单数据混合提交。
+Mind :: 2026-03-10 01:19:32.440 | DEBUG    | Chat done ...
+``````
+
+### SSE 接口实战
+Mock 接口
+```python
+import asyncio
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+
+app = FastAPI(title="SSE Mock")
+
+
+def sse_pack(*, event: str | None = None, data: str = "", id_: str | None = None) -> str:
+    lines: list[str] = []
+    if event is not None:
+        lines.append(f"event: {event}")
+    if id_ is not None:
+        lines.append(f"id: {id_}")
+    for line in str(data).splitlines() or [""]:
+        lines.append(f"data: {line}")
+    return "\n".join(lines) + "\n\n"
+
+
+@app.get("/sse")
+async def mock_sse(request: Request) -> StreamingResponse:
+    mode = str(request.query_params.get("mode") or "hello")
+
+    async def gen():
+        if mode == "hello":
+            yield sse_pack(event="ready", data="hello_ack", id_="1")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="message", data="stream_ready", id_="2")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="done", data="bye", id_="3")
+            return
+
+        if mode == "error":
+            yield sse_pack(event="error", data="mock failure", id_="1")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="done", data="closed", id_="2")
+            return
+
+        if mode == "json":
+            yield sse_pack(event="message", data='{"code":0,"msg":"ok"}', id_="1")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="done", data='{"finished":true}', id_="2")
+            return
+
+        yield sse_pack(event="unknown", data=f"mode={mode}", id_="1")
+
+    return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+if __name__ == "__main__":
+    pass
+```
+
+启动
+```
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+运行命令
+```
+mind --chat --file sse.md
+```
+
+SSE 正常流提取与断言
+``````
+# name: sse
+请求 /sse 来验证 SSE 提取与 ok 判定。
+
+payload = {
+    "url": "http://127.0.0.1:8000/sse",
+    "params": {
+        "mode": "hello"
+    },
+    "max_events": 2,
+    "extract": {
+        "ev0": "events.0.event",
+        "msg0": "events.0.data",
+        "msg1": "events.1.data"
+    },
+    "asserts": [
+        {"path": "status", "op": "eq", "value": 200},
+        {"path": "events.0.event", "op": "eq", "value": "ready"},
+        {"path": "events.0.data", "op": "eq", "value": "hello_ack"},
+        {"path": "events.1.data", "op": "eq", "value": "stream_ready"},
+        {"path": "events", "op": "not_empty"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "sse"
+# - detail.status == 200
+# - detail.events 不为空
+# - detail.events.0.event == "ready"
+# - detail.events.0.data == "hello_ack"
+# - detail.events.1.data == "stream_ready"
+# - detail.extract.ev0 == "ready"
+# - detail.extract.msg0 == "hello_ack"
+# - detail.extract.msg1 == "stream_ready"
+# >>>
+---
+``````
+
+SSE 错误事件流
+``````
+# name: sse_error
+请求 /sse 来验证 SSE 错误事件提取。
+
+payload = {
+    "url": "http://127.0.0.1:8000/sse",
+    "params": {
+        "mode": "error"
+    },
+    "max_events": 2,
+    "extract": {
+        "err_event": "events.0.event",
+        "err_msg": "events.0.data"
+    },
+    "asserts": [
+        {"path": "status", "op": "eq", "value": 200},
+        {"path": "events.0.event", "op": "eq", "value": "error"},
+        {"path": "events.0.data", "op": "contains", "value": "mock"},
+        {"path": "events", "op": "not_empty"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "sse"
+# - detail.status == 200
+# - detail.events.0.event == "error"
+# - detail.events.0.data 包含 "mock"
+# - detail.extract.err_event == "error"
+# - detail.extract.err_msg 包含 "mock"
+# >>>
+---
+``````
+
+SSE JSON 字符串事件
+``````
+# name: sse_json
+请求 /sse 来验证 SSE JSON 字符串事件提取。
+
+payload = {
+    "url": "http://127.0.0.1:8000/sse",
+    "params": {
+        "mode": "json"
+    },
+    "max_events": 2,
+    "extract": {
+        "raw0": "events.0.data",
+        "raw1": "events.1.data"
+    },
+    "asserts": [
+        {"path": "status", "op": "eq", "value": 200},
+        {"path": "events.0.data", "op": "contains", "value": "\"code\":0"},
+        {"path": "events.1.data", "op": "contains", "value": "\"finished\":true"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "sse"
+# - detail.status == 200
+# - detail.events.0.data 包含 "\"code\":0"
+# - detail.events.1.data 包含 "\"finished\":true"
+# - detail.extract.raw0 包含 "\"code\":0"
+# - detail.extract.raw1 包含 "\"finished\":true"
+# >>>
+---
+``````
+
+运行结果
+``````
+Mind :: 2026-03-10 01:07:03.254 | DEBUG    | Chat Streaming
+我将使用 nexus_sse 工具来验证 SSE 提取与 ok 判定。根据您提供的 payload 配置，我将执行 SSE 请求并验证提取和断言。
+nexus_sse {'payload': {'url': 'http://127.0.0.1:8000/sse', 'params': {'mode': 'hello'}, 'max_events': 2, 'extract': {'ev0': 'events.0.event', 'msg0': 'events.0.data', 'msg1': 'events.1.data'}, 'asserts': [{'path': 'status', 'op': 'eq', 'value': 200}, {'path': 'events.0.event', 'op': 'eq', 'value': 'ready'}, {'path': 'events.0.data', 'op': 'eq', 'value': 'hello_ack'}, {'path': 'events.1.data', 'op': 'eq', 'value': 'stream_ready'}, {'path': 'events', 'op': 'not_empty'}]}}
+
+tool=nexus_sse total=1 ok=1 fail=0 elapsed_ms=82
+agent_id=nexus ok=True kind=sse total=1 mission_id=nexus_1773076036050
+
+nexus_sse ok=True
+## SSE 验证结果
+
+**✅ 所有验证条件 PASS**
+
+根据工具输出，所有规则条件均已满足：
+
+### 基础条件验证：
+1. **ok == true** ✅ - `data.ok: true`
+2. **type == "sse"** ✅ - `kind: sse`
+3. **detail.status == 200** ✅ - `detail.status: 200`
+
+### 事件数据验证：
+4. **detail.events 不为空** ✅ - 包含 2 个事件
+5. **detail.events.0.event == "ready"** ✅ - 实际值: `"ready"`
+6. **detail.events.0.data == "hello_ack"** ✅ - 实际值: `"hello_ack"`
+7. **detail.events.1.data == "stream_ready"** ✅ - 实际值: `"stream_ready"`
+
+### 提取字段验证：
+8. **detail.extract.ev0 == "ready"** ✅ - 实际值: `"ready"`
+9. **detail.extract.msg0 == "hello_ack"** ✅ - 实际值: `"hello_ack"`
+10. **detail.extract.msg1 == "stream_ready"** ✅ - 实际值: `"stream_ready"`
+
+### 断言结果：
+- 所有 5 个断言全部通过 (5/5)
+- 断言摘要：`assert_summary: {"total": 5, "pass": 5, "fail": 0}`
+- 断言状态：`assert_ok: true`
+
+### 执行详情：
+- **耗时**: 82ms
+- **事件数量**: 2 个 (达到 max_events 限制)
+- **事件内容**:
+  1. `{"event": "ready", "id": "1", "data": "hello_ack"}`
+  2. `{"event": "message", "id": "2", "data": "stream_ready"}`
+
+**结论**: SSE 提取与 ok 判定验证成功，所有规则条件均满足。
+Mind :: 2026-03-10 01:07:38.722 | DEBUG    | Chat done ...
+Mind :: 2026-03-10 01:07:40.323 | INFO     | ▶️  [2/3] sse_error
+Mind :: 2026-03-10 01:07:42.472 | DEBUG    | Chat Streaming
+我将使用 nexus_sse 工具来验证 SSE 错误事件提取。根据您提供的 payload 配置，我将执行 SSE 请求并验证错误事件的提取和断言。
+nexus_sse {'payload': {'url': 'http://127.0.0.1:8000/sse', 'params': {'mode': 'error'}, 'max_events': 2, 'extract': {'err_event': 'events.0.event', 'err_msg': 'events.0.data'}, 'asserts': [{'path': 'status', 'op': 'eq', 'value': 200}, {'path': 'events.0.event', 'op': 'eq', 'value': 'error'}, {'path': 'events.0.data', 'op': 'contains', 'value': 'mock'}, {'path': 'events', 'op': 'not_empty'}]}}
+
+tool=nexus_sse total=1 ok=1 fail=0 elapsed_ms=92
+agent_id=nexus ok=True kind=sse total=1 mission_id=nexus_1773076073572
+
+nexus_sse ok=True
+## SSE 错误事件验证结果
+
+**✅ 所有验证条件 PASS**
+
+根据工具输出，所有规则条件均已满足：
+
+### 基础条件验证：
+1. **ok == true** ✅ - `data.ok: true`
+2. **type == "sse"** ✅ - `kind: sse`
+3. **detail.status == 200** ✅ - `detail.status: 200`
+
+### 错误事件数据验证：
+4. **detail.events.0.event == "error"** ✅ - 实际值: `"error"`
+5. **detail.events.0.data 包含 "mock"** ✅ - 实际值: `"mock failure"` (包含 "mock")
+
+### 提取字段验证：
+6. **detail.extract.err_event == "error"** ✅ - 实际值: `"error"`
+7. **detail.extract.err_msg 包含 "mock"** ✅ - 实际值: `"mock failure"` (包含 "mock")
+
+### 断言结果：
+- 所有 4 个断言全部通过 (4/4)
+- 断言摘要：`assert_summary: {"total": 4, "pass": 4, "fail": 0}`
+- 断言状态：`assert_ok: true`
+
+### 执行详情：
+- **耗时**: 92ms
+- **事件数量**: 2 个 (达到 max_events 限制)
+- **事件内容**:
+  1. `{"event": "error", "id": "1", "data": "mock failure"}` ✅
+  2. `{"event": "done", "id": "2", "data": "closed"}`
+
+### 特别验证：
+- **contains 断言验证**: `"mock failure"` 包含 `"mock"` ✅
+- **提取字段验证**: `err_msg: "mock failure"` 包含 `"mock"` ✅
+
+**结论**: SSE 错误事件提取验证成功，所有规则条件均满足。服务器正确返回了错误事件，并且提取和断言功能正常工作。
+Mind :: 2026-03-10 01:08:15.312 | DEBUG    | Chat done ...
+Mind :: 2026-03-10 01:08:18.404 | INFO     | ▶️  [3/3] sse_json
+Mind :: 2026-03-10 01:08:21.382 | DEBUG    | Chat Streaming
+我将使用 nexus_sse 工具来验证 SSE JSON 字符串事件提取。根据您提供的 payload 配置，我将执行 SSE 请求并验证 JSON 字符串事件的提取和断言。
+nexus_sse {'payload': {'url': 'http://127.0.0.1:8000/sse', 'params': {'mode': 'json'}, 'max_events': 2, 'extract': {'raw0': 'events.0.data', 'raw1': 'events.1.data'}, 'asserts': [{'path': 'status', 'op': 'eq', 'value': 200}, {'path': 'events.0.data', 'op': 'contains', 'value': '"code":0'}, {'path': 'events.1.data', 'op': 'contains', 'value': '"finished":true'}]}}
+
+tool=nexus_sse total=1 ok=1 fail=0 elapsed_ms=75
+agent_id=nexus ok=True kind=sse total=1 mission_id=nexus_1773076111110
+
+nexus_sse ok=True
+## SSE JSON 字符串事件验证结果
+
+**✅ 所有验证条件 PASS**
+
+根据工具输出，所有规则条件均已满足：
+
+### 基础条件验证：
+1. **ok == true** ✅ - `data.ok: true`
+2. **type == "sse"** ✅ - `kind: sse`
+3. **detail.status == 200** ✅ - `detail.status: 200`
+
+### JSON 字符串数据验证：
+4. **detail.events.0.data 包含 "\"code\":0"** ✅ - 实际值: `"{\"code\":0,\"msg\":\"ok\"}"` (包含 `"code\":0`)
+5. **detail.events.1.data 包含 "\"finished\":true"** ✅ - 实际值: `"{\"finished\":true}"` (包含 `"finished\":true`)
+
+### 提取字段验证：
+6. **detail.extract.raw0 包含 "\"code\":0"** ✅ - 实际值: `"{\"code\":0,\"msg\":\"ok\"}"` (包含 `"code\":0`)
+7. **detail.extract.raw1 包含 "\"finished\":true"** ✅ - 实际值: `"{\"finished\":true}"` (包含 `"finished\":true`)
+
+### 断言结果：
+- 所有 3 个断言全部通过 (3/3)
+- 断言摘要：`assert_summary: {"total": 3, "pass": 3, "fail": 0}`
+- 断言状态：`assert_ok: true`
+
+### 执行详情：
+- **耗时**: 75ms
+- **事件数量**: 2 个 (达到 max_events 限制)
+- **事件内容**:
+  1. `{"event": "message", "id": "1", "data": "{\"code\":0,\"msg\":\"ok\"}"}` ✅
+  2. `{"event": "done", "id": "2", "data": "{\"finished\":true}"}` ✅
+
+### JSON 字符串详细验证：
+- **第一个事件**: `"{\"code\":0,\"msg\":\"ok\"}"`
+  - 包含 `"code\":0` ✅
+  - 完整 JSON 结构: `{"code":0,"msg":"ok"}`
+  
+- **第二个事件**: `"{\"finished\":true}"`
+  - 包含 `"finished\":true` ✅
+  - 完整 JSON 结构: `{"finished":true}`
+
+### 特别验证：
+- **contains 断言验证**: 正确识别 JSON 字符串中的键值对 ✅
+- **转义字符处理**: 双引号在 JSON 字符串中正确转义 ✅
+- **提取字段验证**: 提取的原始字符串包含预期的 JSON 片段 ✅
+
+**结论**: SSE JSON 字符串事件提取验证成功，所有规则条件均满足。服务器正确返回了 JSON 格式的字符串事件，并且提取和断言功能正常工作，能够正确处理包含转义字符的 JSON 字符串。
+Mind :: 2026-03-10 01:09:01.331 | DEBUG    | Chat done ...
+``````
+
+### Websocket 接口实战
+Mock 接口
+```python
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+app = FastAPI(title="WS Mock")
+
+
+@app.websocket("/ws")
+async def mock_ws(ws: WebSocket) -> None:
+    await ws.accept()
+
+    try:
+        first = await ws.receive_text()
+
+        if first == "hello":
+            await ws.send_text("hello_ack")
+            await ws.send_text("stream_ready")
+            await ws.close()
+            return None
+
+        if first == "force_error":
+            await ws.send_text("error: mock failure")
+            await ws.close()
+            return None
+
+        if first.startswith("echo:"):
+            await ws.send_text(first)
+            await ws.send_text("done")
+            await ws.close()
+            return None
+
+        await ws.send_text(f"unknown:{first}")
+        await ws.close()
+
+    except WebSocketDisconnect:
+        return None
+
+
+if __name__ == "__main__":
+    pass
+```
+
+启动
+```
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+运行命令
+```
+mind --chat --file ws.md
+```
+
+Websocket 正常消息提取与断言
+``````
+# name: ws
+请求 /ws 来验证 WebSocket 提取与 ok 判定。
+
+payload = {
+    "url": "ws://127.0.0.1:8000/ws",
+    "sends": ["hello"],
+    "max_messages": 3,
+    "extract": {
+        "msg0": "messages.0",
+        "msg1": "messages.1"
+    },
+    "asserts": [
+        {"path": "messages.0", "op": "eq", "value": "hello_ack"},
+        {"path": "messages.1", "op": "eq", "value": "stream_ready"},
+        {"path": "messages", "op": "not_empty"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "ws"
+# - detail.messages 不为空
+# - detail.messages.0 == "hello_ack"
+# - detail.messages.1 == "stream_ready"
+# - detail.extract.msg0 == "hello_ack"
+# - detail.extract.msg1 == "stream_ready"
+# >>>
+---
+``````
+
+Websocket 错误消息场景
+``````
+# name: ws_error
+请求 /ws 来验证 WebSocket 错误消息提取。
+
+payload = {
+    "url": "ws://127.0.0.1:8000/ws",
+    "sends": ["force_error"],
+    "max_messages": 2,
+    "extract": {
+        "err0": "messages.0"
+    },
+    "asserts": [
+        {"path": "messages.0", "op": "contains", "value": "error:"},
+        {"path": "messages", "op": "not_empty"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "ws"
+# - detail.messages 不为空
+# - detail.messages.0 包含 "error:"
+# - detail.extract.err0 包含 "error:"
+# >>>
+---
+``````
+
+Websocket echo 场景
+``````
+# name: ws_echo
+请求 /ws 来验证 WebSocket echo 提取与断言。
+
+payload = {
+    "url": "ws://127.0.0.1:8000/ws",
+    "sends": ["echo:ping"],
+    "max_messages": 2,
+    "extract": {
+        "echoed": "messages.0",
+        "done": "messages.1"
+    },
+    "asserts": [
+        {"path": "messages.0", "op": "eq", "value": "echo:ping"},
+        {"path": "messages.1", "op": "eq", "value": "done"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "ws"
+# - detail.messages.0 == "echo:ping"
+# - detail.messages.1 == "done"
+# - detail.extract.echoed == "echo:ping"
+# - detail.extract.done == "done"
+# >>>
+---
+``````
+
+运行结果
+``````
+Mind :: 2026-03-10 00:50:07.767 | DEBUG    | Chat Streaming
+我将使用 nexus_ws 工具来验证 WebSocket 连接和提取功能。根据你的 payload 配置，我将发送 WebSocket 请求并验证断言。
+nexus_ws {'payload': {'url': 'ws://127.0.0.1:8000/ws', 'sends': ['hello'], 'max_messages': 3, 'extract': {'msg0': 'messages.0', 'msg1': 'messages.1'}, 'asserts': [{'path': 'messages.0', 'op': 'eq', 'value': 'hello_ack'}, {'path': 'messages.1', 'op': 'eq', 'value': 'stream_ready'}, {'path': 'messages', 'op': 'not_empty'}]}, 'concurrency': 1}
+
+tool=nexus_ws total=1 ok=1 fail=0 elapsed_ms=19
+agent_id=nexus ok=True kind=ws total=1 mission_id=nexus_1773075020132
+
+nexus_ws ok=True
+## WebSocket 验证结果
+
+✅ **所有验证条件 PASS**：
+
+### 1. 基础状态验证
+- **ok == true** ✓ - 整体执行成功
+- **type == "ws"** ✓ - 工具类型为 WebSocket (kind=ws)
+
+### 2. 消息内容验证
+- **detail.messages 不为空** ✓ - 收到 2 条消息：["hello_ack", "stream_ready"]
+- **detail.messages.0 == "hello_ack"** ✓ - 第一条消息匹配
+- **detail.messages.1 == "stream_ready"** ✓ - 第二条消息匹配
+
+### 3. 提取字段验证
+- **detail.extract.msg0 == "hello_ack"** ✓ - 提取的第一个消息正确
+- **detail.extract.msg1 == "stream_ready"** ✓ - 提取的第二个消息正确
+
+### 4. 断言结果验证
+所有 3 个断言全部通过：
+1. `messages.0 == "hello_ack"` ✓
+2. `messages.1 == "stream_ready"` ✓  
+3. `messages not_empty` ✓
+
+### 执行详情
+- **连接地址**: ws://127.0.0.1:8000/ws
+- **发送消息**: ["hello"]
+- **接收消息**: ["hello_ack", "stream_ready"]
+- **耗时**: 19ms
+- **断言统计**: 3/3 通过
+
+WebSocket 连接、消息收发、字段提取和断言验证全部成功完成。
+Mind :: 2026-03-10 00:50:40.586 | DEBUG    | Chat done ...
+Mind :: 2026-03-10 00:50:41.555 | INFO     | ▶️  [2/3] ws_error
+Mind :: 2026-03-10 00:50:44.269 | DEBUG    | Chat Streaming
+我将使用 nexus_ws 工具来验证 WebSocket 错误消息提取功能。根据你的 payload 配置，我将发送 "force_error" 消息并验证错误响应。
+nexus_ws {'payload': {'url': 'ws://127.0.0.1:8000/ws', 'sends': ['force_error'], 'max_messages': 2, 'extract': {'err0': 'messages.0'}, 'asserts': [{'path': 'messages.0', 'op': 'contains', 'value': 'error:'}, {'path': 'messages', 'op': 'not_empty'}]}, 'concurrency': 1}
+
+tool=nexus_ws total=1 ok=1 fail=0 elapsed_ms=6
+agent_id=nexus ok=True kind=ws total=1 mission_id=nexus_1773075055051
+
+nexus_ws ok=True
+## WebSocket 错误消息验证结果
+
+✅ **所有验证条件 PASS**：
+
+### 1. 基础状态验证
+- **ok == true** ✓ - 整体执行成功
+- **type == "ws"** ✓ - 工具类型为 WebSocket (kind=ws)
+
+### 2. 消息内容验证
+- **detail.messages 不为空** ✓ - 收到 1 条消息：["error: mock failure"]
+- **detail.messages.0 包含 "error:"** ✓ - 第一条消息包含 "error:" 字符串
+
+### 3. 提取字段验证
+- **detail.extract.err0 包含 "error:"** ✓ - 提取的错误消息为 "error: mock failure"，包含 "error:"
+
+### 4. 断言结果验证
+所有 2 个断言全部通过：
+1. `messages.0 contains "error:"` ✓ - 实际消息 "error: mock failure" 包含 "error:"
+2. `messages not_empty` ✓
+
+### 执行详情
+- **连接地址**: ws://127.0.0.1:8000/ws
+- **发送消息**: ["force_error"]
+- **接收消息**: ["error: mock failure"]
+- **耗时**: 6ms
+- **断言统计**: 2/2 通过
+
+WebSocket 错误消息的提取和验证全部成功完成。服务器正确响应了 "force_error" 请求，返回了预期的错误消息格式。
+Mind :: 2026-03-10 00:51:13.109 | DEBUG    | Chat done ...
+Mind :: 2026-03-10 00:51:15.691 | INFO     | ▶️  [3/3] ws_echo
+Mind :: 2026-03-10 00:51:18.574 | DEBUG    | Chat Streaming
+我将使用 nexus_ws 工具来验证 WebSocket echo 功能。根据你的 payload 配置，我将发送 "echo:ping" 消息并验证回显响应。
+nexus_ws {'payload': {'url': 'ws://127.0.0.1:8000/ws', 'sends': ['echo:ping'], 'max_messages': 2, 'extract': {'echoed': 'messages.0', 'done': 'messages.1'}, 'asserts': [{'path': 'messages.0', 'op': 'eq', 'value': 'echo:ping'}, {'path': 'messages.1', 'op': 'eq', 'value': 'done'}]}, 'concurrency': 1}
+
+tool=nexus_ws total=1 ok=1 fail=0 elapsed_ms=5
+agent_id=nexus ok=True kind=ws total=1 mission_id=nexus_1773075090025
+
+nexus_ws ok=True
+## WebSocket Echo 验证结果
+
+✅ **所有验证条件 PASS**：
+
+### 1. 基础状态验证
+- **ok == true** ✓ - 整体执行成功
+- **type == "ws"** ✓ - 工具类型为 WebSocket (kind=ws)
+
+### 2. 消息内容验证
+- **detail.messages.0 == "echo:ping"** ✓ - 第一条消息正确回显
+- **detail.messages.1 == "done"** ✓ - 第二条消息为完成标志
+
+### 3. 提取字段验证
+- **detail.extract.echoed == "echo:ping"** ✓ - 提取的回显消息正确
+- **detail.extract.done == "done"** ✓ - 提取的完成标志正确
+
+### 4. 断言结果验证
+所有 2 个断言全部通过：
+1. `messages.0 == "echo:ping"` ✓
+2. `messages.1 == "done"` ✓
+
+### 执行详情
+- **连接地址**: ws://127.0.0.1:8000/ws
+- **发送消息**: ["echo:ping"]
+- **接收消息**: ["echo:ping", "done"]
+- **耗时**: 5ms
+- **断言统计**: 2/2 通过
+
+WebSocket echo 功能的验证全部成功完成。服务器正确实现了 echo 功能，先回显发送的消息，然后发送 "done" 完成标志。
+Mind :: 2026-03-10 00:51:48.484 | DEBUG    | Chat done ...
+``````
+
+### GraphQL 接口实战
+Mock 接口
+```python
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+app = FastAPI(title="GraphQL Mock")
+
+
+@app.post("/graphql")
+async def mock_graphql(request: Request) -> JSONResponse:
+    body = await request.json()
+
+    query = str(body.get("query") or "")
+    variables = body.get("variables") or {}
+    operation_name = body.get("operationName") or body.get("operation_name")
+
+    # 1) 模拟 GraphQL errors
+    if "forceError" in query or variables.get("force_error") is True:
+        return JSONResponse(
+            {
+                "errors": [
+                    {
+                        "message": "mock graphql error",
+                        "extensions": {"code": "MOCK_ERROR"}
+                    }
+                ]
+            },
+            status_code=200
+        )
+
+    # 2) 模拟正常 data
+    return JSONResponse(
+        {
+            "data": {
+                "mockUser": {
+                    "id": 123,
+                    "name": "Ace",
+                    "active": True
+                }
+            },
+            "extensions": {
+                "trace_id": "trace_mock_001"
+            },
+            "meta": {
+                "ok": True,
+                "type": "graphql",
+                "operation_name": operation_name,
+                "variables": variables
+            }
+        },
+        status_code=200
+    )
+
+
+if __name__ == '__main__':
+    pass
+```
+
+启动
+```
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+运行命令
+```
+mind --chat --file graphql.md
+```
+
+GraphQL 成功请求
+``````
+# name: graphql
+请求 /graphql 来验证 GraphQL 提取与 ok 判定。
+
+payload = {
+    "url": "http://127.0.0.1:8000/graphql",
+    "query": "query GetUser { mockUser { id name active } }",
+    "operation_name": "GetUser",
+    "extract": {
+        "uid": "response.body_json.data.mockUser.id",
+        "uname": "response.body_json.data.mockUser.name",
+        "trace_id": "response.body_json.extensions.trace_id"
+    },
+    "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.body_json.data.mockUser.id", "op": "eq", "value": 123},
+        {"path": "response.body_json.data.mockUser.name", "op": "eq", "value": "Ace"},
+        {"path": "response.body_json.data.mockUser.active", "op": "eq", "value": True},
+        {"path": "response.body_json.extensions.trace_id", "op": "eq", "value": "trace_mock_001"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == true
+# - type == "graphql"
+# - detail.response.status == 200
+# - detail.response.body_json 不为空（能解析 JSON）
+# - detail.response.body_json.data.mockUser.id == 123
+# - detail.response.body_json.data.mockUser.name == "Ace"
+# - detail.response.body_json.data.mockUser.active == true
+# - detail.response.body_json.extensions.trace_id == "trace_mock_001"
+# - detail.graphql.errors 为空
+# - detail.extract.uid == 123
+# - detail.extract.uname == "Ace"
+# - detail.extract.trace_id == "trace_mock_001"
+# >>>
+---
+``````
+
+GraphQL 返回 errors
+``````
+# name: graphql_error
+请求 /graphql 来验证 GraphQL errors 判定。
+
+payload = {
+    "url": "http://127.0.0.1:8000/graphql",
+    "query": "query forceError { mockUser { id } }",
+    "operation_name": "forceError",
+    "extract": {
+        "gql_errors": "response.body_json.errors"
+    },
+    "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.body_json.errors", "op": "not_empty"}
+    ]
+}
+
+# rule_suffix: <<<
+# PASS 条件：
+# - ok == false
+# - type == "graphql"
+# - detail.response.status == 200
+# - detail.graphql.errors 不为空
+# - detail.response.body_json.errors 不为空
+# - detail.extract.gql_errors 不为空
+# >>>
+---
+``````
+
+运行结果
+``````
+Mind :: 2026-03-10 00:32:29.365 | DEBUG    | Chat Streaming
+我将使用 nexus_graphql 工具来验证 GraphQL 提取与 ok 判定。根据你的 payload 配置，我将执行这个 GraphQL 请求。
+nexus_graphql {'payload': {'url': 'http://127.0.0.1:8000/graphql', 'query': 'query GetUser { mockUser { id name active } }', 'operation_name': 'GetUser', 'extract': {'uid': 'response.body_json.data.mockUser.id', 'uname': 'response.body_json.data.mockUser.name', 'trace_id': 'response.body_json.extensions.trace_id'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.body_json.data.mockUser.id', 'op': 'eq', 'value': 123}, {'path': 'response.body_json.data.mockUser.name', 'op': 'eq', 'value': 'Ace'}, {'path': 'response.body_json.data.mockUser.active', 'op': 'eq', 'value': True}, {'path': 'response.body_json.extensions.trace_id', 'op': 'eq', 'value': 'trace_mock_001'}]}}
+
+tool=nexus_graphql total=1 ok=1 fail=0 elapsed_ms=76
+agent_id=nexus ok=True kind=graphql total=1 mission_id=nexus_1773073965313
+
+nexus_graphql ok=True
+## 验证结果：✅ **PASS**
+
+根据你提供的规则后缀，所有 PASS 条件均已满足：
+
+### ✅ 核心条件验证：
+1. **ok == true** ✅ - `data.ok: true`
+2. **type == "graphql"** ✅ - `detail.graphql.query` 存在且 `meta.type: "graphql"`
+3. **detail.response.status == 200** ✅ - `response.status: 200`
+4. **detail.response.body_json 不为空** ✅ - `body_json` 包含完整数据
+
+### ✅ 数据验证：
+5. **detail.response.body_json.data.mockUser.id == 123** ✅ - 实际值：`123`
+6. **detail.response.body_json.data.mockUser.name == "Ace"** ✅ - 实际值：`"Ace"`
+7. **detail.response.body_json.data.mockUser.active == true** ✅ - 实际值：`true`
+8. **detail.response.body_json.extensions.trace_id == "trace_mock_001"** ✅ - 实际值：`"trace_mock_001"`
+
+### ✅ GraphQL 特定验证：
+9. **detail.graphql.errors 为空** ✅ - `graphql.errors: null`
+
+### ✅ 提取验证：
+10. **detail.extract.uid == 123** ✅ - 提取值：`123`
+11. **detail.extract.uname == "Ace"** ✅ - 提取值：`"Ace"`
+12. **detail.extract.trace_id == "trace_mock_001"** ✅ - 提取值：`"trace_mock_001"`
+
+### ✅ 断言验证：
+所有 5 个断言全部通过：
+- `response.status == 200` ✅
+- `mockUser.id == 123` ✅
+- `mockUser.name == "Ace"` ✅
+- `mockUser.active == true` ✅
+- `extensions.trace_id == "trace_mock_001"` ✅
+
+**总结**：GraphQL 请求成功，所有提取、断言和验证条件均满足，ok 判定正确。
+Mind :: 2026-03-10 00:33:10.327 | DEBUG    | Chat done ...
+Mind :: 2026-03-10 00:33:11.456 | INFO     | ▶️  [2/2] graphql_error
+Mind :: 2026-03-10 00:33:13.446 | DEBUG    | Chat Streaming
+我将使用 nexus_graphql 工具来验证 GraphQL errors 判定。根据你的 payload 配置，我将执行这个 GraphQL 请求来测试错误处理。
+nexus_graphql {'payload': {'url': 'http://127.0.0.1:8000/graphql', 'query': 'query forceError { mockUser { id } }', 'operation_name': 'forceError', 'extract': {'gql_errors': 'response.body_json.errors'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.body_json.errors', 'op': 'not_empty'}]}}
+
+tool=nexus_graphql total=1 ok=0 fail=1 elapsed_ms=65
+agent_id=nexus ok=False error=kind=graphql total=1 mission_id=nexus_1773074004007
+
+nexus_graphql ok=False
+## 验证结果：✅ **PASS**
+
+根据你提供的规则后缀，所有 PASS 条件均已满足：
+
+### ✅ 核心条件验证：
+1. **ok == false** ✅ - `data.ok: false` (GraphQL 有 errors 时，ok 为 false)
+2. **type == "graphql"** ✅ - `kind: "graphql"` 且 `detail.graphql` 存在
+3. **detail.response.status == 200** ✅ - `response.status: 200`
+
+### ✅ 错误验证：
+4. **detail.graphql.errors 不为空** ✅ - `graphql.errors: [{"message": "mock graphql error", ...}]`
+5. **detail.response.body_json.errors 不为空** ✅ - `body_json.errors: [{"message": "mock graphql error", ...}]`
+6. **detail.extract.gql_errors 不为空** ✅ - `extract.gql_errors: [{"message": "mock graphql error", ...}]`
+
+### ✅ 详细分析：
+- **GraphQL 响应**：服务器返回了 HTTP 200 状态码，但响应体包含 `errors` 字段
+- **错误内容**：`{"message": "mock graphql error", "extensions": {"code": "MOCK_ERROR"}}`
+- **断言结果**：两个断言都通过了（status=200 和 errors not_empty）
+- **assert_ok**：`false` - 这是因为 GraphQL 引擎检测到 `errors` 字段非空，即使所有断言都通过，整体结果仍为 false
+
+### ✅ 关键观察：
+1. **GraphQL 错误处理机制正确**：当响应包含 `errors` 字段时，nexus_graphql 正确地将 `ok` 设为 `false`
+2. **断言与 ok 分离**：断言全部通过（2/2），但整体 `ok` 为 `false`，这符合 GraphQL 规范
+3. **提取功能正常**：成功提取了 `gql_errors` 字段
+4. **错误信息完整**：错误消息和扩展信息都被正确解析
+
+**总结**：GraphQL errors 判定机制工作正常，当 GraphQL 响应包含 errors 时，即使 HTTP 状态码为 200 且所有断言通过，整体结果仍为 `false`，这符合 GraphQL 规范。
+Mind :: 2026-03-10 00:33:53.430 | DEBUG    | Chat done ...
+``````
+
+### API Mocks
+```python
+import asyncio
+from fastapi import (
+    FastAPI,
+    UploadFile,
+    File,
+    Form,
+    Request,
+    WebSocket,
+    WebSocketDisconnect
+)
+from fastapi.responses import (
+    JSONResponse,
+    StreamingResponse
+)
+
+app = FastAPI(title="Mock")
+
+
+@app.post("/http-upload")
+async def mock_http_upload(
+    note: str = Form(""),
+    file: UploadFile = File(...)
+) -> JSONResponse:
+    # 只验证“收到文件”，不做实际处理
+    content = await file.read()
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "type": "http",
+            "data": {
+                "note": note,
+                "file": {
+                    "filename"     : file.filename,
+                    "content_type" : file.content_type,
+                    "size"         : len(content)
+                }
+            }
+        },
+        status_code=200
+    )
+
+
+def sse_pack(*, event: str | None = None, data: str = "", id_: str | None = None) -> str:
+    lines: list[str] = []
+    if event is not None:
+        lines.append(f"event: {event}")
+    if id_ is not None:
+        lines.append(f"id: {id_}")
+    for line in str(data).splitlines() or [""]:
+        lines.append(f"data: {line}")
+    return "\n".join(lines) + "\n\n"
+
+
+@app.get("/sse")
+async def mock_sse(request: Request) -> StreamingResponse:
+    mode = str(request.query_params.get("mode") or "hello")
+
+    async def gen():
+        if mode == "hello":
+            yield sse_pack(event="ready", data="hello_ack", id_="1")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="message", data="stream_ready", id_="2")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="done", data="bye", id_="3")
+            return
+
+        if mode == "error":
+            yield sse_pack(event="error", data="mock failure", id_="1")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="done", data="closed", id_="2")
+            return
+
+        if mode == "json":
+            yield sse_pack(event="message", data='{"code":0,"msg":"ok"}', id_="1")
+            await asyncio.sleep(0.02)
+            yield sse_pack(event="done", data='{"finished":true}', id_="2")
+            return
+
+        yield sse_pack(event="unknown", data=f"mode={mode}", id_="1")
+
+    return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+@app.websocket("/ws")
+async def mock_ws(ws: WebSocket) -> None:
+    await ws.accept()
+
+    try:
+        first = await ws.receive_text()
+
+        if first == "hello":
+            await ws.send_text("hello_ack")
+            await ws.send_text("stream_ready")
+            await ws.close()
+            return None
+
+        if first == "force_error":
+            await ws.send_text("error: mock failure")
+            await ws.close()
+            return None
+
+        if first.startswith("echo:"):
+            await ws.send_text(first)
+            await ws.send_text("done")
+            await ws.close()
+            return None
+
+        await ws.send_text(f"unknown:{first}")
+        await ws.close()
+
+    except WebSocketDisconnect:
+        return None
+
+
+@app.post("/graphql")
+async def mock_graphql(request: Request) -> JSONResponse:
+    body = await request.json()
+
+    query = str(body.get("query") or "")
+    variables = body.get("variables") or {}
+    operation_name = body.get("operationName") or body.get("operation_name")
+
+    # 1) 模拟 GraphQL errors
+    if "forceError" in query or variables.get("force_error") is True:
+        return JSONResponse(
+            {
+                "errors": [
+                    {
+                        "message": "mock graphql error",
+                        "extensions": {"code": "MOCK_ERROR"}
+                    }
+                ]
+            },
+            status_code=200
+        )
+
+    # 2) 模拟正常 data
+    return JSONResponse(
+        {
+            "data": {
+                "mockUser": {
+                    "id": 123,
+                    "name": "Ace",
+                    "active": True
+                }
+            },
+            "extensions": {
+                "trace_id": "trace_mock_001"
+            },
+            "meta": {
+                "ok": True,
+                "type": "graphql",
+                "operation_name": operation_name,
+                "variables": variables
+            }
+        },
+        status_code=200
+    )
+
+
+if __name__ == '__main__':
+    pass
+```
 
 ---
 
@@ -976,3 +2285,6 @@ mind --plan --file pack.md --pattern "open|shot"
 ---
 
 ## ⭐️ 特别鸣谢（Special Thanks）
+......
+
+---
