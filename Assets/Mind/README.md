@@ -23,17 +23,27 @@
   - **[Android 流畅度](#android-流畅度)**
   - **[Android Monkey](#android-monkey)**
 - **[接口实战教学](#-接口实战教学-api-playbook)**
-  - **[HTTP](#http-接口实战)**
-  - **[SSE](#sse-接口实战)**
-  - **[Websocket](#websocket-接口实战)**
-  - **[GraphQL](#graphql-接口实战)**
+  - **[基础：HTTP](#http-接口实战)**
+  - **[基础：SSE](#sse-接口实战)**
+  - **[基础：Websocket](#websocket-接口实战)**
+  - **[基础：GraphQL](#graphql-接口实战)**
   - **[高阶：并发健康检查（HTTP fan-out）](#高阶并发健康检查http-fan-out)**
   - **[高阶：分页轻爬虫（HTTP list crawler）](#高阶分页轻爬虫http-list-crawler)**
   - **[高阶：上下文注入（vars + 模板变量）](#高阶上下文注入vars--模板变量)**
   - **[高阶：SSE 多路订阅采样（并发事件流）](#高阶sse-多路订阅采样并发事件流)**
   - **[高阶：GraphQL 多 query 批采样](#高阶graphql-多-query-批采样)**
   - **[高阶：图片 / 视频响应提取与媒体落盘（爬虫）](#高阶图片--视频响应提取与媒体落盘爬虫)**
+  - **[高阶：SSE 事件字段提取媒体（爬虫）](#高阶sse-事件字段提取媒体爬虫)**
+  - **[高阶：WS 消息字段提取媒体（爬虫）](#高阶ws-消息字段提取媒体爬虫)**
+  - **[高阶：GraphQL 字段提取媒体（爬虫）](#高阶graphql-字段提取媒体爬虫)**
+  - **[顶级：纯自然语言 Prepare 动态鉴权注入](#顶级纯自然语言-prepare-动态鉴权注入)**
+  - **[顶级：纯自然语言 RSA 公钥握手式动态密文登录](#顶级纯自然语言-rsa-公钥握手式动态密文登录)**
 - **[多媒体链路实战教学](#-多媒体链路实战教学-media-playbook)**
+  - **[基础：图片序列：按固定帧率导出全量帧](#图片序列按固定帧率导出全量帧)**
+  - **[基础：场景变化抽帧：抓住真正变化瞬间](#场景变化抽帧抓住真正变化瞬间)**
+  - **[基础：视频拼接：把多段录屏合并成一条证据链](#视频拼接把多段录屏合并成一条证据链)**
+  - **[高阶：组合链路 02：视觉证据链预处理](#组合链路-02视觉证据链预处理)**
+  - **[顶级：星图蓝本多媒体任务](#星图蓝本多媒体任务)**
 - **[构建发布](#-构建发布-build--release)**
 
 ---
@@ -2808,20 +2818,20 @@ payload = {
     "method": "GET",
     "url": "http://127.0.0.1:8000/mock-image",
     "save_response": True,
-    "save_dir": "./downloads",
+    "save_dir": None,
     "extract": {
-        "kind": "response.media.kind",
-        "path": "response.media.path",
-        "mime": "response.media.mime_type",
-        "size": "response.media.size"
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
     },
     "asserts": [
         {"path": "response.status", "op": "eq", "value": 200},
         {"path": "response.content_type", "op": "contains", "value": "image/png"},
-        {"path": "response.media.kind", "op": "eq", "value": "image"},
-        {"path": "response.media.path", "op": "not_empty"},
-        {"path": "response.media.mime_type", "op": "eq", "value": "image/png"},
-        {"path": "response.media.size", "op": "gt", "value": 0}
+        {"path": "response.media.0.kind", "op": "eq", "value": "image"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.mime_type", "op": "eq", "value": "image/png"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
     ]
 }
 
@@ -2831,10 +2841,10 @@ payload = {
 # - type == "http"
 # - detail.response.status == 200
 # - detail.response.content_type 包含 "image/png"
-# - detail.response.media.kind == "image"
-# - detail.response.media.path 非空
-# - detail.response.media.mime_type == "image/png"
-# - detail.response.media.size > 0
+# - detail.response.media.0.kind == "image"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.mime_type == "image/png"
+# - detail.response.media.0.size > 0
 # - detail.extract.kind == "image"
 # - detail.extract.path 非空
 # - detail.extract.mime == "image/png"
@@ -2849,24 +2859,24 @@ payload = {
     "method": "GET",
     "url": "http://127.0.0.1:8000/mock-video",
     "save_response": True,
-    "save_dir": "./downloads",
+    "save_dir": None,
     "extract": {
-        "kind": "response.media.kind",
-        "path": "response.media.path",
-        "filename": "response.media.filename",
-        "mime": "response.media.mime_type",
-        "size": "response.media.size"
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "filename": "response.media.0.filename",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
     },
     "asserts": [
         {"path": "response.status", "op": "eq", "value": 200},
         {"path": "response.content_type", "op": "contains", "value": "video/mp4"},
         {"path": "response.body_json", "op": "empty"},
         {"path": "response.body_text", "op": "empty"},
-        {"path": "response.media.kind", "op": "eq", "value": "video"},
-        {"path": "response.media.path", "op": "not_empty"},
-        {"path": "response.media.filename", "op": "contains", "value": ".mp4"},
-        {"path": "response.media.mime_type", "op": "eq", "value": "video/mp4"},
-        {"path": "response.media.size", "op": "gt", "value": 0}
+        {"path": "response.media.0.kind", "op": "eq", "value": "video"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.filename", "op": "contains", "value": ".mp4"},
+        {"path": "response.media.0.mime_type", "op": "eq", "value": "video/mp4"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
     ]
 }
 
@@ -2878,11 +2888,11 @@ payload = {
 # - detail.response.content_type 包含 "video/mp4"
 # - detail.response.body_json 为空
 # - detail.response.body_text 为空
-# - detail.response.media.kind == "video"
-# - detail.response.media.path 非空
-# - detail.response.media.filename 包含 ".mp4"
-# - detail.response.media.mime_type == "video/mp4"
-# - detail.response.media.size > 0
+# - detail.response.media.0.kind == "video"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.filename 包含 ".mp4"
+# - detail.response.media.0.mime_type == "video/mp4"
+# - detail.response.media.0.size > 0
 # - detail.extract.kind == "video"
 # - detail.extract.path 非空
 # - detail.extract.filename 包含 ".mp4"
@@ -2894,90 +2904,817 @@ payload = {
 
 高阶蓝本结果：图片 / 视频响应提取与媒体落盘（爬虫）
 ``````
-Mind :: 2026-03-12 03:57:19.669 | DEBUG    | Chat Streaming
-我来执行这个HTTP图片响应验证请求。
-nexus_http {'payload': {'method': 'GET', 'url': 'http://127.0.0.1:8000/mock-image', 'save_response': True, 'save_dir': './downloads', 'extract': {'kind': 'response.media.kind', 'path': 'response.media.path', 'mime': 'response.media.mime_type', 'size': 'response.media.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.content_type', 'op': 'contains', 'value': 'image/png'}, {'path': 'response.media.kind', 'op': 'eq', 'value': 'image'}, {'path': 'response.media.path', 'op': 'not_empty'}, {'path': 'response.media.mime_type', 'op': 'eq', 'value': 'image/png'}, {'path': 'response.media.size', 'op': 'gt', 'value': 0}]}}
+Mind :: 2026-03-12 22:56:11.680 | DEBUG    | Chat Streaming
+我来执行这个 HTTP 请求，验证图片响应提取、落盘、提取与断言功能。
+nexus_http {'payload': {'method': 'GET', 'url': 'http://127.0.0.1:8000/mock-image', 'save_response': True, 'save_dir': None, 'extract': {'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.content_type', 'op': 'contains', 'value': 'image/png'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'image'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.mime_type', 'op': 'eq', 'value': 'image/png'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
 
-tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=78
-agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773259047811
+tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=69
+agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773327385107
 
 nexus_http ok=True
 ## 验证结果：PASS ✅
 
-所有断言均通过，HTTP图片响应提取、落盘、提取与断言功能验证成功。
+所有断言均通过，HTTP 图片响应提取、落盘、提取与断言功能验证成功：
 
-### 验证要点：
-1. **请求状态**：HTTP 200 OK
-2. **内容类型**：image/png（包含"image/png"）
-3. **媒体识别**：成功识别为image类型
-4. **文件落盘**：已保存到 `downloads/image_1773259047888.png`
-5. **元数据提取**：
-   - 文件路径：`downloads/image_1773259047888.png`
-   - MIME类型：`image/png`
-   - 文件大小：69字节
-6. **断言结果**：6个断言全部通过
+### 核心验证点：
+1. **HTTP 状态**：200 OK ✓
+2. **内容类型**：image/png ✓
+3. **媒体识别**：成功识别为 image 类型 ✓
+4. **文件落盘**：图片已保存到本地路径 ✓
+5. **文件信息**：大小 69 字节，MIME 类型正确 ✓
+6. **提取功能**：所有字段提取成功 ✓
 
-### 提取数据：
+### 证据链：
+- **响应状态**：200
+- **Content-Type**：image/png
+- **媒体文件**：已保存至 `*.png`
+- **文件信息**：69 字节 PNG 图片
+- **断言结果**：6/6 全部通过
+
+### 提取结果：
 - `kind`: "image"
-- `path`: "downloads/image_1773259047888.png"
+- `path`: 有效文件路径
 - `mime`: "image/png"
 - `size`: 69
 
-### 响应头信息：
-- Content-Type: image/png
-- Content-Length: 69
-- Content-Disposition: attachment; filename="demo.png"
-- ETag: "32f0d49a7b7f655267fb3fd741e0abe0"
+**结论**：HTTP 图片响应处理链路完整可用，媒体识别、落盘、提取、断言功能均正常工作。
+Mind :: 2026-03-12 22:56:42.255 | DEBUG    | Chat done ...
 
-**结论**：HTTP图片响应处理链路完整可用，媒体识别、文件保存、元数据提取和断言验证功能均正常工作。
-Mind :: 2026-03-12 03:57:38.376 | DEBUG    | Chat done ...
+Mind :: 2026-03-12 22:56:48.323 | DEBUG    | Chat Streaming
+我来执行这个 HTTP 请求，验证视频响应提取、落盘、提取与断言功能。
+nexus_http {'payload': {'method': 'GET', 'url': 'http://127.0.0.1:8000/mock-video', 'save_response': True, 'save_dir': None, 'extract': {'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'filename': 'response.media.0.filename', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.content_type', 'op': 'contains', 'value': 'video/mp4'}, {'path': 'response.body_json', 'op': 'empty'}, {'path': 'response.body_text', 'op': 'empty'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'video'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.filename', 'op': 'contains', 'value': '.mp4'}, {'path': 'response.media.0.mime_type', 'op': 'eq', 'value': 'video/mp4'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
 
-Mind :: 2026-03-12 03:57:41.877 | DEBUG    | Chat Streaming
-我来执行这个HTTP视频响应验证请求。
-nexus_http {'payload': {'method': 'GET', 'url': 'http://127.0.0.1:8000/mock-video', 'save_response': True, 'save_dir': './downloads', 'extract': {'kind': 'response.media.kind', 'path': 'response.media.path', 'filename': 'response.media.filename', 'mime': 'response.media.mime_type', 'size': 'response.media.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.content_type', 'op': 'contains', 'value': 'video/mp4'}, {'path': 'response.body_json', 'op': 'empty', 'value': None}, {'path': 'response.body_text', 'op': 'empty', 'value': None}, {'path': 'response.media.kind', 'op': 'eq', 'value': 'video'}, {'path': 'response.media.path', 'op': 'not_empty', 'value': None}, {'path': 'response.media.filename', 'op': 'contains', 'value': '.mp4'}, {'path': 'response.media.mime_type', 'op': 'eq', 'value': 'video/mp4'}, {'path': 'response.media.size', 'op': 'gt', 'value': 0}]}}
-
-tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=71
-agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773259071605
+tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=82
+agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773327424120
 
 nexus_http ok=True
 ## 验证结果：PASS ✅
 
-所有断言均通过，HTTP视频响应提取、落盘、提取与断言功能验证成功。
+所有断言均通过，HTTP 视频响应提取、落盘、提取与断言功能验证成功：
 
-### 验证要点：
-1. **请求状态**：HTTP 200 OK
-2. **内容类型**：video/mp4（包含"video/mp4"）
-3. **响应体验证**：body_json和body_text均为空（媒体响应不解析为文本/JSON）
-4. **媒体识别**：成功识别为video类型
-5. **文件落盘**：已保存到 `downloads/video_1773259071671.mp4`
-6. **元数据提取**：
-   - 文件路径：`downloads/video_1773259071671.mp4`
-   - 文件名：`video_1773259071671.mp4`（包含".mp4"）
-   - MIME类型：`video/mp4`
-   - 文件大小：1,004,812字节（约980KB）
-7. **断言结果**：9个断言全部通过
+### 核心验证点：
+1. **HTTP 状态**：200 OK ✓
+2. **内容类型**：video/mp4 ✓
+3. **媒体识别**：成功识别为 video 类型 ✓
+4. **文件落盘**：视频已保存到本地路径 ✓
+5. **文件信息**：大小 1004812 字节（约 980KB），MIME 类型正确 ✓
+6. **文件名**：包含 ".mp4" 后缀 ✓
+7. **响应体处理**：body_json 和 body_text 均为空（媒体响应正确识别）✓
+8. **提取功能**：所有字段提取成功 ✓
 
-### 提取数据：
+### 证据链：
+- **响应状态**：200
+- **Content-Type**：video/mp4
+- **媒体文件**：已保存至 `*.mp4`
+- **文件信息**：1004812 字节 MP4 视频
+- **断言结果**：9/9 全部通过
+
+### 提取结果：
 - `kind`: "video"
-- `path`: "downloads/video_1773259071671.mp4"
-- `filename`: "video_1773259071671.mp4"
+- `path`: 有效文件路径
+- `filename`: "video.mp4"（包含 ".mp4"）
 - `mime`: "video/mp4"
 - `size`: 1004812
 
-### 响应头信息：
-- Content-Type: video/mp4
-- Content-Length: 1004812
-- Content-Disposition: attachment; filename="demo.mp4"
-- ETag: "542cc791088b543cbc018538f075b87a"
+**结论**：HTTP 视频响应处理链路完整可用，媒体识别、落盘、提取、断言功能均正常工作。视频文件大小合理，文件名规范，所有验证点均通过。
+Mind :: 2026-03-12 22:57:28.076 | DEBUG    | Chat done ...
+``````
 
-### 关键特性验证：
-1. **媒体类型自动识别**：系统正确识别Content-Type为video/mp4
-2. **文件自动保存**：save_response=true时自动保存媒体文件
-3. **元数据提取**：完整提取媒体文件的路径、文件名、MIME类型和大小
-4. **响应体处理**：媒体响应不解析为文本或JSON（body_text和body_json均为null）
+### 高阶：SSE 事件字段提取媒体（爬虫）
+适用于：
+- SSE 事件 data 中携带图片/视频链接的流式场景
+- 边拉流边落盘图片、视频等证据文件
+- 对事件中的 image_url / video_url / cover / poster 等字段做断言校验
+- 验证流式接口是否正确下发可访问的媒体资源
+- 将 SSE 事件流中的媒体字段沉淀为 response.media[] 证据链
 
-**结论**：HTTP视频响应处理链路完整可用，媒体识别、文件保存、元数据提取和断言验证功能均正常工作。视频文件大小约980KB，符合预期。
-Mind :: 2026-03-12 03:58:06.895 | DEBUG    | Chat done ...
+高阶蓝本：SSE 事件字段提取媒体（爬虫）
+``````
+# name: sse_image_extract
+请求 /sse/image 来验证 SSE 事件中的图片链接提取、落盘、提取与断言。
+
+payload = {
+    "method": "GET",
+    "url": "http://127.0.0.1:8000/sse/image",
+    "max_events": 2,
+    "media_index": 0,
+    "media_path": "image_url",
+    "save_response": True,
+    "save_dir": None,
+    "extract": {
+        "ev0": "response.events.0.event",
+        "msg0": "response.events.0.data",
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
+    },
+    "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.events", "op": "not_empty"},
+        {"path": "response.events.0.event", "op": "eq", "value": "image"},
+        {"path": "response.events.0.data", "op": "contains", "value": "app_readme.png"},
+        {"path": "response.media.0.kind", "op": "eq", "value": "image"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.mime_type", "op": "contains", "value": "image/"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
+    ]
+}
+
+# rule: <<<
+# PASS 条件：
+# - ok == true
+# - type == "sse"
+# - detail.response.status == 200
+# - detail.response.events 不为空
+# - detail.response.events.0.event == "image"
+# - detail.response.events.0.data 包含 "app_readme.png"
+# - detail.response.media.0.kind == "image"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.mime_type 包含 "image/"
+# - detail.response.media.0.size > 0
+# - detail.extract.ev0 == "image"
+# - detail.extract.kind == "image"
+# - detail.extract.path 非空
+# - detail.extract.mime 包含 "image/"
+# - detail.extract.size > 0
+# >>>
+---
+``````
+
+高阶蓝本结果：SSE 事件字段提取媒体（爬虫）
+``````
+Mind :: 2026-03-12 23:13:49.295 | DEBUG    | Chat Streaming
+我来执行这个SSE请求，验证图片链接提取、落盘、提取与断言功能。
+nexus_sse {'payload': {'method': 'GET', 'url': 'http://127.0.0.1:8000/sse/image', 'max_events': 2, 'media_index': 0, 'media_path': 'image_url', 'save_response': True, 'save_dir': None, 'extract': {'ev0': 'response.events.0.event', 'msg0': 'response.events.0.data', 'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.events', 'op': 'not_empty'}, {'path': 'response.events.0.event', 'op': 'eq', 'value': 'image'}, {'path': 'response.events.0.data', 'op': 'contains', 'value': 'app_readme.png'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'image'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.mime_type', 'op': 'contains', 'value': 'image/'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
+
+tool=nexus_sse total=1 ok=1 fail=0 elapsed_ms=5354
+agent_id=nexus ok=True kind=sse total=1 mission_id=nexus_1773328447132
+
+nexus_sse ok=True
+## 验证结果
+
+**PASS** - 所有断言通过，SSE图片链接提取、落盘、提取与断言功能验证成功。
+
+### 关键证据：
+
+1. **请求状态**：HTTP 200 OK
+2. **SSE事件**：收到2个事件（image + done）
+3. **图片事件**：
+   - event: "image"
+   - data: 包含"app_readme.png"链接
+   - 成功提取图片URL并下载
+4. **媒体提取**：
+   - kind: "image"
+   - path: `/Users/.../media.png` (已落盘)
+   - mime_type: "image/png"
+   - size: 194,867 bytes (>0)
+5. **提取字段**：
+   - ev0: "image" ✓
+   - msg0: 包含图片URL的JSON ✓
+   - kind: "image" ✓
+   - path: 非空 ✓
+   - mime: "image/png" ✓
+   - size: 194867 (>0) ✓
+
+### 断言验证（8/8通过）：
+- ✓ response.status == 200
+- ✓ response.events 不为空
+- ✓ response.events.0.event == "image"
+- ✓ response.events.0.data 包含 "app_readme.png"
+- ✓ response.media.0.kind == "image"
+- ✓ response.media.0.path 非空
+- ✓ response.media.0.mime_type 包含 "image/"
+- ✓ response.media.0.size > 0
+
+**结论**：SSE图片链接提取、自动下载、落盘、字段提取与断言验证全部成功。图片已保存到本地路径，所有验证规则均满足。
+``````
+
+### 高阶：WS 消息字段提取媒体（爬虫）
+适用于：
+- WebSocket 消息体中携带图片/视频链接的实时推送场景
+- 验证实时通道是否正确下发可访问的媒体资源
+- 将 WS 消息中的媒体字段沉淀为 response.media[] 证据链
+
+高阶蓝本：WS 消息字段提取媒体（爬虫）
+``````
+# name: ws_media_image
+请求 /ws/media 来验证 WS 消息字段图片提取、落盘、提取与断言。
+
+payload = {
+    "url": "ws://127.0.0.1:8000/ws/media",
+    "sends": ["image"],
+    "max_messages": 2,
+    "media_index": 0,
+    "media_path": "image_url",
+    "save_response": True,
+    "save_dir": None,
+    "extract": {
+        "msg0": "response.messages.0",
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
+    },
+    "asserts": [
+        {"path": "response.messages", "op": "not_empty"},
+        {"path": "response.media.0.kind", "op": "eq", "value": "image"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.mime_type", "op": "contains", "value": "image/"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
+    ]
+}
+
+# rule: <<<
+# PASS 条件：
+# - ok == true
+# - type == "ws"
+# - detail.response.messages 不为空
+# - detail.response.media.0.kind == "image"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.mime_type 包含 "image/"
+# - detail.response.media.0.size > 0
+# - detail.extract.kind == "image"
+# - detail.extract.path 非空
+# - detail.extract.mime 包含 "image/"
+# - detail.extract.size > 0
+# >>>
+---
+
+# name: ws_media_video
+请求 /ws/media 来验证 WS 消息字段视频提取、落盘、提取与断言。
+
+payload = {
+    "url": "ws://127.0.0.1:8000/ws/media",
+    "sends": ["video"],
+    "max_messages": 2,
+    "media_index": 0,
+    "media_path": "video_url",
+    "save_response": True,
+    "save_dir": None,
+    "extract": {
+        "msg0": "response.messages.0",
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "filename": "response.media.0.filename",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
+    },
+    "asserts": [
+        {"path": "response.messages", "op": "not_empty"},
+        {"path": "response.media.0.kind", "op": "eq", "value": "video"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.filename", "op": "contains", "value": ".mp4"},
+        {"path": "response.media.0.mime_type", "op": "contains", "value": "video/"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
+    ]
+}
+
+# rule: <<<
+# PASS 条件：
+# - ok == true
+# - type == "ws"
+# - detail.response.messages 不为空
+# - detail.response.media.0.kind == "video"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.filename 包含 ".mp4"
+# - detail.response.media.0.mime_type 包含 "video/"
+# - detail.response.media.0.size > 0
+# - detail.extract.kind == "video"
+# - detail.extract.path 非空
+# - detail.extract.filename 包含 ".mp4"
+# - detail.extract.mime 包含 "video/"
+# - detail.extract.size > 0
+# >>>
+---
+``````
+
+高阶蓝本结果：WS 消息字段提取媒体（爬虫）
+``````
+Mind :: 2026-03-12 23:46:37.958 | DEBUG    | Chat Streaming
+我将执行 WebSocket 请求来验证媒体消息提取功能。让我直接调用 nexus_ws 工具。
+nexus_ws {'payload': {'url': 'ws://127.0.0.1:8000/ws/media', 'sends': ['image'], 'max_messages': 2, 'media_index': 0, 'media_path': 'image_url', 'save_response': True, 'save_dir': None, 'extract': {'msg0': 'response.messages.0', 'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.messages', 'op': 'not_empty'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'image'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.mime_type', 'op': 'contains', 'value': 'image/'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
+
+tool=nexus_ws total=1 ok=1 fail=0 elapsed_ms=7097
+agent_id=nexus ok=True kind=ws total=1 mission_id=nexus_1773330413739
+
+nexus_ws ok=True
+## 验证结果：PASS ✅
+
+根据规则要求，所有条件均已满足：
+
+### 基础条件：
+- ✅ `ok == true` (实际：true)
+- ✅ `type == "ws"` (实际：kind="ws")
+- ✅ `detail.response.messages` 不为空 (实际：2条消息)
+
+### 媒体提取验证：
+- ✅ `detail.response.media.0.kind == "image"` (实际：image)
+- ✅ `detail.response.media.0.path` 非空 (实际：/Users/acekeppel/.../media.png)
+- ✅ `detail.response.media.0.mime_type` 包含 "image/" (实际：image/png)
+- ✅ `detail.response.media.0.size > 0` (实际：194867)
+
+### 提取字段验证：
+- ✅ `detail.extract.kind == "image"` (实际：image)
+- ✅ `detail.extract.path` 非空 (实际：/Users/acekeppel/.../media.png)
+- ✅ `detail.extract.mime` 包含 "image/" (实际：image/png)
+- ✅ `detail.extract.size > 0` (实际：194867)
+
+### 断言结果：
+- 5个断言全部通过 (5/5 PASS)
+
+### 关键证据：
+1. **WebSocket 连接成功**：建立连接并发送 "image" 消息
+2. **消息接收正常**：收到2条消息，第一条包含图片URL
+3. **媒体自动下载**：从 `image_url` 字段下载图片到本地
+4. **文件落盘成功**：保存为 PNG 格式，大小 194KB
+5. **提取字段完整**：kind、path、mime、size 全部正确提取
+
+**结论**：WebSocket 媒体消息提取、下载、落盘、提取与断言功能验证通过。
+Mind :: 2026-03-12 23:47:24.651 | DEBUG    | Chat done ...
+
+Mind :: 2026-03-12 23:47:30.360 | DEBUG    | Chat Streaming
+我将执行 WebSocket 请求来验证视频媒体消息提取功能。
+nexus_ws {'payload': {'url': 'ws://127.0.0.1:8000/ws/media', 'sends': ['video'], 'max_messages': 2, 'media_index': 0, 'media_path': 'video_url', 'save_response': True, 'save_dir': None, 'extract': {'msg0': 'response.messages.0', 'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'filename': 'response.media.0.filename', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.messages', 'op': 'not_empty'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'video'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.filename', 'op': 'contains', 'value': '.mp4'}, {'path': 'response.media.0.mime_type', 'op': 'contains', 'value': 'video/'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
+
+tool=nexus_ws total=1 ok=1 fail=0 elapsed_ms=68
+agent_id=nexus ok=True kind=ws total=1 mission_id=nexus_1773330465701
+
+nexus_ws ok=True
+## 验证结果：PASS ✅
+
+根据规则要求，所有条件均已满足：
+
+### 基础条件：
+- ✅ `ok == true` (实际：true)
+- ✅ `type == "ws"` (实际：kind="ws")
+- ✅ `detail.response.messages` 不为空 (实际：2条消息)
+
+### 媒体提取验证：
+- ✅ `detail.response.media.0.kind == "video"` (实际：video)
+- ✅ `detail.response.media.0.path` 非空 (实际：/Users/acekeppel/.../media.mp4)
+- ✅ `detail.response.media.0.filename` 包含 ".mp4" (实际：media.mp4)
+- ✅ `detail.response.media.0.mime_type` 包含 "video/" (实际：video/mp4)
+- ✅ `detail.response.media.0.size > 0` (实际：1004812 ≈ 1MB)
+
+### 提取字段验证：
+- ✅ `detail.extract.kind == "video"` (实际：video)
+- ✅ `detail.extract.path` 非空 (实际：/Users/acekeppel/.../media.mp4)
+- ✅ `detail.extract.filename` 包含 ".mp4" (实际：media.mp4)
+- ✅ `detail.extract.mime` 包含 "video/" (实际：video/mp4)
+- ✅ `detail.extract.size > 0` (实际：1004812)
+
+### 断言结果：
+- 6个断言全部通过 (6/6 PASS)
+
+### 关键证据：
+1. **WebSocket 连接成功**：建立连接并发送 "video" 消息
+2. **消息接收正常**：收到2条消息，第一条包含视频URL
+3. **视频自动下载**：从 `video_url` 字段下载视频到本地
+4. **文件落盘成功**：保存为 MP4 格式，大小约 1MB
+5. **提取字段完整**：kind、path、filename、mime、size 全部正确提取
+6. **性能优异**：总耗时仅 67ms，下载速度很快
+
+**结论**：WebSocket 视频媒体消息提取、下载、落盘、提取与断言功能验证通过。
+Mind :: 2026-03-12 23:48:12.988 | DEBUG    | Chat done ...
+``````
+
+### 高阶：GraphQL 字段提取媒体（爬虫）
+适用于：
+- GraphQL data 结果中包含图片/视频 URL 的查询场景
+- 对返回结构中的 cover.url / poster.url / video.url / asset.url 等字段做媒体提取
+- schema 变更后快速验证媒体字段是否仍存在且可访问
+- 将 GraphQL 返回中的媒体资源落盘并形成结构化证据
+- 同时校验 GraphQL 主体字段与媒体字段的一致性
+- 将 GraphQL 结果中的媒体字段沉淀为 response.media[] 证据链
+
+高阶蓝本：GraphQL 字段提取媒体（爬虫）
+``````
+# name: graphql_media_image
+请求 /graphql/media-image 来验证 GraphQL 字段图片提取、落盘、提取与断言。
+
+payload = {
+    "url": "http://127.0.0.1:8000/graphql/media-image",
+    "query": "query GetAssetImage { asset { id title cover { url mime_type } } }",
+    "operation_name": "GetAssetImage",
+    "media_path": "data.asset.cover.url",
+    "save_response": True,
+    "save_dir": None,
+    "extract": {
+        "asset_id": "response.body_json.data.asset.id",
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
+    },
+    "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.body_json.data.asset.id", "op": "eq", "value": "img_001"},
+        {"path": "response.media.0.kind", "op": "eq", "value": "image"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.mime_type", "op": "contains", "value": "image/"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
+    ]
+}
+
+# rule: <<<
+# PASS 条件：
+# - ok == true
+# - type == "graphql"
+# - detail.response.status == 200
+# - detail.response.body_json.data.asset.id == "img_001"
+# - detail.response.media.0.kind == "image"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.mime_type 包含 "image/"
+# - detail.response.media.0.size > 0
+# - detail.extract.asset_id == "img_001"
+# - detail.extract.kind == "image"
+# - detail.extract.path 非空
+# - detail.extract.mime 包含 "image/"
+# - detail.extract.size > 0
+# >>>
+---
+
+# name: graphql_media_video
+请求 /graphql/media-video 来验证 GraphQL 字段视频提取、落盘、提取与断言。
+
+payload = {
+    "url": "http://127.0.0.1:8000/graphql/media-video",
+    "query": "query GetAssetVideo { asset { id title video { url mime_type } } }",
+    "operation_name": "GetAssetVideo",
+    "media_path": "data.asset.video.url",
+    "save_response": True,
+    "save_dir": None,
+    "extract": {
+        "asset_id": "response.body_json.data.asset.id",
+        "kind": "response.media.0.kind",
+        "path": "response.media.0.path",
+        "filename": "response.media.0.filename",
+        "mime": "response.media.0.mime_type",
+        "size": "response.media.0.size"
+    },
+    "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.body_json.data.asset.id", "op": "eq", "value": "vid_001"},
+        {"path": "response.media.0.kind", "op": "eq", "value": "video"},
+        {"path": "response.media.0.path", "op": "not_empty"},
+        {"path": "response.media.0.filename", "op": "contains", "value": ".mp4"},
+        {"path": "response.media.0.mime_type", "op": "contains", "value": "video/"},
+        {"path": "response.media.0.size", "op": "gt", "value": 0}
+    ]
+}
+
+# rule: <<<
+# PASS 条件：
+# - ok == true
+# - type == "graphql"
+# - detail.response.status == 200
+# - detail.response.body_json.data.asset.id == "vid_001"
+# - detail.response.media.0.kind == "video"
+# - detail.response.media.0.path 非空
+# - detail.response.media.0.filename 包含 ".mp4"
+# - detail.response.media.0.mime_type 包含 "video/"
+# - detail.response.media.0.size > 0
+# - detail.extract.asset_id == "vid_001"
+# - detail.extract.kind == "video"
+# - detail.extract.path 非空
+# - detail.extract.filename 包含 ".mp4"
+# - detail.extract.mime 包含 "video/"
+# - detail.extract.size > 0
+# >>>
+---
+``````
+
+高阶蓝本结果：GraphQL 字段提取媒体（爬虫）
+``````
+Mind :: 2026-03-12 23:41:13.117 | DEBUG    | Chat Streaming
+我将执行这个GraphQL请求来验证图片提取、落盘、提取与断言功能。
+nexus_graphql {'payload': {'url': 'http://127.0.0.1:8000/graphql/media-image', 'query': 'query GetAssetImage { asset { id title cover { url mime_type } } }', 'operation_name': 'GetAssetImage', 'media_path': 'data.asset.cover.url', 'save_response': True, 'save_dir': None, 'extract': {'asset_id': 'response.body_json.data.asset.id', 'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.body_json.data.asset.id', 'op': 'eq', 'value': 'img_001'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'image'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.mime_type', 'op': 'contains', 'value': 'image/'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
+
+tool=nexus_graphql total=1 ok=1 fail=0 elapsed_ms=6431
+agent_id=nexus ok=True kind=graphql total=1 mission_id=nexus_1773330089051
+
+nexus_graphql ok=True
+## 验证结果：PASS ✅
+
+所有断言条件均已满足：
+
+### 核心验证结果：
+1. **ok == true** ✅ - 请求成功执行
+2. **type == "graphql"** ✅ - 工具类型正确
+3. **detail.response.status == 200** ✅ - HTTP状态码正确
+4. **detail.response.body_json.data.asset.id == "img_001"** ✅ - GraphQL返回的资产ID正确
+
+### 媒体提取验证：
+5. **detail.response.media.0.kind == "image"** ✅ - 媒体类型为图片
+6. **detail.response.media.0.path 非空** ✅ - 文件路径：`*.png`
+7. **detail.response.media.0.mime_type 包含 "image/"** ✅ - MIME类型为`image/png`
+8. **detail.response.media.0.size > 0** ✅ - 文件大小：194,867字节
+
+### 提取字段验证：
+9. **detail.extract.asset_id == "img_001"** ✅ - 提取的资产ID正确
+10. **detail.extract.kind == "image"** ✅ - 提取的媒体类型正确
+11. **detail.extract.path 非空** ✅ - 提取的文件路径正确
+12. **detail.extract.mime 包含 "image/"** ✅ - 提取的MIME类型为`image/png`
+13. **detail.extract.size > 0** ✅ - 提取的文件大小正确
+
+### 附加证据：
+- **图片已成功落盘**：从远程URL下载并保存到本地
+- **断言全部通过**：6个断言全部成功（6/6）
+- **GraphQL响应完整**：包含预期的数据结构
+- **媒体提取流程正常**：从GraphQL字段中提取URL并下载图片
+
+**结论**：GraphQL媒体图片提取、落盘、提取与断言功能验证通过。
+Mind :: 2026-03-12 23:41:59.985 | DEBUG    | Chat done ...
+
+Mind :: 2026-03-12 23:42:04.050 | DEBUG    | Chat Streaming
+我将执行这个GraphQL请求来验证视频提取、落盘、提取与断言功能。
+nexus_graphql {'payload': {'url': 'http://127.0.0.1:8000/graphql/media-video', 'query': 'query GetAssetVideo { asset { id title video { url mime_type } } }', 'operation_name': 'GetAssetVideo', 'media_path': 'data.asset.video.url', 'save_response': True, 'save_dir': None, 'extract': {'asset_id': 'response.body_json.data.asset.id', 'kind': 'response.media.0.kind', 'path': 'response.media.0.path', 'filename': 'response.media.0.filename', 'mime': 'response.media.0.mime_type', 'size': 'response.media.0.size'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.body_json.data.asset.id', 'op': 'eq', 'value': 'vid_001'}, {'path': 'response.media.0.kind', 'op': 'eq', 'value': 'video'}, {'path': 'response.media.0.path', 'op': 'not_empty'}, {'path': 'response.media.0.filename', 'op': 'contains', 'value': '.mp4'}, {'path': 'response.media.0.mime_type', 'op': 'contains', 'value': 'video/'}, {'path': 'response.media.0.size', 'op': 'gt', 'value': 0}]}}
+
+tool=nexus_graphql total=1 ok=1 fail=0 elapsed_ms=111
+agent_id=nexus ok=True kind=graphql total=1 mission_id=nexus_1773330141483
+
+nexus_graphql ok=True
+## 验证结果：PASS ✅
+
+所有断言条件均已满足：
+
+### 核心验证结果：
+1. **ok == true** ✅ - 请求成功执行
+2. **type == "graphql"** ✅ - 工具类型正确
+3. **detail.response.status == 200** ✅ - HTTP状态码正确
+4. **detail.response.body_json.data.asset.id == "vid_001"** ✅ - GraphQL返回的资产ID正确
+
+### 媒体提取验证：
+5. **detail.response.media.0.kind == "video"** ✅ - 媒体类型为视频
+6. **detail.response.media.0.path 非空** ✅ - 文件路径：`*.mp4`
+7. **detail.response.media.0.filename 包含 ".mp4"** ✅ - 文件名：`media.mp4`
+8. **detail.response.media.0.mime_type 包含 "video/"** ✅ - MIME类型为`video/mp4`
+9. **detail.response.media.0.size > 0** ✅ - 文件大小：1,004,812字节
+
+### 提取字段验证：
+10. **detail.extract.asset_id == "vid_001"** ✅ - 提取的资产ID正确
+11. **detail.extract.kind == "video"** ✅ - 提取的媒体类型正确
+12. **detail.extract.path 非空** ✅ - 提取的文件路径正确
+13. **detail.extract.filename 包含 ".mp4"** ✅ - 提取的文件名：`media.mp4`
+14. **detail.extract.mime 包含 "video/"** ✅ - 提取的MIME类型为`video/mp4`
+15. **detail.extract.size > 0** ✅ - 提取的文件大小正确
+
+### 附加证据：
+- **视频已成功落盘**：从本地服务器URL下载并保存到本地
+- **断言全部通过**：7个断言全部成功（7/7）
+- **GraphQL响应完整**：包含预期的数据结构
+- **媒体提取流程正常**：从GraphQL字段中提取URL并下载视频
+- **视频文件较大**：约1MB，验证了视频文件的完整下载
+
+**结论**：GraphQL媒体视频提取、落盘、提取与断言功能验证通过。
+Mind :: 2026-03-12 23:42:53.551 | DEBUG    | Chat done ...
+``````
+
+### 顶级：纯自然语言 Prepare 动态鉴权注入
+适用于：
+- 需要在发请求前动态生成 Bearer Token
+- 签名字段依赖时间戳、nonce、uid 等上下文变量
+- 希望把“生成 token + 注入 headers + 发请求 + 断言”收敛成一条蓝本
+
+顶级蓝本：纯自然语言 Prepare 动态鉴权注入
+``````
+# name: http_prepare_jwt_hs256_nl_short
+访问 http://127.0.0.1:8000/secure/profile。
+
+先生成一个当前秒级时间戳作为 iat，再得到 exp=iat+3600。
+然后用 HS256 和密钥 demo-secret 生成一个 JWT，载荷内容为：
+uid=u_10086，role=tester，region=sg，iat=当前时间戳，exp=一小时后时间戳。
+
+接着把这个 JWT 组装成 Authorization 请求头，格式为 Bearer {token}，并额外带上请求头 X-Region=sg。
+之后对 /secure/profile 发起 GET 请求。
+
+请求完成后，检查接口是否返回成功，并确认：
+response.status 为 200，
+response.body_json.ok 为 true，
+response.body_json.type 为 "http"，
+response.body_json.user.uid 为 u_10086，
+response.body_json.user.role 为 tester，
+response.body_json.user.region 为 sg，
+response.body_json.request_meta.x_region 为 sg，
+response.body_json.request_meta.authorization 中包含 Bearer 前缀。
+
+同时提取以下证据：
+uid 来自 response.body_json.user.uid，
+role 来自 response.body_json.user.role，
+region 来自 response.body_json.user.region，
+authorization 来自 response.body_json.request_meta.authorization。
+
+当以上检查全部满足时，本用例判定通过。
+---
+``````
+
+顶级蓝本结果：纯自然语言 Prepare 动态鉴权注入
+``````
+Mind :: 2026-03-13 02:26:35.748 | DEBUG    | Chat Streaming
+我来帮你完成这个 JWT 认证接口测试。按照你的要求，我将分步执行：
+
+1. 生成当前秒级时间戳作为 iat
+2. 计算 exp = iat + 3600
+3. 生成 HS256 JWT
+4. 组装请求头并发起 GET 请求
+5. 验证响应并提取证据
+prepare_ident {'kind': 'timestamp_s', 'output': 'iat'}
+
+prepare_ident ok kind=timestamp_s output=iat
+
+prepare_ident ok=True
+
+prepare_value {'kind': 'const', 'output': 'exp', 'value': 1773343602}
+
+prepare_value ok kind=const output=exp
+
+prepare_value ok=True
+
+prepare_jwt {'kind': 'jwt_hs256', 'output': 'token', 'payload': {'uid': 'u_10086', 'role': 'tester', 'region': 'sg', 'iat': 1773340002, 'exp': 1773343602}, 'secret': 'demo-secret'}
+
+prepare_jwt ok kind=jwt_hs256 output=token
+
+prepare_jwt ok=True
+
+prepare_text {'kind': 'format', 'output': 'auth_header', 'template': 'Bearer {token}', 'mapping': {'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJ1XzEwMDg2Iiwicm9sZSI6InRlc3RlciIsInJlZ2lvbiI6InNnIiwiaWF0IjoxNzczMzQwMDAyLCJleHAiOjE3NzMzNDM2MDJ9.Rl6l9v6GV9eQOFviKgqRgSK3e26ZRCL5zHjiPjn14DQ'}}
+
+prepare_text ok kind=format output=auth_header
+
+prepare_text ok=True
+现在发起请求并验证响应：
+nexus_http {'payload': {'env': {'base_url': 'http://127.0.0.1:8000'}, 'vars': {'auth_header': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJ1XzEwMDg2Iiwicm9sZSI6InRlc3RlciIsInJlZ2lvbiI6InNnIiwiaWF0IjoxNzczMzQwMDAyLCJleHAiOjE3NzMzNDM2MDJ9.Rl6l9v6GV9eQOFviKgqRgSK3e26ZRCL5zHjiPjn14DQ'}, 'method': 'GET', 'url': '/secure/profile', 'headers': {'Authorization': '{{auth_header}}', 'X-Region': 'sg'}, 'extract': {'uid': 'response.body_json.user.uid', 'role': 'response.body_json.user.role', 'region': 'response.body_json.user.region', 'authorization': 'response.body_json.request_meta.authorization'}, 'asserts': [{'path': 'response.status', 'op': 'eq', 'value': 200}, {'path': 'response.body_json.ok', 'op': 'eq', 'value': True}, {'path': 'response.body_json.type', 'op': 'eq', 'value': 'http'}, {'path': 'response.body_json.user.uid', 'op': 'eq', 'value': 'u_10086'}, {'path': 'response.body_json.user.role', 'op': 'eq', 'value': 'tester'}, {'path': 'response.body_json.user.region', 'op': 'eq', 'value': 'sg'}, {'path': 'response.body_json.request_meta.x_region', 'op': 'eq', 'value': 'sg'}, {'path': 'response.body_json.request_meta.authorization', 'op': 'contains', 'value': 'Bearer'}]}}
+
+tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=86
+agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773340056431
+
+nexus_http ok=True
+## 测试结果：✅ 用例通过
+
+### 执行步骤总结：
+
+1. **生成时间戳**：`iat = 1773340002`（当前秒级时间戳）
+2. **计算过期时间**：`exp = iat + 3600 = 1773343602`
+3. **生成 JWT**：使用 HS256 和密钥 `demo-secret` 生成有效 token
+4. **组装请求头**：`Authorization: Bearer {token}` + `X-Region: sg`
+5. **发起请求**：GET http://127.0.0.1:8000/secure/profile
+6. **验证响应**：所有 8 项断言全部通过
+
+### 提取的证据：
+- **uid**: `u_10086`
+- **role**: `tester`
+- **region**: `sg`
+- **authorization**: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJ1XzEwMDg2Iiwicm9sZSI6InRlc3RlciIsInJlZ2lvbiI6InNnIiwiaWF0IjoxNzczMzQwMDAyLCJleHAiOjE3NzMzNDM2MDJ9.Rl6l9v6GV9eQOFviKgqRgSK3e26ZRCL5zHjiPjn14DQ`
+
+### 接口响应验证：
+- ✅ `response.status = 200`
+- ✅ `response.body_json.ok = true`
+- ✅ `response.body_json.type = "http"`
+- ✅ `response.body_json.user.uid = "u_10086"`
+- ✅ `response.body_json.user.role = "tester"`
+- ✅ `response.body_json.user.region = "sg"`
+- ✅ `response.body_json.request_meta.x_region = "sg"`
+- ✅ `response.body_json.request_meta.authorization` 包含 `Bearer` 前缀
+
+**结论**：JWT 认证接口测试成功，所有检查项均满足，用例判定通过。
+Mind :: 2026-03-13 02:27:58.367 | DEBUG    | Chat done ...
+``````
+
+### 顶级：纯自然语言 RSA 公钥握手式动态密文登录
+适用于：
+- 需要先拉取服务端公钥，再本地组装明文后加密提交
+- 密码或敏感字段不能明传，必须按约定规则做 RSA 加密
+- 希望把“取公钥 + 组装 password|timestamp|nonce + 加密 + 登录请求”收敛成一条蓝本
+
+顶级蓝本：纯自然语言 RSA 公钥握手式动态密文登录
+``````
+# name: http_prepare_rsa_oaep_login_nl_soft
+访问这两个接口：
+
+- http://127.0.0.1:8000/mock/rsa/public-key
+- http://127.0.0.1:8000/mock/rsa/login-bundle
+
+先去拿公钥，确认服务端返回了可用的 public_key，并且这次登录加密规则是 password|timestamp|nonce，算法是 RSA_OAEP_SHA256。
+
+然后准备登录数据：
+先生成一个当前秒级时间戳，再生成一个 nonce，
+把密码 123456、时间戳、nonce 按 password|timestamp|nonce 这个顺序拼成一段明文。
+
+接着用上一步拿到的 public_key，
+按照 RSA_OAEP_SHA256 把这段明文加密成 password_cipher。
+
+再调用 POST /mock/rsa/login-bundle，
+提交：
+- username = ace
+- password_cipher = 刚生成的密文
+
+最后看服务端是否成功解密并登录成功，
+重点确认它解出来的用户名、密码、时间戳、nonce 都是对的，
+并且服务端确实收到了密文。
+
+顺便把这些信息留作证据：
+公钥接口返回的 key_id、algorithm、plain_rule，
+以及登录接口返回的 username、password_decrypted、timestamp、nonce、cipher_present、password_cipher_length。
+
+只要整条链路能跑通，服务端解密结果和本地组装内容一致，就算通过。
+---
+``````
+
+顶级蓝本结果：纯自然语言 RSA 公钥握手式动态密文登录
+``````
+Mind :: 2026-03-13 03:20:12.324 | DEBUG    | Chat Streaming
+我来帮你完成这个RSA加密登录的完整链路验证。让我按步骤执行：
+
+## 步骤1：获取公钥
+nexus_http {'payload': {'request': {'method': 'GET', 'url': 'http://127.0.0.1:8000/mock/rsa/public-key'}}}
+
+tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=70
+agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773343218807
+
+nexus_http ok=True
+很好！公钥接口返回成功，确认了：
+- key_id: `rsa_k1`
+- algorithm: `RSA_OAEP_SHA256`
+- plain_rule: `password|timestamp|nonce`
+- public_key: 有效的RSA公钥
+
+## 步骤2：生成时间戳和nonce
+prepare_ident {'kind': 'timestamp_s', 'output': 'timestamp'}
+
+prepare_ident ok kind=timestamp_s output=timestamp
+
+prepare_ident ok=True
+
+prepare_ident {'kind': 'nonce', 'output': 'nonce', 'length': 16}
+
+prepare_ident ok kind=nonce output=nonce
+
+prepare_ident ok=True
+## 步骤3：组装明文
+prepare_text {'kind': 'format', 'output': 'plaintext', 'template': '123456|{timestamp}|{nonce}', 'mapping': {'timestamp': 1773343227, 'nonce': 'sxLDFiI3qc1i9Ym9'}}
+
+prepare_text ok kind=format output=plaintext
+
+prepare_text ok=True
+明文已生成：`123456|1773343227|sxLDFiI3qc1i9Ym9`
+
+## 步骤4：使用RSA_OAEP_SHA256加密明文
+prepare_crypto {'kind': 'rsa_encrypt_oaep_sha256', 'output': 'password_cipher', 'input_value': '123456|1773343227|sxLDFiI3qc1i9Ym9', 'public_key': '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvhWd/rTTJYh266eICXFc\nTdCQymv12n/2dpHUV2zJwQRjbrU4QhTEVdbH5w8UlE8qZ8LZZM7q5UUB5fY6gKT3\nyqs4bmNn4bnr4zPsxMxI+lHiipHx2NlnYy1cXmErnXttuM3UFbmMb4Im7MBqkEEP\n3acJayhFXFiOqhD+iT5o0e6Ezjkl/+Z86R3MkJ7wqTgVxdmruy0E5OECcu8sENUg\nvXuWsc+eApolhRPh00A/6l0ZkATF4cmgeZUTR4jUprjiwgw2I8D14LAUc5TowBEf\niC1Ynv7vQhz4fmnwhNiOLeoM7edXIFLIGIxFWcyJqa7N8SJli0U46uiflYENEuCE\nDQIDAQAB-----END PUBLIC KEY-----', 'out_mode': 'base64'}
+
+prepare_crypto ok kind=rsa_encrypt_oaep_sha256 output=password_cipher
+
+prepare_crypto ok=True
+密文已生成，长度为344个字符。
+
+## 步骤5：调用登录接口
+nexus_http {'payload': {'request': {'method': 'POST', 'url': 'http://127.0.0.1:8000/mock/rsa/login-bundle', 'json': {'username': 'ace', 'password_cipher': 'mGBq5iCh9a/v6YOUewCt00plc2cuUS0MKey/Qqw5cfjgUQxmrN2PHUYl5xIVSnSsAzGlsBwhgN8eorXyMOofaFd+Jr3FhN/xjehgq7ayYcXL4JBvnQ8bGoGQ7LeQmcIKz/kwJQ//54HgU1vP50byqTpWPiOHmIW0+7rS02XlGpXLhnJRwbMsvHyHjKnaF2R0rJJ6Qu2D784V82e1IyY1mKdk869SdGjgyNL0Pd6dxO9zLOHF2/PbrN+BtKyQnjtr02ij5rxH4oQs1HRCd+jfXbYy3CXngZgcts7b6BbHqJKgnXJ3bS4tgFEqQgF2EYLeY3C+cxMo442EuuSf9C04Ww=='}}}}
+
+tool=nexus_http total=1 ok=1 fail=0 elapsed_ms=131
+agent_id=nexus ok=True kind=http total=1 mission_id=nexus_1773343280889
+
+nexus_http ok=True
+## 验证结果
+
+完美！登录接口返回成功，所有数据都匹配：
+
+### 证据链验证：
+
+**1. 公钥接口返回信息：**
+- key_id: `rsa_k1`
+- algorithm: `RSA_OAEP_SHA256`
+- plain_rule: `password|timestamp|nonce`
+
+**2. 本地生成的登录数据：**
+- 明文: `123456|1773343227|sxLDFiI3qc1i9Ym9`
+- 时间戳: `1773343227`
+- nonce: `sxLDFiI3qc1i9Ym9`
+- 密文长度: `344`字符
+
+**3. 服务端解密验证结果：**
+- username: `ace` ✓
+- password_decrypted: `123456` ✓
+- timestamp: `1773343227` ✓
+- nonce: `sxLDFiI3qc1i9Ym9` ✓
+- cipher_present: `true` ✓
+- password_cipher_length: `344` ✓
+- algorithm: `RSA_OAEP_SHA256` ✓
+- plain_rule: `password|timestamp|nonce` ✓
+
+### 链路验证结论：
+
+✅ **完整链路通过验证**：
+1. 成功获取公钥并确认加密规则
+2. 正确生成时间戳和nonce
+3. 按规则组装明文并成功RSA加密
+4. 服务端成功解密并验证所有字段
+5. 服务端确认收到了密文（cipher_present: true）
+6. 密文长度一致（344字符）
+7. 所有解密数据与本地组装内容完全一致
+
+**时间戳验证**：本地时间戳`1773343227`与服务器当前时间`1773343281`相差54秒，在合理范围内。
+
+整个RSA加密登录链路工作正常，加密解密过程完整，数据一致性验证通过。
+Mind :: 2026-03-13 03:21:41.236 | DEBUG    | Chat done ...
 ``````
 
 ### Basic API Mocks
@@ -3144,15 +3881,70 @@ if __name__ == "__main__":
 
 ### Advance API Mocks
 ```python
+import jwt
+import json
+import time
+import base64
 import typing
 import asyncio
 from pathlib import Path
+from pydantic import BaseModel
 from fastapi import (
-    FastAPI, Request
+    FastAPI, Request, WebSocket, WebSocketDisconnect
 )
 from fastapi.responses import (
     JSONResponse, StreamingResponse, FileResponse
 )
+from cryptography.hazmat.primitives import (
+    hashes, serialization
+)
+from cryptography.hazmat.primitives.asymmetric import padding
+
+SECRET = "demo-secret"
+
+PRIVATE_KEY_PEM = """-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAvhWd/rTTJYh266eICXFcTdCQymv12n/2dpHUV2zJwQRjbrU4
+QhTEVdbH5w8UlE8qZ8LZZM7q5UUB5fY6gKT3yqs4bmNn4bnr4zPsxMxI+lHiipHx
+2NlnYy1cXmErnXttuM3UFbmMb4Im7MBqkEEP3acJayhFXFiOqhD+iT5o0e6Ezjkl
+/+Z86R3MkJ7wqTgVxdmruy0E5OECcu8sENUgvXuWsc+eApolhRPh00A/6l0ZkATF
+4cmgeZUTR4jUprjiwgw2I8D14LAUc5TowBEfiC1Ynv7vQhz4fmnwhNiOLeoM7edX
+IFLIGIxFWcyJqa7N8SJli0U46uiflYENEuCEDQIDAQABAoIBAByvkfefjdLW+I1h
+K74zEZk7rbIin0hhcc4cfVVROVRL536MUihkzmle362ewL4OAWoFxX15XYkKhDoS
+UetamfuHod1E2qc9wdu4mRVs9+Fw7JV5Z2xQiNH2hT9H/kdGmn0ecNBzfz5Pv7SQ
+aDSLYQvT+q+ldOw2ABept2P6W2K8z72IyGfQY3jLg8BzsF8kJV3Wdov4fHB1+/3M
+PQjvCJ44Nn7qQG+tOrDhwzQwVoVdDZOgLZreMjKIBJMGUi3gG5ftsfLqh85fDKu/
+qN4BCaYufH+taEcFYRiuH30mgC/lq+Fyuck9oPDEWp22lPOVM2tfUv+09LKATxGI
+YjRkKDkCgYEA50/7I5ZK0bsBXNdXwwhUj+5MUttxE7cA7AIUZ0/JHrn7D8J8UUIQ
+Y7LV8EzMHA+hUUa+9TMm0W8qS/8JTNcsqaY7Coqvvixcw4N8vhN5oXRSnKm3QEa/
+4xmaAW/EQIRj21VUvAPSHXIxQpsnp/klqESPX3BzX4tCOd4+opIrzhUCgYEA0l8v
+7G83odtrE9e00JexZ5IsnWkFvxT6Ee4BLau1zlr+n00pZbgaIq01o5BJ3a1vOaxb
+Welxen2uB23nQxv7gzHFsaK/mW6phaFQapCWcLI/oCx+QTqRhzRdUJmZfn0as/Hy
+mPAdFfsZTPCOb5NLtGxD9toNbiZjRYohvNow1BkCgYAUCI1Lq7yXJYccr1nefl40
+iQL7Oh41AuiFiDiUKgjVLG5eEw4JS5t3xwlYYo5a78+c5m+rdN6rzODw7Am2Kfyo
+RMlgRFqsMdNm64BmRfGG1jhBcUF5w6bi2FjKPw/UNqMfX+iS0BHmkvlJN37bwWxN
+goKYVXjokXsO3/y0v8wjcQKBgQDEqXuRmf717rtRF2vPPJ/55KqUlONsWF3WeRrc
+6RLS0DoMDgRPNSYpmKb2OyLyevnpfnj/ur389pTEGTgCgpxDbzoS78QR2WPcqosU
+tAoPXHMid7WnoOr+7DL38D+QAb/+zIYv9vgZ3l0ukgt1vssc5cE7eWjoujY/gfw8
+IfVXsQKBgQC4qmHMLOFqlqmbFa0mlCnW3IBKHflnlx50wqMRW1dRv8lZN95N+2jP
+dlok4YfXSQ5bP38rwxBKAMMoIo4BrIOVIOgwqaCjk6jBt46QUrni3jjB8p9GwHbB
+Qemt0q5LUYc7+UpQxpU4NXcPc6dR+2tCfUNLb1JQjxZX0tcaOoVaGA==
+-----END RSA PRIVATE KEY-----"""
+
+PUBLIC_KEY_PEM = """-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvhWd/rTTJYh266eICXFc
+TdCQymv12n/2dpHUV2zJwQRjbrU4QhTEVdbH5w8UlE8qZ8LZZM7q5UUB5fY6gKT3
+yqs4bmNn4bnr4zPsxMxI+lHiipHx2NlnYy1cXmErnXttuM3UFbmMb4Im7MBqkEEP
+3acJayhFXFiOqhD+iT5o0e6Ezjkl/+Z86R3MkJ7wqTgVxdmruy0E5OECcu8sENUg
+vXuWsc+eApolhRPh00A/6l0ZkATF4cmgeZUTR4jUprjiwgw2I8D14LAUc5TowBEf
+iC1Ynv7vQhz4fmnwhNiOLeoM7edXIFLIGIxFWcyJqa7N8SJli0U46uiflYENEuCE
+DQIDAQAB-----END PUBLIC KEY-----
+"""
+
+
+class LoginBody(BaseModel):
+    username: str
+    password_cipher: str
+
 
 BASE_DIR = Path(__file__).resolve().parent
 ASSET_DIR = BASE_DIR / "mock_assets"
@@ -3369,6 +4161,332 @@ async def mock_video():
         media_type="video/mp4",
         filename="demo.mp4"
     )
+
+
+@app.get("/sse/image")
+async def sse_image() -> StreamingResponse:
+    async def gen():
+        payload_1 = {
+            "image_url": "https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_readme.png",
+            "title": "mind_readme_cover",
+            "source": "github"
+        }
+        yield sse_pack(
+            event="image",
+            data=json.dumps(payload_1, ensure_ascii=False),
+            id_="1"
+        )
+
+        await asyncio.sleep(0.02)
+
+        payload_2 = {
+            "done": True,
+            "count": 1
+        }
+        yield sse_pack(
+            event="done",
+            data=json.dumps(payload_2, ensure_ascii=False),
+            id_="2"
+        )
+
+    return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+@app.websocket("/ws/media")
+async def ws_media(ws: WebSocket) -> None:
+    await ws.accept()
+
+    try:
+        first = await ws.receive_text()
+
+        if first == "image":
+            await ws.send_text(json.dumps({
+                "type": "image",
+                "image_url": "https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_readme.png",
+                "trace_id": "ws_img_001"
+            }, ensure_ascii=False))
+            await ws.send_text(json.dumps({
+                "type": "done",
+                "ok": True
+            }, ensure_ascii=False))
+            await ws.close()
+            return
+
+        if first == "video":
+            await ws.send_text(json.dumps({
+                "type": "video",
+                "video_url": "http://127.0.0.1:8000/mock-video",
+                "trace_id": "ws_vid_001"
+            }, ensure_ascii=False))
+            await ws.send_text(json.dumps({
+                "type": "done",
+                "ok": True
+            }, ensure_ascii=False))
+            await ws.close()
+            return
+
+        await ws.send_text(json.dumps({
+            "type": "unknown",
+            "message": first
+        }, ensure_ascii=False))
+        await ws.close()
+
+    except WebSocketDisconnect:
+        return
+
+
+@app.post("/graphql/media-image")
+async def graphql_media_image() -> JSONResponse:
+    return JSONResponse(
+        {
+            "data": {
+                "asset": {
+                    "id": "img_001",
+                    "title": "Mind README",
+                    "cover": {
+                        "url": "https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_readme.png",
+                        "mime_type": "image/png"
+                    }
+                }
+            },
+            "extensions": {
+                "trace_id": "gql_img_001"
+            }
+        },
+        status_code=200
+    )
+
+
+@app.post("/graphql/media-video")
+async def graphql_media_video() -> JSONResponse:
+    return JSONResponse(
+        {
+            "data": {
+                "asset": {
+                    "id": "vid_001",
+                    "title": "Mock Video",
+                    "video": {
+                        "url": "http://127.0.0.1:8000/mock-video",
+                        "mime_type": "video/mp4"
+                    }
+                }
+            },
+            "extensions": {
+                "trace_id": "gql_vid_001"
+            }
+        },
+        status_code=200
+    )
+
+
+@app.get("/secure/profile")
+async def secure_profile(request: Request) -> JSONResponse:
+    auth = str(request.headers.get("Authorization") or "")
+    region = str(request.headers.get("X-Region") or "")
+
+    if not auth.startswith("Bearer "):
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": "missing bearer token"
+            },
+            status_code=401
+        )
+
+    token = auth.removeprefix("Bearer ").strip()
+
+    try:
+        payload = jwt.decode(token, SECRET, algorithms=["HS256"])
+    except Exception as e:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": f"invalid token: {type(e).__name__}"
+            },
+            status_code=401
+        )
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "type": "http",
+            "user": {
+                "uid": payload.get("uid"),
+                "role": payload.get("role"),
+                "region": payload.get("region")
+            },
+            "token_claims": payload,
+            "request_meta": {
+                "authorization": auth,
+                "x_region": region
+            }
+        },
+        status_code=200
+    )
+
+
+@app.get("/mock/rsa/public-key")
+async def mock_rsa_public_key() -> JSONResponse:
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "type": "http",
+            "key_id": "rsa_k1",
+            "algorithm": "RSA_OAEP_SHA256",
+            "public_key": PUBLIC_KEY_PEM,
+            "plain_rule": "password|timestamp|nonce"
+        },
+        status_code=200
+    )
+
+
+@app.post("/mock/rsa/login-bundle")
+async def mock_rsa_login_bundle(body: LoginBody) -> JSONResponse:
+    try:
+        private_key = serialization.load_pem_private_key(
+            PRIVATE_KEY_PEM.encode("utf-8"),
+            password=None
+        )
+
+        cipher_bytes = base64.b64decode(body.password_cipher, validate=False)
+
+        plain_bytes = private_key.decrypt(
+            cipher_bytes,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        plain_text = plain_bytes.decode("utf-8")
+
+    except Exception as e:
+        return JSONResponse(
+            {
+                "ok": False,
+                "type": "http",
+                "error": f"decrypt failed: {type(e).__name__}"
+            },
+            status_code=400
+        )
+
+    parts = plain_text.split("|")
+    if len(parts) != 3:
+        return JSONResponse(
+            {
+                "ok": False,
+                "type": "http",
+                "error": "invalid plain format",
+                "expected": "password|timestamp|nonce",
+                "actual_plain": plain_text
+            },
+            status_code=400
+        )
+
+    password_plain, timestamp_text, nonce_text = parts
+
+    try:
+        timestamp_value = int(timestamp_text)
+    except Exception:
+        return JSONResponse(
+            {
+                "ok": False,
+                "type": "http",
+                "error": "timestamp must be int",
+                "actual_timestamp": timestamp_text
+            },
+            status_code=400
+        )
+
+    if not nonce_text.strip():
+        return JSONResponse(
+            {
+                "ok": False,
+                "type": "http",
+                "error": "nonce is empty"
+            },
+            status_code=400
+        )
+
+    if body.username != "ace" or password_plain != "123456":
+        return JSONResponse(
+            {
+                "ok": False,
+                "type": "http",
+                "error": "invalid credential",
+                "user": {
+                    "username": body.username
+                },
+                "security": {
+                    "password_decrypted": password_plain,
+                    "timestamp": timestamp_value,
+                    "nonce": nonce_text
+                }
+            },
+            status_code=401
+        )
+
+    now_s = int(time.time())
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "type": "http",
+            "user": {
+                "username": body.username
+            },
+            "security": {
+                "algorithm": "RSA_OAEP_SHA256",
+                "plain_rule": "password|timestamp|nonce",
+                "password_decrypted": password_plain,
+                "timestamp": timestamp_value,
+                "nonce": nonce_text,
+                "server_now": now_s,
+                "cipher_present": bool(body.password_cipher)
+            },
+            "request_meta": {
+                "password_cipher_length": len(body.password_cipher)
+            }
+        },
+        status_code=200
+    )
+
+
+def rsa_self_check() -> None:
+    private_key = serialization.load_pem_private_key(
+        PRIVATE_KEY_PEM.encode("utf-8"),
+        password=None
+    )
+    public_key = serialization.load_pem_public_key(
+        PUBLIC_KEY_PEM.encode("utf-8")
+    )
+
+    plain = b"123456|1700000000|abc12345"
+
+    cipher = public_key.encrypt(
+        plain,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+
+    decoded = private_key.decrypt(
+        cipher,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+
+    print(decoded.decode("utf-8"))
+    print(base64.b64encode(cipher).decode("ascii"))
+
+
+rsa_self_check()
 
 
 if __name__ == "__main__":
