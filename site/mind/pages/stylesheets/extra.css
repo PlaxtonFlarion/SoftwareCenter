@@ -11,18 +11,38 @@
 
 [data-md-color-scheme="default"] .mind-hero {
   background: var(--mind-hero-bg);
-  border-radius: 1.1rem;
+  border-radius: 0.95rem;
   color: var(--mind-text-invert);
-  padding: 1.2rem 1.2rem 1rem;
-  margin: 0 0 1.2rem;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.95rem 1rem 0.82rem;
+  margin: 0 0 0.95rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mind-hero-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(230px, 0.86fr);
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+.mind-hero-copy {
+  min-width: 0;
+}
+
+.mind-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: rgba(248, 250, 252, 0.68);
 }
 
 .mind-hero h1 {
-  font-size: 2.1rem;
-  line-height: 1.05;
-  margin: 0 0 0.35rem;
+  font-size: 1.82rem;
+  line-height: 1.02;
+  margin: 0 0 0.22rem;
 }
 
 .mind-hero h1,
@@ -35,41 +55,65 @@
 
 .mind-hero p {
   color: var(--mind-muted-invert);
-  margin: 0.3rem 0;
+  margin: 0.18rem 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
-.mind-pill-row {
-  display: flex;
-  flex-wrap: wrap;
+.mind-hero-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
-  margin: 0.8rem 0 0.95rem;
+  padding: 0.8rem;
+  border-radius: 0.82rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  align-content: start;
 }
 
-.mind-pill {
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  padding: 0.28rem 0.72rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.01em;
-  color: var(--mind-text-invert);
+.mind-mini-stat {
+  padding: 0.48rem 0.55rem;
+  border-radius: 0.66rem;
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mind-mini-stat strong {
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.15;
+  color: var(--mind-text-invert);
+}
+
+.mind-mini-stat span {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.67rem;
+  color: rgba(248, 250, 252, 0.68);
+}
+
+.mind-hero-note {
+  grid-column: 1 / -1;
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem !important;
+  line-height: 1.45;
+  color: rgba(248, 250, 252, 0.62) !important;
 }
 
 .mind-cta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 0.95rem;
+  gap: 0.55rem;
+  margin-top: 0.72rem;
 }
 
 .mind-cta {
   display: inline-block;
-  border-radius: 0.72rem;
-  padding: 0.68rem 0.95rem;
+  border-radius: 0.68rem;
+  padding: 0.58rem 0.88rem;
   text-decoration: none !important;
   font-weight: 650;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   transition: transform 120ms ease, opacity 120ms ease, background 120ms ease;
 }
 
@@ -94,6 +138,10 @@
   gap: 0.9rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   margin: 0.95rem 0 1.1rem;
+}
+
+.mind-card-grid-compact {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .mind-card {
@@ -130,11 +178,16 @@
 
 @media (max-width: 760px) {
   [data-md-color-scheme="default"] .mind-hero {
-    padding: 1rem 0.95rem 0.85rem;
+    padding: 0.86rem 0.88rem 0.74rem;
+  }
+
+  .mind-hero-shell {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
   .mind-hero h1 {
-    font-size: 1.7rem;
+    font-size: 1.5rem;
   }
 
   .mind-cta-row {
@@ -144,5 +197,10 @@
   .mind-cta {
     width: 100%;
     text-align: center;
+  }
+
+  .mind-hero-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0.68rem;
   }
 }
