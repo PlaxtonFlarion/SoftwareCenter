@@ -89,7 +89,7 @@
 .mind-card {
   border: 1px solid var(--mind-card-border);
   border-radius: 1rem;
-  padding: 1rem 1rem 0.9rem;
+  padding: 0.95rem 0.95rem 0.82rem;
   background: var(--mind-card-bg);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 }
@@ -98,6 +98,18 @@
 .mind-card p,
 .mind-card ul {
   margin-top: 0;
+}
+
+.mind-card h3 {
+  font-size: 0.98rem;
+  line-height: 1.25;
+  margin-bottom: 0.45rem;
+}
+
+.mind-card p {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  margin-bottom: 0;
 }
 
 .mind-section-intro {

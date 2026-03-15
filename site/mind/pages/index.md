@@ -10,8 +10,8 @@
     <span class="mind-pill">Batch Blueprint</span>
   </div>
   <div class="mind-cta-row">
-    <a class="mind-cta mind-cta-primary" href="getting-started.md">立即开始</a>
-    <a class="mind-cta mind-cta-secondary" href="reference.md">查看文档</a>
+    <a class="mind-cta mind-cta-primary" href="./getting-started/">立即开始</a>
+    <a class="mind-cta mind-cta-secondary" href="./reference/">查看文档</a>
   </div>
 </div>
 

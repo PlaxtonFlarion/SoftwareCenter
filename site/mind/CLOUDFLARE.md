@@ -20,7 +20,7 @@ SoftwareCenter/
         ├── mkdocs.yml
         ├── requirements.txt
         ├── scripts/
-        └── docs/
+        └── pages/
 ```
 
 说明：
