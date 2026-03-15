@@ -98,19 +98,6 @@ SoftwareCenter/Assets/Mind/
   - README 是否需要补入口
   - 同步后相对路径仍可达
 
-本地生成 HTML 文档站时，使用：
-- `python scripts/build_site_docs.py`
-- `mkdocs serve`
-- `mkdocs build`
-
-安装文档依赖时，使用：
-- `pip install -r requirements.docs.txt`
-
-其中：
-- `README.md` 会被映射为站点首页 `index.md`
-- `docs/*.md` 会被复制到站点文档目录
-- 站点配置在 `mkdocs.yml`
-
 ## 变更检查清单 (Change Checklist)
 每次涉及模式、文档或同步链路的改动，至少检查下面这些点：
 
