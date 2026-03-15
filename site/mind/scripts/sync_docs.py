@@ -55,7 +55,7 @@ def target_name(source_rel: str) -> str:
 
 
 def sync_reference_docs(source_root: Path, site_root: Path) -> None:
-    target_root = site_root / "docs" / "reference"
+    target_root = site_root / "pages" / "generated"
     target_root.mkdir(parents=True, exist_ok=True)
 
     for old in target_root.glob("*.md"):
@@ -75,7 +75,7 @@ def sync_reference_docs(source_root: Path, site_root: Path) -> None:
 def main() -> None:
     source_root, site_root = resolve_roots()
     sync_reference_docs(source_root, site_root)
-    print(f"synced docs from {source_root} -> {site_root / 'docs' / 'reference'}")
+    print(f"synced docs from {source_root} -> {site_root / 'pages' / 'generated'}")
 
 
 if __name__ == "__main__":

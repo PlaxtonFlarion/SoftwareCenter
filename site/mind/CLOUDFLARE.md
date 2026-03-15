@@ -67,7 +67,7 @@ Cloudflare Pages 的构建过程分三步：
 2. 运行 `scripts/sync_docs.py`
    - 从 `Assets/Mind/README.md`
    - 以及 `Assets/Mind/docs/*.md`
-   - 生成 `site/mind/docs/reference/*.md`
+   - 生成 `site/mind/pages/generated/*.md`
 3. 运行 `mkdocs build`
    - 输出静态 HTML 到 `site/`
 

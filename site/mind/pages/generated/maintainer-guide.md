@@ -67,7 +67,7 @@ device / bench / common / media
 - `docs/performance-playbook.md`：性能蓝本与典型跑法
 - `docs/interactive-mode.md`：REPL 说明
 - `docs/architecture.md`：背景、云端架构、推理集群
-- `website/mind/`：官网展示壳与站点入口骨架
+- `website/mind/pages/`：官网展示壳与站点入口页
 - `website/mind/CLOUDFLARE.md`：Cloudflare Pages 部署说明
 
 维护原则：
@@ -97,7 +97,7 @@ SoftwareCenter/site/mind/
   ├── mkdocs.yml
   ├── requirements.txt
   ├── scripts/
-  └── docs/
+  └── pages/
 ```
 
 维护要求：

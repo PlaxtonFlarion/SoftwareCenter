@@ -1,22 +1,48 @@
 site_name: Mind
-site_description: Mind official documentation site
+site_description: Mind official documentation and website shell
 site_url: ""
+repo_name: PlaxtonFlarion/SoftwareCenter
+repo_url: https://github.com/PlaxtonFlarion/SoftwareCenter
+docs_dir: pages
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - tables
+  - fenced_code
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.highlight
 
 theme:
   name: material
+  icon:
+    logo: material/rocket-launch-outline
+  palette:
+    - scheme: default
+      primary: teal
+      accent: amber
+  features:
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - toc.follow
+    - content.code.copy
 
 nav:
   - 首页: index.md
   - 快速开始: getting-started.md
   - 能力概览: capabilities.md
   - 参考文档:
-      - 导览: reference.md
-      - 项目总览: reference/overview.md
-      - 文档索引: reference/docs-index.md
-      - 星图协议: reference/cli-code.md
-      - 接口实战: reference/api-playbook.md
-      - 交互模式: reference/interactive-mode.md
-      - 多媒体链路: reference/media-playbook.md
-      - 性能实战: reference/performance-playbook.md
-      - 背景与架构: reference/architecture.md
-      - 维护者指南: reference/maintainer-guide.md
+      - 阅读导览: reference.md
+      - 项目总览: generated/overview.md
+      - 文档索引: generated/docs-index.md
+      - 星图协议: generated/cli-code.md
+      - 接口实战: generated/api-playbook.md
+      - 交互模式: generated/interactive-mode.md
+      - 多媒体链路: generated/media-playbook.md
+      - 性能实战: generated/performance-playbook.md
+      - 背景与架构: generated/architecture.md
+      - 维护者指南: generated/maintainer-guide.md

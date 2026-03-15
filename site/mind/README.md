@@ -4,13 +4,14 @@
 
 职责边界：
 - `README.md` 与 `docs/*.md` 仍然是文档事实源
-- `website/mind/` 负责官网入口、导航与站点配置
+- `website/mind/pages/` 负责官网入口、导航与站点配置
 - 同步到 `SoftwareCenter` 后，预期映射到 `site/mind/`
 
 当前状态：
 - 已建立站点目录骨架
 - 已补首页、快速开始、能力概览和参考文档入口
 - 已补 `requirements.txt` 与 `scripts/sync_docs.py`
+- 正文镜像页会生成到 `pages/generated/`
 
 建议的本地预览方式：
 ```bash
