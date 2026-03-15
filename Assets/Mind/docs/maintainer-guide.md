@@ -71,6 +71,14 @@ device / bench / common / media
 - 用户入口变重时，优先下沉到 `docs/`
 - 维护者说明不要反向塞回 README
 
+## 文档维护约定 (Documentation Conventions)
+- 标题统一使用“中文标题 (English Title)”格式
+- README 和 `docs/` 内部链接统一使用仓库内相对路径
+- 命令行模式名称使用小写：`chat / fast / plan`
+- REPL 内部状态名称使用大写：`CHAT / FAST / PLAN`
+- 术语一旦在 README 中定稿，`docs/` 中应保持同一写法，不要派生近义口径
+- 只要改了 `README.md`、`docs/*.md` 或 `LICENSE.md`，都应判断是否需要同步到 SoftwareCenter
+
 ## 同步链路 (Sync Pipeline)
 同步工作流在：
 - [`sync-to-software-center.yml`](../.github/workflows/sync-to-software-center.yml)
