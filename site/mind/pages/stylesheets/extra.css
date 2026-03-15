@@ -19,15 +19,9 @@
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.mind-hero-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(230px, 0.86fr);
-  gap: 0.9rem;
-  align-items: stretch;
-}
-
 .mind-hero-copy {
   min-width: 0;
+  max-width: 34rem;
 }
 
 .mind-eyebrow {
@@ -58,46 +52,6 @@
   margin: 0.18rem 0;
   font-size: 0.92rem;
   line-height: 1.45;
-}
-
-.mind-hero-panel {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem;
-  padding: 0.8rem;
-  border-radius: 0.82rem;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  align-content: start;
-}
-
-.mind-mini-stat {
-  padding: 0.48rem 0.55rem;
-  border-radius: 0.66rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.mind-mini-stat strong {
-  display: block;
-  font-size: 0.78rem;
-  line-height: 1.15;
-  color: var(--mind-text-invert);
-}
-
-.mind-mini-stat span {
-  display: block;
-  margin-top: 0.12rem;
-  font-size: 0.67rem;
-  color: rgba(248, 250, 252, 0.68);
-}
-
-.mind-hero-note {
-  grid-column: 1 / -1;
-  margin: 0.1rem 0 0;
-  font-size: 0.72rem !important;
-  line-height: 1.45;
-  color: rgba(248, 250, 252, 0.62) !important;
 }
 
 .mind-cta-row {
@@ -181,11 +135,6 @@
     padding: 0.86rem 0.88rem 0.74rem;
   }
 
-  .mind-hero-shell {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
   .mind-hero h1 {
     font-size: 1.5rem;
   }
@@ -197,10 +146,5 @@
   .mind-cta {
     width: 100%;
     text-align: center;
-  }
-
-  .mind-hero-panel {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 0.68rem;
   }
 }

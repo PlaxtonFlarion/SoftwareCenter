@@ -1,33 +1,11 @@
 <div class="mind-hero">
-  <div class="mind-hero-shell">
-    <div class="mind-hero-copy">
-      <span class="mind-eyebrow">ENGINEERING AGENT RUNTIME</span>
-      <h1>Mind</h1>
-      <p>面向工程交付的命令行代理执行框架。</p>
-      <p>把自然语言目标拆成可执行步骤，并编排 MCP 工具完成设备、接口、性能、媒体与回归任务。</p>
-      <div class="mind-cta-row">
-        <a class="mind-cta mind-cta-primary" href="./getting-started/">立即开始</a>
-        <a class="mind-cta mind-cta-secondary" href="./reference/">查看文档</a>
-      </div>
-    </div>
-    <div class="mind-hero-panel">
-      <div class="mind-mini-stat">
-        <strong>chat</strong>
-        <span>开放式探索</span>
-      </div>
-      <div class="mind-mini-stat">
-        <strong>fast</strong>
-        <span>短链路执行</span>
-      </div>
-      <div class="mind-mini-stat">
-        <strong>plan</strong>
-        <span>结构化回归</span>
-      </div>
-      <div class="mind-mini-stat">
-        <strong>--code</strong>
-        <span>蓝本批跑</span>
-      </div>
-      <p class="mind-hero-note">执行链路可观测，结果可复盘，文档与官网共用同一事实源。</p>
+  <div class="mind-hero-copy">
+    <span class="mind-eyebrow">ENGINEERING AGENT RUNTIME</span>
+    <h1>Mind</h1>
+    <p>面向工程交付的命令行代理执行框架。</p>
+    <div class="mind-cta-row">
+      <a class="mind-cta mind-cta-primary" href="./getting-started/">立即开始</a>
+      <a class="mind-cta mind-cta-secondary" href="./reference/">查看文档</a>
     </div>
   </div>
 </div>
