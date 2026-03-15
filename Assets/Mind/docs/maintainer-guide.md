@@ -51,7 +51,7 @@ device / bench / common / media
 
 维护时要一起检查：
 - README 的 `--code` 摘要
-- [docs/cli-code.md](cli-code.md)
+- `docs/cli-code.md`
 - REPL / README 中对 `cfg.repeat`、`loop` 的引用
 
 建议：
@@ -81,7 +81,7 @@ device / bench / common / media
 
 ## 同步链路 (Sync Pipeline)
 同步工作流在：
-- [`sync-to-software-center.yml`](../.github/workflows/sync-to-software-center.yml)
+- `.github/workflows/sync-to-software-center.yml`
 
 当前同步目标：
 ```text
@@ -109,7 +109,7 @@ SoftwareCenter/Assets/Mind/
 其中：
 - `README.md` 会被映射为站点首页 `index.md`
 - `docs/*.md` 会被复制到站点文档目录
-- 站点配置在 [`mkdocs.yml`](../mkdocs.yml)
+- 站点配置在 `mkdocs.yml`
 
 ## 变更检查清单 (Change Checklist)
 每次涉及模式、文档或同步链路的改动，至少检查下面这些点：
