@@ -106,6 +106,19 @@
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
 }
 
+.mind-card-link {
+  display: block;
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.mind-card-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+  border-color: rgba(13, 148, 136, 0.22);
+}
+
 .mind-card h3,
 .mind-card p,
 .mind-card ul {
