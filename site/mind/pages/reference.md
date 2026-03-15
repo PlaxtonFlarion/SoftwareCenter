@@ -14,42 +14,51 @@
 ## 文档导航
 
 <div class="mind-card-grid">
-  <div class="mind-card">
-    <h3><a href="../generated/overview/">项目总览</a></h3>
+  <a class="mind-card mind-card-link" href="../generated/overview/">
+    <h3>项目总览</h3>
     <p>第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/docs-index/">文档索引</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/docs-index/">
+    <h3>文档索引</h3>
     <p>已经知道要找什么时，从这里按专题跳文档最快。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/cli-code/">星图协议</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/cli-code/">
+    <h3>星图协议</h3>
     <p>批跑、回归、前后置、循环和蓝本规则层。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/api-playbook/">接口实战</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/api-playbook/">
+    <h3>接口实战</h3>
     <p>HTTP、SSE、WebSocket、GraphQL 与其它协议场景。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/interactive-mode/">交互模式</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/interactive-mode/">
+    <h3>交互模式</h3>
     <p>REPL 指令、状态切换和输入约束。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/media-playbook/">多媒体链路</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/media-playbook/">
+    <h3>多媒体链路</h3>
     <p>关键帧、场景帧、音轨、裁剪、转码和拼接。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/performance-playbook/">性能实战</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/performance-playbook/">
+    <h3>性能实战</h3>
     <p>Memrix / Framix / Monkey 相关跑法与样例。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/architecture/">背景与架构</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/architecture/">
+    <h3>背景与架构</h3>
     <p>系统分层、模型矩阵和工程摘要。</p>
-  </div>
-  <div class="mind-card">
-    <h3><a href="../generated/maintainer-guide/">维护者指南</a></h3>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/maintainer-guide/">
+    <h3>维护者指南</h3>
     <p>维护文档、官网壳和同步链路时阅读。</p>
-  </div>
+    <span class="mind-card-arrow">进入文档 →</span>
+  </a>
 </div>
 
 ## 生成方式

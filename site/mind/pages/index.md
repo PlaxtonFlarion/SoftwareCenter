@@ -24,18 +24,22 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
   <a class="mind-card mind-card-link" href="./capabilities/">
     <h3>设备与 UI</h3>
     <p>启动应用、切换页面、点击、输入、滚动、系统控制与证据留存。</p>
+    <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./reference/">
     <h3>接口与协议</h3>
     <p>HTTP、SSE、WebSocket、GraphQL、Socket、邮件与文件协议验证。</p>
+    <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./reference/">
     <h3>性能与稳定性</h3>
     <p>Memrix / Framix 采样、Monkey 扰动、日志与视觉证据汇总。</p>
+    <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./reference/">
     <h3>媒体与回归</h3>
     <p>关键帧、场景帧、音轨、裁剪、转码，以及 `--code` 蓝本批跑。</p>
+    <span class="mind-card-arrow">查看详情 →</span>
   </a>
 </div>
 
@@ -45,14 +49,17 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
   <a class="mind-card mind-card-link" href="./capabilities/">
     <h3>chat</h3>
     <p>开放式流式工具闭环，适合探索、问答和混合型任务。</p>
+    <span class="mind-card-arrow">查看边界 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./capabilities/">
     <h3>fast</h3>
     <p>裁剪工具集后的快速执行通道，适合接口、媒体和短链路处理。</p>
+    <span class="mind-card-arrow">查看边界 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./capabilities/">
     <h3>plan</h3>
     <p>先生成计划，再按步骤顺序执行，适合巡检、固定流程和回归。</p>
+    <span class="mind-card-arrow">查看边界 →</span>
   </a>
 </div>
 
