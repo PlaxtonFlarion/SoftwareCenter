@@ -11,29 +11,29 @@
 ---
 
 - **主导航**
-- **[快速开始](#-快速开始-quick-start)**
-- **[Top10 核心能力](#-top10-核心能力-top-10)**
-- **[运行模式](#-运行模式-modes)**
-- **[命令行参数](#-命令行参数-cli-arguments)**
-- **[性能工具接口层](#-自研性能工具接口层-in-house-performance-tooling)**
-- **[接口实战教学](#-接口实战教学-api-playbook)**
-- **[多媒体链路实战教学](#-多媒体链路实战教学-media-playbook)**
-- **[背景与架构](#-背景与架构-background--architecture)**
+- **[快速开始](#quick-start)**
+- **[Top10 核心能力](#top10)**
+- **[运行模式](#modes)**
+- **[命令行参数](#cli-arguments)**
+- **[性能工具接口层](#performance-tooling)**
+- **[接口实战教学](#api-playbook)**
+- **[多媒体链路实战教学](#media-playbook)**
+- **[背景与架构](#architecture)**
 - **[Docs 索引](docs/README.md)**
-- **[构建发布](#-构建发布-build--release)**
+- **[构建发布](#build-release)**
 
 - **按场景跳转**
-- **设备 / UI 自动化**：从 [快速开始](#-快速开始-quick-start) 和 [Top10 核心能力](#-top10-核心能力-top-10) 入手
-- **性能与稳定性**：看 [性能工具接口层](#-自研性能工具接口层-in-house-performance-tooling) 和 [性能实战教学](#-性能实战教学-performance-playbook)
-- **接口协议验证**：看 [接口实战教学](#-接口实战教学-api-playbook)
-- **音视频与证据链**：看 [多媒体链路实战教学](#-多媒体链路实战教学-media-playbook)
-- **批跑 / 编排 / 回归**：看 [命令行参数](#-命令行参数-cli-arguments) 中的 `--code`
-- **背景设计与实现**：看 [背景与架构](#-背景与架构-background--architecture)
+- **设备 / UI 自动化**：从 [快速开始](#quick-start) 和 [Top10 核心能力](#top10) 入手
+- **性能与稳定性**：看 [性能工具接口层](#performance-tooling) 和 [性能实战教学](#performance-playbook)
+- **接口协议验证**：看 [接口实战教学](#api-playbook)
+- **音视频与证据链**：看 [多媒体链路实战教学](#media-playbook)
+- **批跑 / 编排 / 回归**：看 [命令行参数](#cli-arguments) 中的 `--code`
+- **背景设计与实现**：看 [背景与架构](#architecture)
 - **长文档总览**：看 [Docs 索引](docs/README.md)
 
 **首次阅读建议**
-- 只想先跑起来：先看 [快速开始](#-快速开始-quick-start) → [运行模式](#-运行模式-modes) → [命令行参数](#-命令行参数-cli-arguments)
-- 只想看能力边界：看 [Top10 核心能力](#-top10-核心能力-top-10) 和 [运行模式](#-运行模式-modes)
+- 只想先跑起来：先看 [快速开始](#quick-start) → [运行模式](#modes) → [命令行参数](#cli-arguments)
+- 只想看能力边界：看 [Top10 核心能力](#top10) 和 [运行模式](#modes)
 - 需要完整长文档时，直接走 [Docs 索引](docs/README.md)
 
 ---
@@ -52,6 +52,7 @@
 
 ---
 
+<a id="quick-start"></a>
 ## ⭐️ 快速开始 (Quick Start)
 
 Mind 有两种运行方式：
@@ -71,7 +72,7 @@ mind --fast "对 path/to/video.mp4 进行关键帧抽取，并返回可用证据
 mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ```
 
-如果你要跑批量任务或协议用例，直接看 [命令行参数](#-命令行参数-cli-arguments) 里的 `--code`，以及后面的 [接口实战教学](#-接口实战教学-api-playbook)。
+如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `--code`，以及后面的 [接口实战教学](#api-playbook)。
 
 ### 交互式运行 (REPL)
 启动 REPL：
@@ -100,10 +101,11 @@ mind
 - /quit：退出
 
 REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fast/plan 三种模式决定。  
-如果你需要完整指令说明，继续看后面的 [交互模式详解](#-交互模式详解-interactive-mode)。
+如果你需要完整指令说明，继续看后面的 [交互模式详解](#interactive-mode)。
 
 ---
 
+<a id="top10"></a>
 ## ⭐️ Top10 核心能力 (Top 10)
 
 - **智能元素自愈**：处理定位漂移、属性变化和轻度页面变形
@@ -119,6 +121,7 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 
 ---
 
+<a id="modes"></a>
 ## ⭐️ 运行模式 (Modes)
 **Mind** 提供三种互斥运行模式：
 
@@ -131,16 +134,20 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 ### 能力边界对齐
 三种模式的核心差异，不是“模型强弱”，而是“执行协议”和“可见工具集”：
 
-| 模式 | 执行协议 | 工具边界 | 更适合 | 不建议主打 |
-|------|----------|----------|--------|------------|
-| `chat` | 流式对话，模型可持续发起工具调用 | 最宽；仅排除少量特殊工具 | 探索、问答、临时任务、自然语言驱动的接口/设备操作 | 追求最稳定步骤形态时 |
-| `fast` | 流式对话，和 `chat` 同类闭环 | 比 `chat` 更窄；主动排除设备域、部分 inspect、screen、Framix/Memrix 等链路 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 自动化、重型性能链路、需要全域工具时 |
-| `plan` | 先出计划，再顺序执行步骤 | 独立计划执行面；排除部分 security/runtime/nexus 工具 | 巡检、固定流程、批处理、需要步骤可读和更强可复盘性时 | 开放式多轮探索、边聊边改策略 |
+| 模式     | 执行协议               | 工具边界                                                            | 更适合                        | 不建议主打                    |
+|--------|--------------------|-----------------------------------------------------------------|----------------------------|--------------------------|
+| `chat` | 流式对话，模型可持续发起工具调用   | 最宽；仅排除少量特殊工具                                                    | 探索、问答、临时任务、自然语言驱动的接口/设备操作  | 追求最稳定步骤形态时               |
+| `fast` | 流式对话，和 `chat` 同类闭环 | 比 `chat` 更窄；主动排除设备域、部分 inspect、screen、Framix/Memrix 等链路         | 接口请求、事件流采样、媒体处理、短路径任务      | 设备/UI 自动化、重型性能链路、需要全域工具时 |
+| `plan` | 先出计划，再顺序执行步骤       | 独立计划执行面；排除部分 security/runtime/nexus 工具，并承载 `free_rule` 这类规则判断能力 | 巡检、固定流程、批处理、需要步骤可读和更强可复盘性时 | 开放式多轮探索、边聊边改策略           |
 
 一句话理解：
 - `chat` 是“边想边做”
 - `fast` 是“少开工具、尽快做完”
 - `plan` 是“先列步骤、再按序执行”
+
+补充说明：
+- 这里的 `free_rule` 指执行期的自由规则判断能力，只在 `plan` 执行面使用
+- `--code` 里的 `global_rule / rule` 属于蓝本规则层，不等同于 `free_rule`
 
 ### 使用建议
 - `mind --chat "..."`：默认入口；适合探索、问答、混合型任务
@@ -154,6 +161,7 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 
 ---
 
+<a id="cli-arguments"></a>
 ## ⭐️ 命令行参数 (CLI Arguments)
 Mind 的参数分两类：**互斥参数** 与 **兼容参数**。
 
@@ -167,14 +175,14 @@ Mind 的参数分两类：**互斥参数** 与 **兼容参数**。
 ### 常用速查
 如果你只想先跑起来，先记住这 6 个入口：
 
-| 目标 | 命令 |
-|------|------|
-| 自然语言探索 | `mind --chat "..."` |
+| 目标      | 命令                  |
+|---------|---------------------|
+| 自然语言探索  | `mind --chat "..."` |
 | 快速短链路任务 | `mind --fast "..."` |
-| 结构化执行 | `mind --plan "..."` |
-| 进入交互模式 | `mind` |
-| 给本次运行归档 | `--gravity <tag>` |
-| 批量执行蓝本 | `--code <path...>` |
+| 结构化执行   | `mind --plan "..."` |
+| 进入交互模式  | `mind`              |
+| 给本次运行归档 | `--gravity <tag>`   |
+| 批量执行蓝本  | `--code <path...>`  |
 
 建议的阅读顺序：
 - 只想上手：先看 `--chat / --fast / --plan`
@@ -305,17 +313,19 @@ mind --chat --code http.md sse.md ws.md graphql.md
 ---
 ```
 
-### `--code <path...>`：深入：三层前后置 + 全局规则
+### `--code <path...>`：深入：三层前后置 + 蓝本规则层
 高级批跑说明已拆到独立文档：[docs/cli-code.md](docs/cli-code.md)。
 
 这里先记住 4 个点就够了：
 - `cfg` 支持批次级、轮次级和任务级前后置
-- `global_rule` 是整份蓝本默认规则，`rule` 是单任务覆盖规则
+- `global_rule` 是整份蓝本的默认规则文本，`rule` 是单任务覆盖规则文本
 - `prefix/suffix` 会覆盖 `global_prefix/global_suffix`
+- 这里的 `global_rule / rule` 属于蓝本规则层，不等同于 `plan` 执行面的 `free_rule`
 - 需要长样例、长文本字段或完整蓝本时，直接看独立文档
 
 ---
 
+<a id="interactive-mode"></a>
 ## ⭐️ 交互模式详解 (Interactive Mode)
 完整 REPL 说明已拆到独立文档：[docs/interactive-mode.md](docs/interactive-mode.md)。
 
@@ -342,6 +352,7 @@ README 这里只保留入口层信息。
 
 ---
 
+<a id="performance-tooling"></a>
 ## ⭐️ 自研性能工具接口层 (In-house Performance Tooling)
 **Mind** 的性能体系不是“跑一堆指标然后祈祷”，而是把 **采集 → 对齐 → 归因 → 回归** 做成工程闭环。  
 这一层的定位是：**把端侧真实世界的性能信号，变成可对比、可复盘、可运营的标准产物**。
@@ -380,6 +391,7 @@ README 这里只保留入口层信息。
 
 ---
 
+<a id="performance-playbook"></a>
 ## ⭐️ 性能实战教学 (Performance Playbook)
 完整性能案例和蓝本样例已拆到独立文档：[docs/performance-playbook.md](docs/performance-playbook.md)。
 
@@ -392,12 +404,12 @@ README 这里只保留入口层信息。
 - Monkey 和长稳扰动场景建议写进蓝本，不要堆在命令行里
 
 ### 能力速览
-| 类型 | 入口 |
-|------|------|
-| 视觉真值 | Framix 帧分析与阶段报告 |
-| 指标采样 | Memrix 内存 / 流畅度 / 趋势对比 |
-| 稳定性扰动 | Monkey + logcat 异常留痕 |
-| 典型跑法 | `mind --plan --code ...` 或 `mind --chat "..."` |
+| 类型    | 入口                                             |
+|-------|------------------------------------------------|
+| 视觉真值  | Framix 帧分析与阶段报告                                |
+| 指标采样  | Memrix 内存 / 流畅度 / 趋势对比                         |
+| 稳定性扰动 | Monkey + logcat 异常留痕                           |
+| 典型跑法  | `mind --plan --code ...` 或 `mind --chat "..."` |
 
 ### 常见场景
 - `E2E / ASR / VAD / tokens/s`
@@ -406,6 +418,7 @@ README 这里只保留入口层信息。
 
 ---
 
+<a id="api-playbook"></a>
 ## ⭐️ 接口实战教学 (API Playbook)
 完整协议约定、helper 迁移和样例说明已拆到独立文档：[docs/api-playbook.md](docs/api-playbook.md)。
 
@@ -462,6 +475,7 @@ asserts = [
 - 协议字段边界对齐 `nexus_*_request` 和 `nexus_*_batch`
 
 ---
+<a id="media-playbook"></a>
 ## ⭐️ 多媒体链路实战教学 (Media Playbook)
 完整媒体命令、组合链路和蓝本任务已拆到独立文档：[docs/media-playbook.md](docs/media-playbook.md)。
 
@@ -475,12 +489,12 @@ README 这里只保留入口层信息。
 - 需要完整证据链或多步蓝本时，直接看独立文档
 
 ### 能力速览
-| 类型 | 入口 |
-|------|------|
-| 抽帧取证 | `snapshot / frames / keyframes / scene` |
-| 视频处理 | `trim / scale / convert / concat / remux / mute` |
+| 类型   | 入口                                                     |
+|------|--------------------------------------------------------|
+| 抽帧取证 | `snapshot / frames / keyframes / scene`                |
+| 视频处理 | `trim / scale / convert / concat / remux / mute`       |
 | 音频处理 | `extract_audio / replace_audio / convert_audio / play` |
-| 组合链路 | 多步串联的媒体预处理与证据链任务 |
+| 组合链路 | 多步串联的媒体预处理与证据链任务                                       |
 
 ### 常用命令
 - `mind --fast "从 /path/to/demo.mp4 的第 3.5 秒抽取一张截图，并返回证据"`
@@ -490,6 +504,7 @@ README 这里只保留入口层信息。
 
 ---
 
+<a id="architecture"></a>
 ## ⭐️ 背景与架构 (Background & Architecture)
 完整背景、云端架构和推理集群说明已拆到独立文档：[docs/architecture.md](docs/architecture.md)。
 
@@ -517,6 +532,7 @@ device / bench / common / media
 
 ---
 
+<a id="build-release"></a>
 ## ⭐️ 构建发布 (Build & Release)
 
 ![LOGO](https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_compile.png)

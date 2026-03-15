@@ -29,12 +29,13 @@ device / bench / common / media
 ## 模式边界 (Mode Boundaries)
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
-- `plan`：先生成计划，再按步骤顺序执行
+- `plan`：先生成计划，再按步骤顺序执行，并承载 `free_rule` 这类执行期规则判断能力
 
 维护要求：
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
+- 不要把 `free_rule` 和 `--code` 的 `global_rule / rule` 混写成同一个概念
 
 ## 工具域边界 (Tool Domains)
 - `device`：应用与系统控制、UI 操作链

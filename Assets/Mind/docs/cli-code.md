@@ -3,7 +3,7 @@
 `--code` 用于装载一个或多个批量执行蓝本，并按选定协议执行。
 
 ## 适用范围 (Scope)
-- 适用于需要批次控制、前后置、全局规则、重试和筛选的批跑场景
+- 适用于需要批次控制、前后置、蓝本规则层、重试和筛选的批跑场景
 - 如果你只是想把几条任务跑起来，README 里的基础写法已经足够
 
 ## 支持的 `cfg` 字段 (Supported `cfg` Keys)
@@ -45,11 +45,15 @@
 - `suffix` 覆盖 `global_suffix`
 
 ## 规则层级 (Rule Layers)
-- `global_rule`：整份批跑文件的默认规则
-- `rule`：当前任务专属规则
+- `global_rule`：整份批跑文件的默认规则文本
+- `rule`：当前任务专属规则文本
 
 覆盖关系：
 - `rule` 存在时覆盖 `global_rule`
+
+边界说明：
+- 这里的 `global_rule / rule` 属于 `--code` 的蓝本规则层
+- 它们不等同于 `plan` 执行面中的 `free_rule`
 
 ## 最小示例 (Minimal Example)
 ``````
