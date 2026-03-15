@@ -1,0 +1,22 @@
+site_name: Mind
+site_description: Mind official documentation site
+site_url: ""
+
+theme:
+  name: material
+
+nav:
+  - 首页: index.md
+  - 快速开始: getting-started.md
+  - 能力概览: capabilities.md
+  - 参考文档:
+      - 导览: reference.md
+      - 项目总览: reference/overview.md
+      - 文档索引: reference/docs-index.md
+      - 星图协议: reference/cli-code.md
+      - 接口实战: reference/api-playbook.md
+      - 交互模式: reference/interactive-mode.md
+      - 多媒体链路: reference/media-playbook.md
+      - 性能实战: reference/performance-playbook.md
+      - 背景与架构: reference/architecture.md
+      - 维护者指南: reference/maintainer-guide.md
