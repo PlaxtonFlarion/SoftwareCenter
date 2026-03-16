@@ -583,7 +583,7 @@ device / bench / common / media
 
 ---
 
-## ⭐️ 贡献指南（Contributing）
+## ⭐️ 贡献指南
 我们欢迎对 Mind 生态的任何形式贡献：新增工具域能力、修复缺陷、补充文档、优化可观测性与工程稳定性。
 
 ### 贡献范围
@@ -608,7 +608,7 @@ device / bench / common / media
 
 ---
 
-## ⭐️ 特别鸣谢（Special Thanks）
+## ⭐️ 特别鸣谢
 ......
 
 ---
