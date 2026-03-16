@@ -282,6 +282,9 @@
 
 [data-md-color-scheme="slate"] .md-sidebar .md-nav__link,
 [data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link {
+  display: block;
+  box-sizing: border-box;
+  padding: 0.22rem 0.5rem;
   color: var(--mind-dark-text);
 }
 
