@@ -17,7 +17,7 @@ mind --apply YOUR_LICENSE_CODE
 mind --pref
 ```
 
-## 三种模式
+## 模式命令
 
 ```bash
 mind --chat "概述当前系统的核心能力与边界"
@@ -74,8 +74,8 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./reference/">
-    <h3>`--code` 蓝本</h3>
-    <p>批跑、回归、前后置、规则层和结构化执行编排。</p>
+    <h3>蓝本编排</h3>
+    <p>通过 <code>--code</code> 做批跑、回归、前后置、规则层和结构化执行编排。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
 </div>
@@ -105,4 +105,4 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 - 想先跑起来：看 [快速开始](getting-started.md)
 - 想看模式边界：看 [能力概览](capabilities.md)
 - 想看模板、安全和设备专题：看 [参考文档](reference.md)
-- 想按专题继续查长文档：看 [参考文档](reference.md)
+- 想按文档树继续查长文：看 [文档索引](./generated/docs-index/)
