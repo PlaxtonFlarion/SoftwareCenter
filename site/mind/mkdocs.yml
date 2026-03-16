@@ -22,6 +22,15 @@ theme:
     logo: material/rocket-launch-outline
   palette:
     - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: 切换到暗色模式
+      primary: teal
+      accent: amber
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: 切换到亮色模式
       primary: teal
       accent: amber
   features:
