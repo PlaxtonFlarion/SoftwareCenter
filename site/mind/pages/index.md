@@ -48,34 +48,34 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ## 关键能力
 
 <div class="mind-card-grid">
-  <a class="mind-card mind-card-link" href="./capabilities/">
+  <a class="mind-card mind-card-link" href="./generated/device-playbook/">
     <h3>设备与 UI</h3>
-    <p>启动应用、切换页面、点击、输入、滚动、系统控制与证据留存。</p>
+    <p>启动应用、切换页面、点击输入、滚动控制与执行留证。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./reference/">
+  <a class="mind-card mind-card-link" href="./generated/api-playbook/">
     <h3>接口与协议</h3>
-    <p>HTTP、SSE、WebSocket、GraphQL、Socket、邮件与文件协议验证。</p>
+    <p>HTTP、SSE、WebSocket、GraphQL 与多类协议验证。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./reference/">
+  <a class="mind-card mind-card-link" href="./generated/performance-playbook/">
     <h3>性能采样</h3>
-    <p>Memrix / Framix 采样、指标抓取、视觉证据和性能诊断。</p>
+    <p>Memrix / Framix 采样、指标抓取、视觉留证与性能诊断。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./reference/">
+  <a class="mind-card mind-card-link" href="./generated/media-playbook/">
     <h3>媒体处理</h3>
-    <p>关键帧、场景帧、音轨、裁剪、转码和片段证据输出。</p>
+    <p>关键帧、场景帧、音轨、裁剪转码与片段证据输出。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./reference/">
+  <a class="mind-card mind-card-link" href="./generated/monkey-playbook/">
     <h3>Monkey 扰动</h3>
-    <p>稳定性压测、随机事件扰动、异常探测和执行留痕。</p>
+    <p>稳定性压测、随机事件扰动、异常探测与执行留痕。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./reference/">
+  <a class="mind-card mind-card-link" href="./generated/cli-code/">
     <h3>蓝本编排</h3>
-    <p>通过 <code>--code</code> 做批跑、回归、前后置、规则层和结构化执行编排。</p>
+    <p>通过 <code>--code</code> 做批跑回归、前后置与结构化执行编排。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
 </div>
@@ -83,19 +83,19 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ## 模式定位
 
 <div class="mind-card-grid mind-card-grid-compact">
-  <a class="mind-card mind-card-link" href="./capabilities/">
+  <a class="mind-card mind-card-link" href="./capabilities/#chat">
     <h3>chat</h3>
-    <p>开放式流式工具闭环，适合探索、问答和混合型任务。</p>
+    <p>开放式流式工具闭环，适合探索、问答与混合型任务。</p>
     <span class="mind-card-arrow">查看边界 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./capabilities/">
+  <a class="mind-card mind-card-link" href="./capabilities/#fast">
     <h3>fast</h3>
-    <p>裁剪工具集后的快速执行通道，适合接口、媒体和短链路处理。</p>
+    <p>裁剪工具集后的快速执行通道，适合接口、媒体与短链路处理。</p>
     <span class="mind-card-arrow">查看边界 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="./capabilities/">
+  <a class="mind-card mind-card-link" href="./capabilities/#plan">
     <h3>plan</h3>
-    <p>先生成计划，再按步骤顺序执行，适合巡检、固定流程和回归。</p>
+    <p>先生成计划再按序执行，适合巡检、固定流程与回归。</p>
     <span class="mind-card-arrow">查看边界 →</span>
   </a>
 </div>

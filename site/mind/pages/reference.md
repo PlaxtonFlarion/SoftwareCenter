@@ -41,6 +41,8 @@
   适合看 `security_*` 的摘要、JWT、RSA、AES 和安全层边界。
 - [设备域实战](../generated/device-playbook/)  
   适合看 `device` 的 app/ui/system/keyevent/monkey/file 分层和稳定执行建议。
+- [Monkey 扰动](../generated/monkey-playbook/)  
+  适合看 `device.monkey.injection` 的全部参数、执行流程和返回结构。
 - [交互模式](../generated/interactive-mode/)  
   适合看 REPL 指令、状态切换和输入约束。
 - [多媒体链路](../generated/media-playbook/)  

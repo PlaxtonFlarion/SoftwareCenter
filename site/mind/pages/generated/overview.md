@@ -20,6 +20,7 @@
 - **[模板能力实战](template-playbook.md)**
 - **[安全工具实战](security-playbook.md)**
 - **[设备域实战](device-playbook.md)**
+- **[Monkey 扰动实战](monkey-playbook.md)**
 - **[多媒体链路实战教学](#media-playbook)**
 - **[背景与架构](#architecture)**
 - **[Docs 索引](docs-index.md)**
@@ -31,6 +32,7 @@
 - **接口协议验证**：看 [接口实战教学](#api-playbook)
 - **模板 helper / 签名前置**：看 [模板能力实战](template-playbook.md)
 - **安全签名 / JWT / AES / RSA**：看 [安全工具实战](security-playbook.md)
+- **Monkey 稳定性扰动**：看 [Monkey 扰动实战](monkey-playbook.md)
 - **音视频与证据链**：看 [多媒体链路实战教学](#media-playbook)
 - **批跑 / 编排 / 回归**：看 [命令行参数](#cli-arguments) 中的 `--code`
 - **背景设计与实现**：看 [背景与架构](#architecture)
@@ -43,6 +45,7 @@
 - 需要看 `bench.nexus` 模板 helper 和签名前置边界时，直接看 [模板能力实战](template-playbook.md)
 - 需要看 `security_*` 的能力边界和最小用法时，直接看 [安全工具实战](security-playbook.md)
 - 需要系统看 `device` 域的工具分层和稳定执行建议时，直接看 [设备域实战](device-playbook.md)
+- 需要系统看 `device.monkey` 的参数、执行流程和返回结构时，直接看 [Monkey 扰动实战](monkey-playbook.md)
 
 ---
 

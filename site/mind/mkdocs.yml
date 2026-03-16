@@ -55,6 +55,7 @@ nav:
       - 模板能力: generated/template-playbook.md
       - 安全工具: generated/security-playbook.md
       - 设备域实战: generated/device-playbook.md
+      - Monkey 扰动: generated/monkey-playbook.md
       - 交互模式: generated/interactive-mode.md
       - 多媒体链路: generated/media-playbook.md
       - 性能实战: generated/performance-playbook.md
