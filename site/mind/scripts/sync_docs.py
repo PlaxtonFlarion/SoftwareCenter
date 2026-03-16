@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 
 DOC_FILES = (
@@ -43,7 +44,12 @@ def rewrite_content(source_rel: str, text: str) -> str:
     if source_rel == "README.md":
         for before, after in README_REWRITE_MAP.items():
             text = text.replace(before, after)
+    text = strip_heading_suffix(text)
     return text
+
+
+def strip_heading_suffix(text: str) -> str:
+    return re.sub(r"^(#{1,6}\s+.+?)\s+[（(][^()（）]+[)）]\s*$", r"\1", text, flags=re.MULTILINE)
 
 
 def target_name(source_rel: str) -> str:

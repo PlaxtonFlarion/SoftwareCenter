@@ -1,12 +1,12 @@
-# 星图协议深入说明 (`--code` Advanced Guide)
+# 星图协议深入说明
 
 `--code` 用于装载一个或多个批量执行蓝本，并按选定协议执行。
 
-## 适用范围 (Scope)
+## 适用范围
 - 适用于需要批次控制、前后置、蓝本规则层、重试和筛选的批跑场景
 - 如果你只是想把几条任务跑起来，README 里的基础写法已经足够
 
-## 支持的 `cfg` 字段 (Supported `cfg` Keys)
+## 支持的 `cfg` 字段
 - `repeat`
 - `pattern`
 - `attempts`
@@ -19,7 +19,7 @@
 - `global_suffix`
 - `global_rule`
 
-## 文件格式 (Format)
+## 文件格式
 - 顶部可包含一个 ` ```cfg ` 配置块
 - `cfg` 配置块必须以独立一行 ` ```cfg ` 开始，并以独立一行 ` ``` ` 结束
 - 多行字段推荐两种写法：
@@ -34,7 +34,7 @@
   - `# suffix:`
   - `# rule:`
 
-## 前后置层级 (Hook Layers)
+## 前后置层级
 - 批次级：`loop_prefix` / `loop_suffix`
 - 轮次级：`round_prefix` / `round_suffix`
 - 默认任务级：`global_prefix` / `global_suffix`
@@ -44,7 +44,7 @@
 - `prefix` 覆盖 `global_prefix`
 - `suffix` 覆盖 `global_suffix`
 
-## 规则层级 (Rule Layers)
+## 规则层级
 - `global_rule`：整份批跑文件的默认规则文本
 - `rule`：当前任务专属规则文本
 
@@ -55,7 +55,7 @@
 - 这里的 `global_rule / rule` 属于 `--code` 的蓝本规则层
 - 它们不等同于 `plan` 执行面中的 `free_rule`
 
-## 最小示例 (Minimal Example)
+## 最小示例
 ``````
 ```cfg
 loop_prefix: |
@@ -95,7 +95,7 @@ global_rule: <<<
 ---
 ``````
 
-## 长文本示例 (Long Text Example)
+## 长文本示例
 ``````
 ```cfg
 global_prefix: <<<
@@ -112,7 +112,7 @@ global_rule: <<<
 ```
 ``````
 
-## 完整蓝本示例 (Full Blueprint Example)
+## 完整蓝本示例
 ``````
 ```cfg
 global_prefix: <<<

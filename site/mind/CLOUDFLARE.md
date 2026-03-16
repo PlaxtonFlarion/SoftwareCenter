@@ -1,4 +1,4 @@
-# Cloudflare Pages 部署说明 (Cloudflare Pages Deployment)
+# Cloudflare Pages 部署说明
 
 这份说明对应当前的 `A` 方案：
 - 私有仓库维护正文与官网壳

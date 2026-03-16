@@ -38,7 +38,7 @@
 
 ---
 
-## 🏆 项目简介 (Project Overview)
+## 🏆 项目简介
 
 **Mind** 是面向工程交付的命令行代理执行框架：把一句话意图拆成可执行步骤，并编排调用 **MCP 工具** 完成设备控制、数据采集、媒体处理和脚本编排等任务。
 
@@ -53,7 +53,7 @@
 ---
 
 <a id="quick-start"></a>
-## ⭐️ 快速开始 (Quick Start)
+## ⭐️ 快速开始
 
 Mind 有两种运行方式：
 
@@ -74,7 +74,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 
 如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `--code`，以及后面的 [接口实战教学](#api-playbook)。
 
-### 交互式运行 (REPL)
+### 交互式运行
 启动 REPL：
 ```
 mind
@@ -106,7 +106,7 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 ---
 
 <a id="top10"></a>
-## ⭐️ Top10 核心能力 (Top 10)
+## ⭐️ Top10 核心能力
 
 - **智能元素自愈**：处理定位漂移、属性变化和轻度页面变形
 - **Memrix 链路**：做内存、流畅度与稳定性采样
@@ -122,7 +122,7 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 ---
 
 <a id="modes"></a>
-## ⭐️ 运行模式 (Modes)
+## ⭐️ 运行模式
 **Mind** 提供三种互斥运行模式：
 
 | 模式       | 说明     |
@@ -162,7 +162,7 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 ---
 
 <a id="cli-arguments"></a>
-## ⭐️ 命令行参数 (CLI Arguments)
+## ⭐️ 命令行参数
 Mind 的参数分两类：**互斥参数** 与 **兼容参数**。
 
 - **互斥参数（Mutually Exclusive）**：一条命令里只能选 **一个**；用于确定“主运行协议/主入口”。  
@@ -175,14 +175,14 @@ Mind 的参数分两类：**互斥参数** 与 **兼容参数**。
 ### 常用速查
 如果你只想先跑起来，先记住这 6 个入口：
 
-| 目标      | 命令                  |
-|---------|---------------------|
-| 自然语言探索  | `mind --chat "..."` |
-| 快速短链路任务 | `mind --fast "..."` |
-| 结构化执行   | `mind --plan "..."` |
-| 进入交互模式  | `mind`              |
-| 给本次运行归档 | `--gravity <tag>`   |
-| 批量执行蓝本  | `--code <path...>`  |
+| 场景 | 入口 | 什么时候用 |
+|------|------|------------|
+| 自然语言探索 | `mind --chat "..."` | 先问能力边界、混合型临时任务 |
+| 快速短链路任务 | `mind --fast "..."` | 接口、媒体、文件类短任务 |
+| 结构化执行 | `mind --plan "..."` | 需要步骤稳定、证据整齐 |
+| 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan` |
+| 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
+| 批量执行蓝本 | `mind --chat --code <path...>` | 批跑、回归、规则化蓝本执行 |
 
 建议的阅读顺序：
 - 只想上手：先看 `--chat / --fast / --plan`
@@ -190,11 +190,14 @@ Mind 的参数分两类：**互斥参数** 与 **兼容参数**。
 - 想调试链路：再看 `--reflection`
 - 想批跑和回归：最后看 `--code`
 
-### `--apply <code>`：原点协议（参数互斥）
+### 原点协议（参数互斥）
+`--apply <code>`
+
 用于写入激活码并申请本地授权文件。
 
 - 适用于：首次激活、替换授权、重新落盘 License
 - 执行后直接完成授权流程，不进入 `chat / fast / plan` 执行链路
+- 命令：`mind --apply <license-code>`
 
 示例：
 ```
@@ -202,12 +205,15 @@ Mind 的参数分两类：**互斥参数** 与 **兼容参数**。
 mind --apply YOUR_LICENSE_CODE
 ```
 
-### `--pref`：基线协议（参数互斥）
+### 基线协议（参数互斥）
+`--pref`
+
 用于打开/定位本地配置文件（偏好设置），以便持久化默认参数：
 - `api`：默认模型 API 提供方（如 OpenAI / Groq）
 - `model`：默认推理引擎 / 模型名
 - `apikey`：默认访问密钥 / Token
 - `base_url`：自定义 API Base URL（可选；为空则使用官方默认）
+- 命令：`mind --pref`
 
 示例：
 ```
@@ -215,11 +221,14 @@ mind --apply YOUR_LICENSE_CODE
 mind --pref
 ```
 
-### `--upgrade`：奇点协议（参数互斥）
+### 奇点协议（参数互斥）
+`--upgrade`
+
 用于更新本地 **MCP 服务/运行组件** 到最新版本形态（拉取 → 校验 → 覆盖 → 切换）。
 
 - 适用于：需要同步更新底层 MCP 能力集时
 - 不参与 chat/fast/plan 执行链路：它是一个“单一动作入口”（执行完即退出）
+- 命令：`mind --upgrade`
 
 示例：
 ```
@@ -227,10 +236,13 @@ mind --pref
 mind --upgrade
 ```
 
-### `--gravity <tag>`：引力协议（参数兼容）
+### 引力协议（参数兼容）
+`--gravity <tag>`
+
 为本次运行设置 **引力标签（gravity tag）**，用于确定日志/报告的 **落盘根目录命名空间**：
 - 同一 `tag` 的多次运行会被聚合到同一命名空间（便于按项目/版本/场景归档）
 - 适用于：回归批次、灰度组、特性分支、实验编号、设备分组等
+- 命令：`mind --chat "..." --gravity <tag>`
 
 示例：
 ```
@@ -241,10 +253,13 @@ mind --plan "打开设置，等待2秒，然后截图" --gravity TEST_202602
 mind --fast "对 path/to/video.mp4 抽帧并返回证据" --gravity Perf_Baseline_v1
 ```
 
-### `--reflection`：反射协议（参数兼容）
+### 反射协议（参数兼容）
+`--reflection`
+
 开启 详细调试视角，输出运行轨迹与关键决策信息（用于定位“为什么这么做”）：
 - 打印：关键分支选择、执行路径、路由与决策依据（更丰富的 trace / debug 视角）
 - 适用于：PoC 调试、工具链问题定位、计划偏航分析、线上回归异常复盘
+- 命令：`mind --plan "..." --reflection`
 
 示例：
 ```
@@ -257,7 +272,9 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 
 建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
 
-### `--code <path...>`：星图协议（参数兼容）
+### 星图协议（参数兼容）
+`--code <path...>`
+
 用于装载一个或多个批量执行蓝本，并按选定协议执行。
 - 支持 `.md / .txt`
 - 可与 `--chat / --fast / --plan` 组合：指定批跑使用的主序协议
@@ -326,7 +343,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 ---
 
 <a id="interactive-mode"></a>
-## ⭐️ 交互模式详解 (Interactive Mode)
+## ⭐️ 交互模式详解
 完整 REPL 说明已拆到独立文档：[docs/interactive-mode.md](docs/interactive-mode.md)。
 
 README 这里只保留入口层信息。
@@ -353,14 +370,14 @@ README 这里只保留入口层信息。
 ---
 
 <a id="performance-tooling"></a>
-## ⭐️ 自研性能工具接口层 (In-house Performance Tooling)
+## ⭐️ 自研性能工具接口层
 **Mind** 的性能体系不是“跑一堆指标然后祈祷”，而是把 **采集 → 对齐 → 归因 → 回归** 做成工程闭环。  
 这一层的定位是：**把端侧真实世界的性能信号，变成可对比、可复盘、可运营的标准产物**。
 
 它不是附属功能，而是 Mind 的“第二条生命线”：  
 端侧执行负责“把事做成”，性能接口层负责“把事做稳、做快、做得可证明”。
 
-### [Framix · 画帧秀 (Framix Interface)](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Framix)
+### [Framix · 画帧秀](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Framix)
 **Framix** 专注 **视觉驱动的端到端耗时**：用画面真值对齐链路时序，把“体感卡不卡”翻译成可量化的时间线。
 - **视觉 E2E 真值**：基于关键帧/状态变化定义起止点，避免埋点缺失或口径漂移  
 - **端侧链路采集**：贴近设备真实表现，覆盖渲染、动效、加载、遮罩、跳转等肉眼可见路径  
@@ -370,7 +387,7 @@ README 这里只保留入口层信息。
 
 > Framix 的爆点：把“感觉慢”变成“证据链上的慢”，把 E2E 性能从玄学拉回工程。
 
-### [Memrix · 记忆星核 (Memrix Interface)](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Memrix)
+### [Memrix · 记忆星核](https://github.com/PlaxtonFlarion/SoftwareCenter/tree/main/Assets/Memrix)
 **Memrix** 专注 **Android 性能数据采集与稳定性量化**：把资源变化从“某次偶现”升级为“可回归的趋势结论”。
 - **多指标覆盖**：内存、流畅度、IO 等关键指标统一采集与落盘  
 - **长稳压友好**：支持高频采样与长时间运行，适配性能采样与稳定性回归场景  
@@ -380,7 +397,7 @@ README 这里只保留入口层信息。
 
 > Memrix 的爆点：把“看监控”升级为“做回归”——让性能问题可复现、可量化、可追踪。
 
-### 组合拳：视觉真值 × 指标宇宙 (Framix × Memrix)
+### 组合拳：视觉真值 × 指标宇宙
 这层接口最强的地方在于：**Framix 给出“用户看到的真相”，Memrix 给出“系统内部的原因”**，两者合在一起就是性能工程的黄金闭环：
 - Framix 定位 **哪一段慢**（E2E 时间线真值）
 - Memrix 解释 **为什么慢**（资源/趋势/稳定性信号）
@@ -392,7 +409,7 @@ README 这里只保留入口层信息。
 ---
 
 <a id="performance-playbook"></a>
-## ⭐️ 性能实战教学 (Performance Playbook)
+## ⭐️ 性能实战教学
 完整性能案例和蓝本样例已拆到独立文档：[docs/performance-playbook.md](docs/performance-playbook.md)。
 
 README 这里只保留入口层信息。
@@ -404,12 +421,14 @@ README 这里只保留入口层信息。
 - Monkey 和长稳扰动场景建议写进蓝本，不要堆在命令行里
 
 ### 能力速览
-| 类型    | 入口                                             |
-|-------|------------------------------------------------|
-| 视觉真值  | Framix 帧分析与阶段报告                                |
-| 指标采样  | Memrix 内存 / 流畅度 / 趋势对比                         |
-| 稳定性扰动 | Monkey + logcat 异常留痕                           |
-| 典型跑法  | `mind --plan --code ...` 或 `mind --chat "..."` |
+- **视觉真值**
+  入口：Framix 帧分析与阶段报告
+- **指标采样**
+  入口：Memrix 内存 / 流畅度 / 趋势对比
+- **稳定性扰动**
+  入口：Monkey + logcat 异常留痕
+- **典型跑法**
+  命令：`mind --plan --code ...` 或 `mind --chat "..."`
 
 ### 常见场景
 - `E2E / ASR / VAD / tokens/s`
@@ -419,7 +438,7 @@ README 这里只保留入口层信息。
 ---
 
 <a id="api-playbook"></a>
-## ⭐️ 接口实战教学 (API Playbook)
+## ⭐️ 接口实战教学
 完整协议约定、helper 迁移和样例说明已拆到独立文档：[docs/api-playbook.md](docs/api-playbook.md)。
 
 README 这里只保留入口层信息。
@@ -432,12 +451,18 @@ README 这里只保留入口层信息。
 - 安全场景重点看蓝本结构、模板变量和通过条件，不必在 README 里保留运行回放
 
 ### 协议速览
-| 类型 | 入口 |
-|------|------|
-| 基础请求 | HTTP / SSE / WebSocket / GraphQL / TCP / UDP / SMTP / IMAP / FTP |
-| 批量请求 | `nexus_*_batch` |
-| 预执行检查 | `nexus_render_*` / `nexus_validate_*` |
-| 结果能力 | `extract` / `asserts` / 媒体落盘 / fail-fast |
+- **基础请求**
+  覆盖：`HTTP / SSE / WebSocket / GraphQL / TCP / UDP / SMTP / IMAP / FTP`  
+  命令：`mind --chat --code api_case.md`
+- **批量请求**
+  覆盖：`nexus_*_batch`  
+  命令：`mind --chat --code api_batch.md`
+- **预执行检查**
+  覆盖：`nexus_render_*` / `nexus_validate_*`  
+  命令：`mind --chat --code api_check.md --reflection`
+- **结果能力**
+  覆盖：`extract` / `asserts` / 媒体落盘 / `fail_fast`  
+  命令：`mind --chat --code api_case.md --gravity API_REGRESSION`
 
 ### 批量蓝本最小骨架
 ``````
@@ -476,7 +501,7 @@ asserts = [
 
 ---
 <a id="media-playbook"></a>
-## ⭐️ 多媒体链路实战教学 (Media Playbook)
+## ⭐️ 多媒体链路实战教学
 完整媒体命令、组合链路和蓝本任务已拆到独立文档：[docs/media-playbook.md](docs/media-playbook.md)。
 
 README 这里只保留入口层信息。
@@ -489,12 +514,14 @@ README 这里只保留入口层信息。
 - 需要完整证据链或多步蓝本时，直接看独立文档
 
 ### 能力速览
-| 类型   | 入口                                                     |
-|------|--------------------------------------------------------|
-| 抽帧取证 | `snapshot / frames / keyframes / scene`                |
-| 视频处理 | `trim / scale / convert / concat / remux / mute`       |
-| 音频处理 | `extract_audio / replace_audio / convert_audio / play` |
-| 组合链路 | 多步串联的媒体预处理与证据链任务                                       |
+- **抽帧取证**
+  入口：`snapshot / frames / keyframes / scene`
+- **视频处理**
+  入口：`trim / scale / convert / concat / remux / mute`
+- **音频处理**
+  入口：`extract_audio / replace_audio / convert_audio / play`
+- **组合链路**
+  入口：多步串联的媒体预处理与证据链任务
 
 ### 常用命令
 - `mind --fast "从 /path/to/demo.mp4 的第 3.5 秒抽取一张截图，并返回证据"`
@@ -505,7 +532,7 @@ README 这里只保留入口层信息。
 ---
 
 <a id="architecture"></a>
-## ⭐️ 背景与架构 (Background & Architecture)
+## ⭐️ 背景与架构
 完整背景、云端架构和推理集群说明已拆到独立文档：[docs/architecture.md](docs/architecture.md)。
 
 README 这里只保留最小摘要，避免首页继续变成架构白皮书。
@@ -533,7 +560,7 @@ device / bench / common / media
 ---
 
 <a id="build-release"></a>
-## ⭐️ 构建发布 (Build & Release)
+## ⭐️ 构建发布
 
 ![LOGO](https://raw.githubusercontent.com/PlaxtonFlarion/SoftwareCenter/main/Assets/MindSource/app_compile.png)
 
@@ -543,14 +570,14 @@ device / bench / common / media
 
 ---
 
-## ⭐️ 合作支持 (Support)
+## ⭐️ 合作支持
 如需技术合作、定制能力或企业级部署支持，请通过邮箱联系作者。
 
 作者邮箱：`AceKeppel@outlook.com`
 
 ---
 
-## ⭐️ 许可说明 (License)
+## ⭐️ 许可说明
 当前仓库包含 `GPL-3.0` 授权文本（见 `LICENSE.md`）。  
 如发布产物或常量中存在其他授权声明，请以 `LICENSE.md` 为准。
 

@@ -12,54 +12,24 @@
 - 只有维护或二次开发时再看维护者指南
 
 ## 文档导航
-
-<div class="mind-card-grid">
-  <a class="mind-card mind-card-link" href="../generated/overview/">
-    <h3>项目总览</h3>
-    <p>第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/docs-index/">
-    <h3>文档索引</h3>
-    <p>已经知道要找什么时，从这里按专题跳文档最快。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/cli-code/">
-    <h3>星图协议</h3>
-    <p>批跑、回归、前后置、循环和蓝本规则层。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/api-playbook/">
-    <h3>接口实战</h3>
-    <p>HTTP、SSE、WebSocket、GraphQL 与其它协议场景。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/interactive-mode/">
-    <h3>交互模式</h3>
-    <p>REPL 指令、状态切换和输入约束。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/media-playbook/">
-    <h3>多媒体链路</h3>
-    <p>关键帧、场景帧、音轨、裁剪、转码和拼接。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/performance-playbook/">
-    <h3>性能实战</h3>
-    <p>Memrix / Framix / Monkey 相关跑法与样例。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/architecture/">
-    <h3>背景与架构</h3>
-    <p>系统分层、模型矩阵和工程摘要。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="../generated/maintainer-guide/">
-    <h3>维护者指南</h3>
-    <p>维护文档、官网壳和同步链路时阅读。</p>
-    <span class="mind-card-arrow">进入文档 →</span>
-  </a>
-</div>
+- [项目总览](../generated/overview/)  
+  第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。
+- [文档索引](../generated/docs-index/)  
+  已经知道要找什么时，从这里按专题跳文档最快。
+- [星图协议](../generated/cli-code/)  
+  适合看批跑、回归、前后置、循环和蓝本规则层。
+- [接口实战](../generated/api-playbook/)  
+  适合看 HTTP、SSE、WebSocket、GraphQL 与其它协议场景。
+- [交互模式](../generated/interactive-mode/)  
+  适合看 REPL 指令、状态切换和输入约束。
+- [多媒体链路](../generated/media-playbook/)  
+  适合看关键帧、场景帧、音轨、裁剪、转码和拼接。
+- [性能实战](../generated/performance-playbook/)  
+  适合看 Memrix、Framix、Monkey 相关跑法与样例。
+- [背景与架构](../generated/architecture/)  
+  适合看系统分层、模型矩阵和工程摘要。
+- [维护者指南](../generated/maintainer-guide/)  
+  适合在维护文档、官网壳和同步链路时阅读。
 
 ## 生成方式
 
