@@ -205,6 +205,45 @@
   color: var(--mind-card-text);
 }
 
+.mind-heading-flash {
+  position: relative;
+  animation: mind-heading-flash 900ms ease 0s 2;
+}
+
+.mind-heading-flash::after {
+  content: "";
+  position: absolute;
+  inset: -0.18rem -0.42rem;
+  border-radius: 0.45rem;
+  background: rgba(56, 189, 248, 0.16);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.20);
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-md-color-scheme="slate"] .mind-heading-flash::after {
+  background: rgba(125, 211, 252, 0.14);
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.22);
+}
+
+@keyframes mind-heading-flash {
+  0% {
+    transform: translateX(0);
+  }
+
+  30% {
+    transform: translateX(1px);
+  }
+
+  60% {
+    transform: translateX(-1px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
 @media (min-width: 76.25em) {
   .md-grid {
     max-width: 90rem;

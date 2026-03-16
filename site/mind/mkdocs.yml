@@ -6,6 +6,8 @@ repo_url: https://github.com/PlaxtonFlarion/SoftwareCenter
 docs_dir: pages
 extra_css:
   - stylesheets/extra.css
+extra_javascript:
+  - javascripts/heading-flash.js
 
 markdown_extensions:
   - admonition
