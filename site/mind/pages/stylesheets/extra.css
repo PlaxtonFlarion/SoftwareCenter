@@ -250,7 +250,7 @@
 
 @media (min-width: 76.25em) {
   .md-grid {
-    max-width: 90rem;
+    max-width: 88rem;
   }
 
   .md-main__inner {
@@ -266,7 +266,7 @@
   }
 
   .md-content {
-    margin-inline: 0.5rem;
+    margin-inline: 0.9rem;
   }
 }
 
