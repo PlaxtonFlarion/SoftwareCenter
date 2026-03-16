@@ -11,6 +11,12 @@
   适合看 `--code`、`cfg`、前后置和蓝本规则层。
 - [接口实战教学](api-playbook.md)  
   适合看 `bench.nexus` 协议边界、批量蓝本和验收结构。
+- [模板能力实战](template-playbook.md)  
+  适合看 `bench.nexus` 的模板 helper、签名前置材料和模板层边界。
+- [安全工具实战](security-playbook.md)  
+  适合看 `security_*` 的摘要、JWT、RSA、AES 和安全层边界。
+- [设备域实战](device-playbook.md)  
+  适合看 `device` 的 app/ui/system/keyevent/monkey/file 分层和稳定执行建议。
 - [交互模式详解](interactive-mode.md)  
   适合看 REPL 指令、状态切换和输入约束。
 - [多媒体链路实战教学](media-playbook.md)  

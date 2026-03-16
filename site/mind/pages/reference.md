@@ -35,6 +35,12 @@
   适合看批跑、回归、前后置、循环和蓝本规则层。
 - [接口实战](../generated/api-playbook/)  
   适合看 HTTP、SSE、WebSocket、GraphQL 与其它协议场景。
+- [模板能力](../generated/template-playbook/)  
+  适合看 `bench.nexus` 模板 helper、签名前置材料和模板层边界。
+- [安全工具](../generated/security-playbook/)  
+  适合看 `security_*` 的摘要、JWT、RSA、AES 和安全层边界。
+- [设备域实战](../generated/device-playbook/)  
+  适合看 `device` 的 app/ui/system/keyevent/monkey/file 分层和稳定执行建议。
 - [交互模式](../generated/interactive-mode/)  
   适合看 REPL 指令、状态切换和输入约束。
 - [多媒体链路](../generated/media-playbook/)  

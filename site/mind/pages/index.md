@@ -15,6 +15,11 @@
 ```bash
 mind --apply YOUR_LICENSE_CODE
 mind --pref
+```
+
+## 三种模式
+
+```bash
 mind --chat "概述当前系统的核心能力与边界"
 mind --fast "对 path/to/video.mp4 提取关键帧并返回证据"
 mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
@@ -35,7 +40,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
   </a>
   <a class="mind-card mind-card-link" href="./getting-started/">
     <h3>环境变量</h3>
-    <p>Windows 与 macOS 推荐优先用环境变量管理密钥、代理与运行环境。</p>
+    <p>Windows 与 macOS 推荐优先用环境变量管理密钥与运行环境，不建议挂 VPN 使用。</p>
     <span class="mind-card-arrow">查看建议 →</span>
   </a>
 </div>
@@ -54,18 +59,28 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./reference/">
-    <h3>性能与稳定性</h3>
-    <p>Memrix / Framix 采样、Monkey 扰动、日志与视觉证据汇总。</p>
+    <h3>性能采样</h3>
+    <p>Memrix / Framix 采样、指标抓取、视觉证据和性能诊断。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./reference/">
-    <h3>媒体与回归</h3>
-    <p>关键帧、场景帧、音轨、裁剪、转码，以及 `--code` 蓝本批跑。</p>
+    <h3>媒体处理</h3>
+    <p>关键帧、场景帧、音轨、裁剪、转码和片段证据输出。</p>
+    <span class="mind-card-arrow">查看详情 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="./reference/">
+    <h3>Monkey 扰动</h3>
+    <p>稳定性压测、随机事件扰动、异常探测和执行留痕。</p>
+    <span class="mind-card-arrow">查看详情 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="./reference/">
+    <h3>`--code` 蓝本</h3>
+    <p>批跑、回归、前后置、规则层和结构化执行编排。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
 </div>
 
-## 三种模式
+## 模式定位
 
 <div class="mind-card-grid mind-card-grid-compact">
   <a class="mind-card mind-card-link" href="./capabilities/">
@@ -89,4 +104,5 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 
 - 想先跑起来：看 [快速开始](getting-started.md)
 - 想看模式边界：看 [能力概览](capabilities.md)
-- 想看完整文档树：看 [参考文档](reference.md)
+- 想看模板、安全和设备专题：看 [参考文档](reference.md)
+- 想按专题继续查长文档：看 [参考文档](reference.md)

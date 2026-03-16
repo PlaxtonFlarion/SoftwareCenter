@@ -53,26 +53,23 @@ mind --pref
 }
 ```
 
-如果你是从 Software 首页进入，建议先阅读 Software 首页内置 `README`，其中包含授权、环境变量、激活与基础使用说明。
+如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含授权、环境变量、激活与基础使用说明。
 
 ## 推荐终端与环境变量
 
 - Windows：推荐 `Windows Terminal`
 - macOS：推荐 `iTerm2` 或系统 `Terminal`
-- Windows 与 macOS 都建议优先使用环境变量管理密钥和代理
+- Windows 与 macOS 都建议优先使用环境变量管理密钥和运行环境
+- 不推荐默认配置系统代理或挂 VPN；只有明确需要兼容网关时，再单独配置 `base_url`
 
 ```bash
 # macOS / zsh
 export OPENAI_API_KEY="YOUR_API_KEY"
-export HTTP_PROXY="http://127.0.0.1:7890"
-export HTTPS_PROXY="http://127.0.0.1:7890"
 ```
 
 ```powershell
 # Windows PowerShell
 $env:OPENAI_API_KEY="YOUR_API_KEY"
-$env:HTTP_PROXY="http://127.0.0.1:7890"
-$env:HTTPS_PROXY="http://127.0.0.1:7890"
 ```
 
 ## 先怎么选模式
@@ -124,16 +121,17 @@ mind
 
 - 先关闭抓包工具再试
 - 某些抓包工具会影响 CLI 长连接、SSE 或流式响应
+- 如果同时开着 VPN 或本地代理，也一并先关闭
 
 ### 2. 开着 VPN / 代理时不稳定？
 
-- 先确认代理是否支持长连接和流式响应
-- 先在直连网络下验证，再恢复代理
-- 同时检查 `HTTP_PROXY / HTTPS_PROXY`
+- 不推荐在 VPN 场景下使用 Mind
+- 如果开着 VPN、本地代理或抓包工具，先全部关闭
+- 先在直连网络下验证；只有明确需要兼容网关时，再配置 `base_url`
 
 ### 3. 授权、环境变量、激活说明在哪里？
 
-- Software 首页内置 `README`
+- [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前页面
 - `mind --apply <code>`
 - `mind --pref`

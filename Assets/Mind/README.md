@@ -17,15 +17,20 @@
 - **[命令行参数](#cli-arguments)**
 - **[性能工具接口层](#performance-tooling)**
 - **[接口实战教学](#api-playbook)**
+- **[模板能力实战](docs/template-playbook.md)**
+- **[安全工具实战](docs/security-playbook.md)**
+- **[设备域实战](docs/device-playbook.md)**
 - **[多媒体链路实战教学](#media-playbook)**
 - **[背景与架构](#architecture)**
 - **[Docs 索引](docs/README.md)**
 - **[构建发布](#build-release)**
 
 - **按场景跳转**
-- **设备 / UI 自动化**：从 [快速开始](#quick-start) 和 [Top10 核心能力](#top10) 入手
+- **设备 / UI 自动化**：从 [快速开始](#quick-start)、[Top10 核心能力](#top10) 和 [设备域实战](docs/device-playbook.md) 入手
 - **性能与稳定性**：看 [性能工具接口层](#performance-tooling) 和 [性能实战教学](#performance-playbook)
 - **接口协议验证**：看 [接口实战教学](#api-playbook)
+- **模板 helper / 签名前置**：看 [模板能力实战](docs/template-playbook.md)
+- **安全签名 / JWT / AES / RSA**：看 [安全工具实战](docs/security-playbook.md)
 - **音视频与证据链**：看 [多媒体链路实战教学](#media-playbook)
 - **批跑 / 编排 / 回归**：看 [命令行参数](#cli-arguments) 中的 `--code`
 - **背景设计与实现**：看 [背景与架构](#architecture)
@@ -35,6 +40,9 @@
 - 只想先跑起来：先看 [快速开始](#quick-start) → [运行模式](#modes) → [命令行参数](#cli-arguments)
 - 只想看能力边界：看 [Top10 核心能力](#top10) 和 [运行模式](#modes)
 - 需要完整长文档时，直接走 [Docs 索引](docs/README.md)
+- 需要看 `bench.nexus` 模板 helper 和签名前置边界时，直接看 [模板能力实战](docs/template-playbook.md)
+- 需要看 `security_*` 的能力边界和最小用法时，直接看 [安全工具实战](docs/security-playbook.md)
+- 需要系统看 `device` 域的工具分层和稳定执行建议时，直接看 [设备域实战](docs/device-playbook.md)
 
 ---
 
@@ -117,28 +125,25 @@ mind --pref
 - `apikey`：填写该平台的访问密钥
 - `base_url`：直连官方时可留空；走代理、中转或兼容服务时再填写
 
-如果你是从 Software 首页进入，请优先阅读 Software 首页内置的 `README`：其中包含授权、环境变量、激活与基础使用说明。
+如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含授权、环境变量、激活与基础使用说明。
 
 ### 1. 推荐终端与环境变量
 
 - Windows：推荐使用 `Windows Terminal`
 - macOS：推荐使用 `iTerm2` 或系统 `Terminal`
-- Windows 与 macOS 都建议优先通过环境变量管理代理、路径和密钥，不要把运行环境散落在临时 shell 历史里
+- Windows 与 macOS 都建议优先通过环境变量管理密钥和运行环境，不要把配置散落在临时 shell 历史里
+- 不推荐默认配置系统代理或挂 VPN；只有明确需要兼容网关时，再单独配置 `base_url`
 
 常见环境变量示例：
 
 ```bash
 # macOS / zsh
 export OPENAI_API_KEY="YOUR_API_KEY"
-export HTTP_PROXY="http://127.0.0.1:7890"
-export HTTPS_PROXY="http://127.0.0.1:7890"
 ```
 
 ```powershell
 # Windows PowerShell
 $env:OPENAI_API_KEY="YOUR_API_KEY"
-$env:HTTP_PROXY="http://127.0.0.1:7890"
-$env:HTTPS_PROXY="http://127.0.0.1:7890"
 ```
 
 ### 2. 最小上手
@@ -188,19 +193,19 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 
 **1. 已经联网，但一直 timeout？**
 
-- 先检查是否开启了 VPN / 代理 / 系统抓包工具
-- 某些抓包代理会劫持或改写长连接，导致 `stream_chat / stream_plan` 超时
-- 先临时关闭抓包工具，再确认 `HTTP_PROXY / HTTPS_PROXY` 是否指向正确代理
+- 先关闭 VPN、本地代理和系统抓包工具再试
+- 某些 VPN、代理或抓包工具会劫持、改写或中断 CLI 长连接，导致 `stream_chat / stream_plan` 超时
+- 这类场景不推荐挂 VPN 使用，先在直连网络下验证
 
 **2. 开着 VPN 或本地代理时不稳定？**
 
-- 优先确认代理是否支持 SSE / 长连接
-- 若代理只适合浏览器流量，不适合 CLI 长连接，可能出现首包慢、流式中断、连接超时
-- 建议先在直连网络下验证，再逐步恢复代理
+- 不推荐在 VPN 场景下使用 Mind
+- 如果当前开着 VPN、本地代理或抓包工具，先全部关闭
+- 只有在明确需要兼容网关时，再单独配置 `base_url`
 
 **3. 授权、环境变量、激活信息应该去哪里看？**
 
-- 软件分发页 / Software 首页内置 `README`
+- [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前仓库的 [快速开始](#quick-start)
 - `mind --apply <code>`
 - `mind --pref`
