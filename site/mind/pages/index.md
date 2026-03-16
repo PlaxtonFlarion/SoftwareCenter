@@ -1,7 +1,7 @@
 <div class="mind-hero">
   <div class="mind-hero-copy">
     <span class="mind-eyebrow">ENGINEERING AGENT RUNTIME</span>
-    <h1>Mind</h1>
+    <h1>Mind 代理思维</h1>
     <p>面向工程交付的命令行代理执行框架。</p>
     <div class="mind-cta-row">
       <a class="mind-cta mind-cta-primary" href="./getting-started/">立即开始</a>
