@@ -12,7 +12,9 @@
       return;
     }
 
-    const heading = document.getElementById(id);
+    const heading = document.querySelector(
+      `.md-typeset :is(h2, h3, h4, h5, h6)[id="${CSS.escape(id)}"]`
+    );
     if (!heading) {
       return;
     }

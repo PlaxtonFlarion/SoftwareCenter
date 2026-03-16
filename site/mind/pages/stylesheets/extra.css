@@ -205,42 +205,46 @@
   color: var(--mind-card-text);
 }
 
-.mind-heading-flash {
-  position: relative;
-  animation: mind-heading-flash 900ms ease 0s 2;
-}
-
-.mind-heading-flash::after {
-  content: "";
-  position: absolute;
-  inset: -0.18rem -0.42rem;
-  border-radius: 0.45rem;
-  background: rgba(56, 189, 248, 0.16);
-  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.20);
-  pointer-events: none;
-  z-index: -1;
-}
-
-[data-md-color-scheme="slate"] .mind-heading-flash::after {
-  background: rgba(125, 211, 252, 0.14);
-  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.22);
+.md-typeset :is(h2, h3, h4, h5, h6).mind-heading-flash {
+  border-radius: 0.5rem;
+  animation: mind-heading-flash 1200ms ease-out 0s 1;
 }
 
 @keyframes mind-heading-flash {
   0% {
-    transform: translateX(0);
+    background: rgba(56, 189, 248, 0.24);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.28);
   }
 
-  30% {
-    transform: translateX(1px);
-  }
-
-  60% {
-    transform: translateX(-1px);
+  35% {
+    background: rgba(56, 189, 248, 0.18);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.22);
   }
 
   100% {
-    transform: translateX(0);
+    background: transparent;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0);
+  }
+}
+
+[data-md-color-scheme="slate"] .md-typeset :is(h2, h3, h4, h5, h6).mind-heading-flash {
+  animation-name: mind-heading-flash-slate;
+}
+
+@keyframes mind-heading-flash-slate {
+  0% {
+    background: rgba(125, 211, 252, 0.18);
+    box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.24);
+  }
+
+  35% {
+    background: rgba(125, 211, 252, 0.12);
+    box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.18);
+  }
+
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 1px rgba(125, 211, 252, 0);
   }
 }
 
