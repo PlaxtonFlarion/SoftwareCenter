@@ -13,10 +13,32 @@
 ## 一眼上手
 
 ```bash
+mind --apply YOUR_LICENSE_CODE
+mind --pref
 mind --chat "概述当前系统的核心能力与边界"
 mind --fast "对 path/to/video.mp4 提取关键帧并返回证据"
 mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ```
+
+## 激活与配置
+
+<div class="mind-card-grid mind-card-grid-compact">
+  <a class="mind-card mind-card-link" href="./getting-started/">
+    <h3>激活授权</h3>
+    <p>使用 <code>--apply</code> 写入激活码并申请本地授权文件。</p>
+    <span class="mind-card-arrow">查看命令 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="./getting-started/">
+    <h3>配置模型</h3>
+    <p>使用 <code>--pref</code> 配置默认的 api、model 与 apikey。</p>
+    <span class="mind-card-arrow">查看命令 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="./getting-started/">
+    <h3>环境变量</h3>
+    <p>Windows 与 macOS 推荐优先用环境变量管理密钥、代理与运行环境。</p>
+    <span class="mind-card-arrow">查看建议 →</span>
+  </a>
+</div>
 
 ## 关键能力
 

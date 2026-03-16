@@ -60,7 +60,88 @@ Mind 有两种运行方式：
 - **命令行模式**：每条命令执行一次任务，适合脚本/CI
 - **交互式模式**：进入循环交互，可在 chat/fast/plan 间随时切换，适合探索与调试
 
-### 最小上手
+### 0. 先做激活与配置
+
+首次使用，建议先完成这两步：
+
+```bash
+# 1) 写入激活码并申请本地授权
+mind --apply YOUR_LICENSE_CODE
+
+# 2) 打开配置文件，填写 api / model / apikey
+mind --pref
+```
+
+`--apply` 用于申请并写入本地授权文件；`--pref` 用于持久化默认配置，至少建议配置：
+
+- `api`
+- `model`
+- `apikey`
+- `base_url`（可选）
+
+目前常见可填写方式：
+
+```json
+{
+  "api": "OpenAI",
+  "model": "gpt-4o-mini",
+  "apikey": "sk-...",
+  "base_url": ""
+}
+```
+
+```json
+{
+  "api": "Groq",
+  "model": "llama-3.3-70b-versatile",
+  "apikey": "gsk_...",
+  "base_url": ""
+}
+```
+
+如果你走兼容网关或代理转发，也可以填写 `base_url`：
+
+```json
+{
+  "api": "OpenAI",
+  "model": "gpt-4o-mini",
+  "apikey": "sk-...",
+  "base_url": "https://your-proxy.example.com/v1"
+}
+```
+
+填写建议：
+
+- `api`：目前写 `OpenAI` 或 `Groq`
+- `model`：填写对应平台支持的模型名
+- `apikey`：填写该平台的访问密钥
+- `base_url`：直连官方时可留空；走代理、中转或兼容服务时再填写
+
+如果你是从 Software 首页进入，请优先阅读 Software 首页内置的 `README`：其中包含授权、环境变量、激活与基础使用说明。
+
+### 1. 推荐终端与环境变量
+
+- Windows：推荐使用 `Windows Terminal`
+- macOS：推荐使用 `iTerm2` 或系统 `Terminal`
+- Windows 与 macOS 都建议优先通过环境变量管理代理、路径和密钥，不要把运行环境散落在临时 shell 历史里
+
+常见环境变量示例：
+
+```bash
+# macOS / zsh
+export OPENAI_API_KEY="YOUR_API_KEY"
+export HTTP_PROXY="http://127.0.0.1:7890"
+export HTTPS_PROXY="http://127.0.0.1:7890"
+```
+
+```powershell
+# Windows PowerShell
+$env:OPENAI_API_KEY="YOUR_API_KEY"
+$env:HTTP_PROXY="http://127.0.0.1:7890"
+$env:HTTPS_PROXY="http://127.0.0.1:7890"
+```
+
+### 2. 最小上手
 ```
 # chat：先问系统能做什么
 mind --chat "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
@@ -74,7 +155,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 
 如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `--code`，以及后面的 [接口实战教学](#api-playbook)。
 
-### 交互式运行
+### 3. 交互式运行
 启动 REPL：
 ```
 mind
@@ -102,6 +183,35 @@ mind
 
 REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fast/plan 三种模式决定。  
 如果你需要完整指令说明，继续看后面的 [交互模式详解](#interactive-mode)。
+
+### 4. 常见问题解答
+
+**1. 已经联网，但一直 timeout？**
+
+- 先检查是否开启了 VPN / 代理 / 系统抓包工具
+- 某些抓包代理会劫持或改写长连接，导致 `stream_chat / stream_plan` 超时
+- 先临时关闭抓包工具，再确认 `HTTP_PROXY / HTTPS_PROXY` 是否指向正确代理
+
+**2. 开着 VPN 或本地代理时不稳定？**
+
+- 优先确认代理是否支持 SSE / 长连接
+- 若代理只适合浏览器流量，不适合 CLI 长连接，可能出现首包慢、流式中断、连接超时
+- 建议先在直连网络下验证，再逐步恢复代理
+
+**3. 授权、环境变量、激活信息应该去哪里看？**
+
+- 软件分发页 / Software 首页内置 `README`
+- 当前仓库的 [快速开始](#quick-start)
+- `mind --apply <code>`
+- `mind --pref`
+
+**4. `--pref` 里至少应该填什么？**
+
+- `api`
+- `model`
+- `apikey`
+
+没有这三项时，主执行链路无法正常调用模型。
 
 ---
 
