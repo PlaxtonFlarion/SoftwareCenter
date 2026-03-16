@@ -205,6 +205,28 @@
   color: var(--mind-card-text);
 }
 
+@media (min-width: 76.25em) {
+  .md-grid {
+    max-width: 90rem;
+  }
+
+  .md-main__inner {
+    margin-top: 0.8rem;
+  }
+
+  .md-sidebar--primary {
+    width: 11.8rem;
+  }
+
+  .md-sidebar--secondary {
+    margin-left: 0;
+  }
+
+  .md-content {
+    margin-inline: 0.5rem;
+  }
+}
+
 [data-md-color-scheme="slate"] .md-sidebar .md-nav__link--active,
 [data-md-color-scheme="slate"] .md-sidebar .md-nav__link:hover,
 [data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link--active,
