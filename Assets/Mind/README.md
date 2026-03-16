@@ -330,7 +330,9 @@ mind --chat --code http.md sse.md ws.md graphql.md
 ---
 ```
 
-### `--code <path...>`：深入：三层前后置 + 蓝本规则层
+### 深入：三层前后置 + 蓝本规则层
+`--code <path...>`
+
 高级批跑说明已拆到独立文档：[docs/cli-code.md](docs/cli-code.md)。
 
 这里先记住 4 个点就够了：
