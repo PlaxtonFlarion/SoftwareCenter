@@ -134,19 +134,27 @@ mind --pref
 
 - Windows：推荐使用 `Windows Terminal`
 - macOS：推荐使用 `iTerm2` 或系统 `Terminal`
-- Windows 与 macOS 都建议优先通过环境变量管理密钥和运行环境，不要把配置散落在临时 shell 历史里
+- Windows 与 macOS 都建议先把 `mind` 所在目录加入 `PATH`
 - 不推荐默认配置系统代理或挂 VPN；只有明确需要兼容网关时，再单独配置 `base_url`
 
 常见环境变量示例：
 
 ```bash
-# macOS / zsh
-export OPENAI_API_KEY="YOUR_API_KEY"
+# Mind 示例
+echo 'export PATH="/Applications/Mind.app/Contents/MacOS:$PATH"' >> ~/.zshrc
+
+source ~/.zshrc
 ```
 
 ```powershell
-# Windows PowerShell
-$env:OPENAI_API_KEY="YOUR_API_KEY"
+# Mind 示例（默认安装目录）
+[Environment]::SetEnvironmentVariable(
+  "Path",
+  [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\Mind",
+  "User"
+)
+
+$env:Path += ";C:\Program Files\Mind"
 ```
 
 ### 2. 最小上手
@@ -196,15 +204,15 @@ REPL 是“持续读取输入”的交互壳；真正的执行语义由 chat/fas
 
 **1. 已经联网，但一直 timeout？**
 
-- 先关闭 VPN、本地代理和系统抓包工具再试
-- 某些 VPN、代理或抓包工具会劫持、改写或中断 CLI 长连接，导致 `stream_chat / stream_plan` 超时
-- 这类场景不推荐挂 VPN 使用，先在直连网络下验证
+- 这类问题优先归到网络链路问题，先关闭 VPN、本地代理和系统代理
+- 某些 VPN 或代理会中断 CLI 长连接、SSE 或流式响应，表现为一直 `timeout`
+- 先在直连网络下验证；只有明确需要兼容网关时，再单独配置 `base_url`
 
-**2. 开着 VPN 或本地代理时不稳定？**
+**2. 出现 `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)`？**
 
-- 不推荐在 VPN 场景下使用 Mind
-- 如果当前开着 VPN、本地代理或抓包工具，先全部关闭
-- 只有在明确需要兼容网关时，再单独配置 `base_url`
+- 这类问题优先归到证书链被改写，常见原因是抓包工具做了 HTTPS 中间人代理
+- 先关闭抓包工具后再试；如果仍然开启证书注入，也会继续报这个错误
+- `timeout` 和证书校验失败是两类问题：前者偏链路中断，后者偏 TLS 证书被替换或无法被系统信任
 
 **3. 授权、环境变量、激活信息应该去哪里看？**
 
