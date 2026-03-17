@@ -659,65 +659,132 @@ framix --fully script.json
 #### 📔 常规配置:
 ```json
 {
-    "command": [
-        {
-            "ID-X": {
-                "parser": {"FST": {"frate": 60}, "ALS": {"boost": true}},
-                "header": ["script"],
-                "change": [],
-                "looper": 1,
-                "origin": {"cmds": ["unlock_screen"]},
-                "prefix": [
-                    {"cmds": ["key_event"], "vals": [[3]]}, 
-                    {"cmds": ["sleep"], "vals": [[1]]}
-                ],
-                "action": [
-                    {
-                        "cmds": ["automator"], 
-                        "vals": [[{"text": "text"}, "long_click"]], 
-                        "args": [[400, 600]], 
-                        "kwds": [{"duration": 1}]
-                    }, 
-                    {"cmds": ["sleep"], "vals": [[3]]}
-                ],
-                "suffix": [
-                    {"cmds": ["force_stop"], "vals": [["package_name"]]}, 
-                    {"cmds": ["sleep"], "vals": [[1]]}
-                ],
-                "finish": {"cmds": ["key_event"], "vals": [[3]]}
-            }
-        }
-    ]
+  "command": [
+    {
+      "ID-X": {
+        "parser": {
+          "FST": { "frate": 60 },
+          "ALS": { "boost": true }
+        },
+        "header": ["script"],
+        "change": [],
+        "looper": 3,
+
+        "origin": [
+          {
+            "cmds": ["automator_unlock_screen"]
+          }
+        ],
+
+        "prefix": [
+          {
+            "cmds": ["sleep"],
+            "vals": [[1]]
+          },
+          {
+            "cmds": ["automator"],
+            "vals": [[
+              { "resourceId": "com.example.app:id/Example" },
+              "click"
+            ]]
+          },
+          {
+            "cmds": ["sleep"],
+            "vals": [[1]]
+          },
+          {
+            "cmds": ["automator"],
+            "vals": [[
+              { "resourceId": "com.example.app:id/Example" },
+              "set_text"
+            ]],
+            "args": [["生成一个圣诞节的光效"]]
+          },
+          {
+            "cmds": ["sleep"],
+            "vals": [[1]]
+          }
+        ],
+
+        "action": [
+          {
+            "cmds": ["automator"],
+            "vals": [[
+              { "resourceId": "com.example.app:id/Example" },
+              "click"
+            ]]
+          },
+          {
+            "cmds": ["sleep"],
+            "vals": [[5]]
+          }
+        ],
+
+        "suffix": [
+          {
+            "cmds": ["sleep"],
+            "vals": [[1]]
+          }
+        ],
+
+        "finish": [
+          {
+            "cmds": ["sleep"],
+            "vals": [[1]]
+          }
+        ]
+      }
+    }
+  ]
 }
 ```
 #### 📔 并发配置:
 ```json
 {
-    "command": [
-        {
-            "ID-X": {
-                "parser": {"FST": {"frate": 60}, "ALS": {"boost": true}},
-                "header": ["script"],
-                "change": [],
-                "looper": 1,
-                "origin": {"cmds": ["unlock_screen"]},
-                "prefix": [
-                    {"cmds": ["key_event", "sleep"], "vals": [[3], [1]]}
-                ],
-                "action": [
-                    {
-                        "cmds": ["automator"], 
-                        "vals": [[{"text": "text"}, "click"]]
-                    }, 
-                    {"cmds": ["sleep"], "vals": [[3]]}
-                ],
-                "suffix": [
-                    {"cmds": ["force_stop", "sleep"], "vals": [["package_name"], [1]]} 
-                ],
-                "finish": {"cmds": ["key_event"], "vals": [[3]]}
-            }
-        }
-    ]
+  "command": [
+    {
+      "ID-X": {
+        "parser": { 
+            "FST": { "frate": 60 }, 
+            "ALS": { "boost": true }
+        },
+        "header": ["script"],
+        "change": [],
+        "looper": 3,
+        "origin": [
+          { "cmds": ["automator_unlock_screen"] }
+        ],
+        "prefix": [
+          { 
+              "cmds": ["key_event", "sleep"], 
+              "vals": [
+                  [3], [1]
+              ]
+          }
+        ],
+        "action": [
+          { 
+              "cmds": ["automator"], 
+              "vals": [
+                  [{ "text": "示例文本" }, "click"]
+              ]
+          },
+          { "cmds": ["sleep"], "vals": [[3]] }
+        ],
+        "suffix": [
+          { 
+              "cmds": ["force_stop", "sleep"], 
+              "vals": [
+                  ["example.package.name"], [1]
+              ]
+          }
+        ],
+        "finish": [
+          { "cmds": ["key_event"], "vals": [[3]] }
+        ]
+      }
+    }
+  ]
 }
 ```
 
