@@ -16,7 +16,7 @@
 - [安全工具实战](security-playbook.md)  
   适合看 `security_*` 的摘要、JWT、RSA、AES 和安全层边界。
 - [设备域实战](device-playbook.md)  
-  适合看 `device` 的 app/ui/system/keyevent/monkey/file 分层和稳定执行建议。
+  适合看设备能力分层、多设备广播模型和稳定执行建议。
 - [Monkey 扰动实战](monkey-playbook.md)  
   适合看 `device.monkey.injection` 的全部参数、执行流程和返回结构。
 - [交互模式详解](interactive-mode.md)  

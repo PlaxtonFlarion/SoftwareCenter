@@ -1,12 +1,12 @@
 # 设备域实战
 
-README 只保留入口层信息；如果你需要系统理解 `device` 域的能力边界、工具分层和稳定执行建议，直接看这里。
+README 只保留入口层信息；如果你需要系统理解 `device` 域的能力边界、能力分层和稳定执行建议，直接看这里。
 
 ## 这页解决什么问题
 
 - `device` 域到底能做什么
-- `app / ui / info / system / keyevent / monkey / file / tool` 分别负责什么
-- 哪些动作应该用系统级工具，哪些应该用 UI 工具
+- 设备能力应该按什么边界理解，而不是死记工具名
+- 哪些动作应该走应用级、页面级、系统级、证据级能力
 - 多设备执行、前台收敛、自愈和等待应该怎么理解
 
 ## 设计定位
@@ -30,7 +30,7 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 
 - 默认对当前在线设备列表广播执行
 - `matrix` 可按 `serial -> args` 做逐设备覆盖
-- 多设备场景下返回的是 per-device 结果，不是单一设备结果
+- 多设备场景下返回的是 per-agent 结果，不是单一设备结果
 
 这意味着：
 
@@ -38,183 +38,123 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 - 你写了 `matrix`，可以对不同设备传不同参数
 - 多设备 pull、截图、logcat 这类能力会避免本地文件冲突
 
-## 工具分层
+## 能力分层
 
-### 1. `tool`
+### 1. 设备发现与执行入口
 
-当前主要入口：
+这一层负责：
 
-- `refresh`
-
-作用：
-
-- 刷新可用设备列表
-- 在执行前更新 adb 在线状态
-- 返回在线设备数量和 serial 列表
+- 刷新在线设备列表
+- 在执行前收敛可用设备
+- 以广播模型把动作分发到多个设备
 
 适合：
 
 - 执行前做设备就绪检查
-- 多设备批跑前先收敛可用性
+- 多设备批跑前先确认在线设备集合
 
-### 2. `app`
+### 2. 应用生命周期能力
 
-当前能力：
+这一层负责：
 
-- `app_deep_link`
-- `app_start`
-- `app_stop`
-- `app_install`
-- `app_uninstall`
-- `app_clear`
-- `app_foreground`
+- 启动、停止、清数据、安装、卸载
+- Deep Link 跳转
+- 前台收敛和应用状态切换
 
-特点：
+边界：
 
-- 直接以包名、Activity、Deep Link 驱动应用生命周期
-- `app_foreground` 不是简单 start，它会做前台收敛
-- 安装、卸载、清数据这些动作都属于状态级操作，不该混进 UI 点击链里
+- 以包名、Activity、Deep Link 为核心输入
+- 目标是让应用状态正确，不是点页面控件
+- “确保应用真的来到前台”属于这一层，不属于页面点击层
 
 适合：
 
 - 启动应用
-- 强制停止并重启
-- 清数据重置状态
-- 通过 Deep Link 直接跳转页面
+- 重置应用状态
+- 直接拉起到目标页面
 
-建议：
+### 3. 页面交互能力
 
-- 需要确保应用真的到前台时，优先用 `app_foreground`
-- 需要重置应用状态时，用 `app_clear` 或 `app_stop`
+这一层负责四类事情：
 
-### 3. `ui`
+- 手势与滚动
+- 页面内点击与选择
+- 输入与焦点控制
+- 页面感知、等待和自愈
 
-当前能力大致分四类：
+边界：
 
-- 滚动与手势
-  - `scroll_up / scroll_down / scroll_left / scroll_right`
-  - `scroll_to_top / scroll_to_bottom`
-  - `scroll_into_view`
-  - `swipe`
-- 坐标与控件点击
-  - `tap`
-  - `click`
-  - `double_click`
-- 输入与焦点
-  - `send_keys`
-  - `send_keys_fallback`
-  - `clear_text`
-  - `current_focus`
-- 页面感知与等待
-  - `current_widgets`
-  - `find_element`
-  - `heal_element`
-  - `wait_exists`
-  - `wait_gone`
+- 坐标手势属于绝对动作
+- 控件查找、等待、点击属于页面语义动作
+- “滚到目标出现”为止和“等待目标状态变化”都属于这一层
+- 自愈属于诊断与修复页面定位漂移，不是普通点击替代品
 
-这里有几个关键边界：
+适合：
 
-- `tap / swipe / double_click` 是绝对坐标级动作
-- `click / find_element / wait_exists` 是控件语义级动作
-- `scroll_into_view` 是“滚到目标出现”为止，不是盲滚
-- `heal_element` 是自愈与诊断工具，不只是简单查找
+- 页面内滚动、点击、输入
+- 等待页面状态变化
+- 页面结构诊断和定位漂移修复
 
-### 4. `info`
+### 4. 观察与取证能力
 
-当前能力：
+这一层负责：
 
-- `device_snapshot`
-- `screenshot`
-- `grep_packages`
+- 设备快照
+- 页面截图
+- 安装包与环境观察
+- 文件与日志导出
+
+边界：
+
+- 以观察、留证、导出为主
+- 不负责改变应用或系统状态
 
 适合：
 
 - 拉设备快照
 - 截图留证
-- 检查包是否安装
+- 动作后导出日志
+- 判断包或环境是否就绪
 
-这类工具偏观察，不负责状态修改。
+### 5. 系统控制能力
 
-### 5. `system`
+这一层负责：
 
-当前能力：
+- 通知栏、快捷页、系统级界面入口
+- 屏幕、电源、网络、输入法等状态切换
+- 重启、解锁、组合键等强系统语义动作
 
-- `open_notification`
-- `open_settings`
-- `combo_key`
-- `ime_reset`
-- `reboot`
-- `swipe_unlock`
-- `screen_on / screen_off`
-- `bluetooth_on / bluetooth_off`
-- `wifi_on / wifi_off`
-- `data_on / data_off`
+边界：
 
-这里的核心原则很明确：
-
-- 系统级入口不要用 `click / tap` 模拟
-- 像通知栏、设置页、屏幕、电源、网络开关都应该走 `system`
+- 系统级入口不要用页面点击模拟
+- 电源、网络、锁屏这类动作优先走系统语义能力
 
 适合：
 
 - 系统级页面和开关控制
 - 需要更稳、更接近系统语义的动作
 
-### 6. `keyevent`
+### 6. 按键与导航能力
 
-当前能力：
+这一层负责：
 
-- 导航：
-  - `go_home`
-  - `go_back`
-  - `open_recents`
-  - `open_menu`
-- 输入与焦点：
-  - `press_enter`
-  - `press_tab`
-  - `press_delete`
-  - `press_space`
-  - `press_escape`
-- 系统和媒体：
-  - `press_power`
-  - `press_voice_assist`
-  - `volume_up / volume_down / volume_mute`
-  - `media_pause / media_next / media_previous`
+- Home / Back / Recents 一类系统导航键
+- Enter / Tab / Delete 一类物理键语义输入
+- 音量、媒体控制等硬件键语义
 
 适合：
 
-- 系统导航键
-- 物理键语义更强的输入场景
-- 不适合用点击模拟的系统入口
+- 需要真实导航键语义的场景
+- 不适合用页面点击替代的系统交互
 
-### 7. `file`
+### 7. 扰动与稳定性能力
 
-当前能力：
+这一层负责：
 
-- `file_pull`
-- `file_push`
-- `file_remove`
-- `file_logcat_dump`
-- `file_logcat_clean`
-
-适合：
-
-- 拉取设备文件
-- 推送本地文件
-- 清理设备文件或 logcat
-- 导出设备日志作为证据
-
-这组能力和 `device` 执行链结合得很紧，尤其适合：
-
-- 动作后拉日志
-- 回归失败后留证
-- Monkey 后看 logcat 片段
-
-### 8. `monkey`
-
-当前能力：
-
-- `injection`
+- 随机事件注入
+- 稳定性扰动
+- 压测式探索
+- 与日志留证配套的异常发现
 
 特点：
 
@@ -253,18 +193,18 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 
 ## 前台收敛、等待和自愈
 
-设备域里真正提高稳定性的，不是多点几次，而是这些工具：
+设备域里真正提高稳定性的，不是多点几次，而是这些能力：
 
-- `app_foreground`
+- 前台收敛
   - 负责把应用真正收敛到前台
-- `wait_exists / wait_gone`
+- 显式等待
   - 负责把页面变化显式等待出来
-- `scroll_into_view`
-  - 负责把目标滚进可见区域
-- `heal_element`
-  - 负责定位漂移后的诊断和自愈
-- `current_focus / current_widgets`
-  - 负责在动作前确认上下文
+- 目标滚动到可见
+  - 负责把目标滚进可见区域，而不是盲滚
+- 诊断与自愈
+  - 负责定位漂移后的诊断和修正
+- 焦点与页面上下文检查
+  - 负责在动作前确认当前页面和焦点是否对
 
 推荐思路：
 
@@ -277,7 +217,7 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 
 ## 什么时候用 `system`，什么时候用 `ui`
 
-优先用 `system`：
+优先用系统控制能力：
 
 - 打开通知栏
 - 打开系统设置
@@ -285,13 +225,13 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 - Wi-Fi、蓝牙、数据开关
 - 重启、解锁、组合键
 
-优先用 `ui`：
+优先用页面交互能力：
 
 - 页面内部控件查找
 - 滚动、点击、输入
 - 等待页面元素出现或消失
 
-优先用 `keyevent`：
+优先用按键与导航能力：
 
 - Home / Back / Recents / Menu
 - Enter / Tab / Delete / Space
@@ -320,13 +260,13 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 
 更稳的链路通常长这样：
 
-1. `refresh`
-2. `app_foreground`
-3. `wait_exists`
-4. `click` 或 `scroll_into_view`
-5. `send_keys`
-6. `wait_gone / wait_exists`
-7. `screenshot` 或 `file_logcat_dump`
+1. 刷新设备可用性
+2. 收敛应用到前台
+3. 显式等待页面状态
+4. 执行页面查找、点击或滚动到可见
+5. 输入文本或执行系统导航
+6. 再次等待目标状态变化
+7. 截图或导出日志留证
 
 而不是：
 
@@ -337,22 +277,15 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 ## 约束和风险
 
 - 多设备默认广播执行，别忽略这一点
-- `send_keys` 依赖输入焦点和输入法环境
-- `send_keys_fallback` 对中文、emoji、特殊字符兼容性有限
+- 文本输入依赖输入焦点和输入法环境
+- 兜底式输入方案对中文、emoji、特殊字符兼容性有限
 - `xpath` 不适合当成长期稳定定位策略
 - 坐标点击容易随分辨率、布局和状态变化漂移
 - `reboot`、网络开关、安装卸载这类动作有明显副作用，别在探索场景乱用
 
 ## 和其它域的关系
 
-- `device`
-  - 负责真的操作设备
-- `media`
-  - 负责截图、录屏、音视频和证据加工
-- `bench`
-  - 负责接口、性能、稳定性与协议验证
-- `--code`
-  - 负责把设备动作组织成可批跑、可回归的蓝本
+设备域负责真的操作设备；媒体域负责截图、录屏、音视频和证据加工；性能与协议能力落在 bench；`--code` 负责把动作组织成可批跑、可回归的蓝本。
 
 设备域不是孤立的，常见组合是：
 

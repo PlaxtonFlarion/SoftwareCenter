@@ -44,7 +44,7 @@
 - 需要完整长文档时，直接走 [Docs 索引](docs-index.md)
 - 需要看 `bench.nexus` 模板 helper 和签名前置边界时，直接看 [模板能力实战](template-playbook.md)
 - 需要看 `security_*` 的能力边界和最小用法时，直接看 [安全工具实战](security-playbook.md)
-- 需要系统看 `device` 域的工具分层和稳定执行建议时，直接看 [设备域实战](device-playbook.md)
+- 需要系统看 `device` 域的能力分层和稳定执行建议时，直接看 [设备域实战](device-playbook.md)
 - 需要系统看 `device.monkey` 的参数、执行流程和返回结构时，直接看 [Monkey 扰动实战](monkey-playbook.md)
 
 ---
@@ -463,6 +463,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 
 这里先记住 4 个点就够了：
 - `cfg` 支持批次级、轮次级和任务级前后置
+- 任务级前后置现在分成两层：`item_prefix / item_suffix` 负责每个任务块外层包裹，`global_prefix / global_suffix` 负责单条任务正文前后置
 - `global_rule` 是整份蓝本的默认规则文本，`rule` 是单任务覆盖规则文本
 - `prefix/suffix` 会覆盖 `global_prefix/global_suffix`
 - 这里的 `global_rule / rule` 属于蓝本规则层，不等同于 `plan` 执行面的 `free_rule`

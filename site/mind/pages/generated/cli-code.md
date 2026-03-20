@@ -15,6 +15,8 @@
 - `loop_suffix`
 - `round_prefix`
 - `round_suffix`
+- `item_prefix`
+- `item_suffix`
 - `global_prefix`
 - `global_suffix`
 - `global_rule`
@@ -37,12 +39,30 @@
 ## 前后置层级
 - 批次级：`loop_prefix` / `loop_suffix`
 - 轮次级：`round_prefix` / `round_suffix`
-- 默认任务级：`global_prefix` / `global_suffix`
+- 任务块级：`item_prefix` / `item_suffix`
+- 默认任务正文级：`global_prefix` / `global_suffix`
 - 单条任务级：`prefix` / `suffix`
 
 覆盖关系：
 - `prefix` 覆盖 `global_prefix`
 - `suffix` 覆盖 `global_suffix`
+
+执行顺序：
+1. `loop_prefix`
+2. `round_prefix`
+3. `item_prefix`
+4. `global_prefix` 或 `prefix`
+5. 任务正文
+6. `global_suffix` 或 `suffix`
+7. `item_suffix`
+8. `round_suffix`
+9. `loop_suffix`
+
+边界说明：
+- `item_prefix / item_suffix` 是“任务块外层 hook”，每个任务块执行一次
+- `global_prefix / global_suffix` 是“任务正文默认前后置”，会被单条任务的 `prefix / suffix` 覆盖
+- 如果你只想给每条任务统一套一层准备/收尾，用 `item_prefix / item_suffix`
+- 如果你想让任务正文有可被单条覆盖的默认前后置，用 `global_prefix / global_suffix`
 
 ## 规则层级
 - `global_rule`：整份批跑文件的默认规则文本
@@ -73,6 +93,11 @@ global_prefix: |
 global_suffix: |
   [GS] 每条后置：通用收尾（每条一次）
 
+item_prefix: |
+  [IP] 任务块开始前：统一包裹（每条一次）
+item_suffix: |
+  [IS] 任务块结束后：统一包裹（每条一次）
+
 global_rule: <<<
 【证据/断言/评分（自由文本）】
 - 这里可以写截图策略、UI 断言描述、评分说明等
@@ -98,6 +123,14 @@ global_rule: <<<
 ## 长文本示例
 ``````
 ```cfg
+item_prefix: <<<
+【任务块开始前：统一说明（示例）】
+>>>
+
+item_suffix: <<<
+【任务块结束后：统一说明（示例）】
+>>>
+
 global_prefix: <<<
 【占位符/填充字段规则（示例）】
 >>>
