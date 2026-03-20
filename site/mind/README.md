@@ -6,6 +6,7 @@
 - `README.md` 与 `docs/*.md` 仍然是文档事实源
 - `website/mind/pages/` 负责官网入口、导航与站点配置
 - 同步到 `SoftwareCenter` 后，预期映射到 `site/mind/`
+- 工具能力说明与维护约定以 `docs/maintainer-guide.md` 为准，官网壳不单独发明第二套口径
 
 当前状态：
 - 已建立站点目录骨架
@@ -20,6 +21,11 @@ pip install -r requirements.txt
 python scripts/sync_docs.py
 mkdocs serve
 ```
+
+维护提示：
+- 如果改了 `README.md` 或 `docs/*.md`，先把正文文档改对，再运行 `python scripts/sync_docs.py`
+- 如果改了工具说明，尤其是 `backend/mcp_tools/automator/` 下的 doc block，记得同步检查官网生成页的描述是否仍然准确
+- 工具说明应按“做什么 / 不做什么 / 前置条件或限制”维护，避免官网和源码出现两套不同口径
 
 部署到 Cloudflare Pages 时，直接参考：
 - `CLOUDFLARE.md`

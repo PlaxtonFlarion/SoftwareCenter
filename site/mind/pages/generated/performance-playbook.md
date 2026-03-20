@@ -26,24 +26,80 @@ mind --plan --code example.md
 attempts: 3
 stop_on_fail: false
 
-loop_suffix: |
-  生成视频帧阶段报告
-  
-round_suffix: |
-  Framix 分析视频帧
-  
-global_prefix: |
-  开始录屏
-  
-global_suffix: |
-  结束录屏
->>>
+item_prefix: |
+  每轮任务开始前，先确认测试设备在线且目标应用可拉起。
 ```
 
 # name: performance-001
-  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送，等待回复完成，执行5次
+录制一次完整交互流程，再生成 Framix 阶段报告。
+
+steps = [
+  {
+    "tool": "scrcpy_record",
+    "args": {
+      "directory": "/tmp/mind_perf/e2e",
+      "fps": 30
+    }
+  },
+  {
+    "tool": "app_foreground",
+    "args": {
+      "package": "com.example.app"
+    }
+  },
+  {
+    "tool": "wait_element",
+    "args": {
+      "by": "text",
+      "value": "输入框",
+      "timeout": 10,
+      "state": "exists"
+    }
+  },
+  {
+    "tool": "click",
+    "args": {
+      "by": "text",
+      "value": "输入框"
+    }
+  },
+  {
+    "tool": "input_text",
+    "args": {
+      "value": "你好"
+    }
+  },
+  {
+    "tool": "press_enter",
+    "args": {}
+  },
+  {
+    "tool": "wait_element",
+    "args": {
+      "by": "text",
+      "value": "回复完成",
+      "timeout": 20,
+      "state": "exists"
+    }
+  },
+  {
+    "tool": "scrcpy_close",
+    "args": {}
+  },
+  {
+    "tool": "fx_frame_analyzer",
+    "args": {
+      "title": "performance_e2e",
+      "scale": 0.4
+    }
+  },
+  {
+    "tool": "fx_frame_reporter",
+    "args": {}
+  }
+]
 ---
-``````
+`````` 
 
 ## Android 内存基线
 ``````
@@ -51,60 +107,224 @@ global_suffix: |
 repeat: 10
 
 loop_suffix: |
-  生成分层内存测试报告
-
-round_prefix: |
-  开始采集内存
-  
-round_suffix: |
-  结束采集内存
+  所有轮次结束后，统一生成分层内存报告。
 ```
 
 # name: performance-001
-  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送
+对首页进入流程做重复采样，建立内存基线。
+
+steps = [
+  {
+    "tool": "mx_sample_mem",
+    "args": {
+      "focus": "com.example.app",
+      "title": "mem_baseline"
+    }
+  },
+  {
+    "tool": "app_foreground",
+    "args": {
+      "package": "com.example.app"
+    }
+  },
+  {
+    "tool": "wait_element",
+    "args": {
+      "by": "text",
+      "value": "首页",
+      "timeout": 10,
+      "state": "exists"
+    }
+  },
+  {
+    "tool": "sleep",
+    "args": {
+      "delay": 5
+    }
+  },
+  {
+    "tool": "mx_task_final",
+    "args": {}
+  },
+  {
+    "tool": "mx_mem_reporter",
+    "args": {
+      "layer": true
+    }
+  }
+]
 ---
-``````
+`````` 
 
 ## Android 内存泄漏
 ``````
 ```cfg
 loop_suffix: |
-  生成内存测试报告
-
-round_prefix: |
-  开始采集内存
-  
-round_suffix: |
-  结束采集内存
+  所有轮次结束后，统一生成内存报告。
 ```
 
 # name: performance-001
-  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送，执行10次
+围绕同一业务流重复进出页面，观察内存是否持续抬升。
+
+steps = [
+  {
+    "tool": "mx_sample_mem",
+    "args": {
+      "focus": "com.example.app",
+      "title": "mem_leak"
+    }
+  },
+  {
+    "tool": "app_foreground",
+    "args": {
+      "package": "com.example.app"
+    }
+  },
+  {
+    "tool": "wait_element",
+    "args": {
+      "by": "text",
+      "value": "首页",
+      "timeout": 10,
+      "state": "exists"
+    }
+  },
+  {
+    "tool": "scroll_into_view",
+    "args": {
+      "by": "text",
+      "value": "详情",
+      "direction": "down",
+      "timeout": 10,
+      "max_swipes": 6,
+      "should_click": true
+    }
+  },
+  {
+    "tool": "go_back",
+    "args": {}
+  },
+  {
+    "tool": "sleep",
+    "args": {
+      "delay": 3
+    }
+  },
+  {
+    "tool": "mx_task_final",
+    "args": {}
+  },
+  {
+    "tool": "mx_mem_reporter",
+    "args": {}
+  }
+]
 ---
-``````
+`````` 
 
 ## Android 流畅度
 ``````
 ```cfg
 loop_suffix: |
-  生成流畅度测试报告
-
-round_prefix: |
-  开始采集流畅度
-  
-round_suffix: |
-  结束采集流畅度
+  所有轮次结束后，统一生成流畅度报告。
 ```
 
 # name: performance-001
-  打开APP首页，等待输入框出现，点击输入框，输入"你好"，点击发送，执行5次
+对典型页面滚动和进入流程做图形采样，输出流畅度报告。
+
+steps = [
+  {
+    "tool": "mx_sample_gfx",
+    "args": {
+      "focus": "com.example.app",
+      "title": "gfx_baseline"
+    }
+  },
+  {
+    "tool": "app_foreground",
+    "args": {
+      "package": "com.example.app"
+    }
+  },
+  {
+    "tool": "wait_element",
+    "args": {
+      "by": "text",
+      "value": "首页",
+      "timeout": 10,
+      "state": "exists"
+    }
+  },
+  {
+    "tool": "scroll",
+    "args": {
+      "direction": "down",
+      "x": 500,
+      "y": 1200,
+      "duration": 350
+    }
+  },
+  {
+    "tool": "scroll",
+    "args": {
+      "direction": "up",
+      "x": 500,
+      "y": 600,
+      "duration": 350
+    }
+  },
+  {
+    "tool": "sleep",
+    "args": {
+      "delay": 3
+    }
+  },
+  {
+    "tool": "mx_task_final",
+    "args": {}
+  },
+  {
+    "tool": "mx_gfx_reporter",
+    "args": {}
+  }
+]
 ---
-``````
+`````` 
 
 ## Android Monkey
-```text
-mind --chat "对 com.example.app 做一次 Monkey 随机事件注入测试，固定 seed 为 42，事件间隔 150 毫秒，触摸事件占 65%，滑动事件占 20%，导航事件占 10%，总事件数 10000。测试前先清理 logcat，测试过程中持续采集日志，并按异常关键词降噪保留关键 tail，最后输出执行结果和日志证据。"
-```
+``````
+# name: monkey-001
+对目标应用执行一次固定参数的 Monkey 扰动，并保留日志证据。
+
+steps = [
+  {
+    "tool": "file_logcat_clean",
+    "args": {}
+  },
+  {
+    "tool": "injection",
+    "args": {
+      "package": "com.example.app",
+      "seed": 42,
+      "throttle_ms": 150,
+      "touch": 65,
+      "motion": 20,
+      "nav": 10,
+      "events": 10000
+    }
+  },
+  {
+    "tool": "file_logcat_dump",
+    "args": {
+      "keywords": ["Crash", "ANR", "FATAL EXCEPTION"],
+      "level": "W",
+      "max_lines": 200,
+      "saved": "/tmp/mind_perf/monkey_logcat"
+    }
+  }
+]
+---
+`````` 
 
 说明：
 - 同类目标也可以用英文或日文描述，执行语义保持一致

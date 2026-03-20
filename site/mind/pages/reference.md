@@ -8,7 +8,8 @@
 ## 怎么读
 
 - 先看“项目总览”，确认整体入口和模式边界
-- 再按专题跳到接口、媒体、性能或交互模式
+- 再看“文档索引”，按专题找到对应正文
+- 只有当你要看字段、协议或执行结构时，再进入协议型文档
 - 只有维护或二次开发时再看维护者指南
 
 ## CLI 速查
@@ -32,23 +33,25 @@
 - [文档索引](../generated/docs-index/)  
   已经知道要找什么时，从这里按专题跳文档最快。
 - [星图协议](../generated/cli-code/)  
-  适合看批跑、回归、前后置、循环和蓝本规则层。
+  适合看 `--code` 的字段、层级、前后置和规则结构。
+- [蓝本样例](../generated/code-blueprints/)  
+  适合看 `--code` 的高层自然语言样例，以及什么时候该写蓝本。
 - [接口实战](../generated/api-playbook/)  
-  适合看 HTTP、SSE、WebSocket、GraphQL 与其它协议场景。
+  适合看 `bench.nexus` 的协议边界、提取、断言和批量请求。
 - [模板能力](../generated/template-playbook/)  
   适合看 `bench.nexus` 模板 helper、签名前置材料和模板层边界。
 - [安全工具](../generated/security-playbook/)  
   适合看 `security_*` 的摘要、JWT、RSA、AES 和安全层边界。
 - [设备域实战](../generated/device-playbook/)  
-  适合看 `device` 的 app/ui/system/keyevent/monkey/file 分层和稳定执行建议。
+  适合看设备能力分层、稳定执行建议和自然语言任务写法。
 - [Monkey 扰动](../generated/monkey-playbook/)  
   适合看 `device.monkey.injection` 的全部参数、执行流程和返回结构。
 - [交互模式](../generated/interactive-mode/)  
   适合看 REPL 指令、状态切换和输入约束。
 - [多媒体链路](../generated/media-playbook/)  
-  适合看关键帧、场景帧、音轨、裁剪、转码和拼接。
+  适合看媒体能力边界、自然语言任务写法和证据链思路。
 - [性能实战](../generated/performance-playbook/)  
-  适合看 Memrix、Framix、Monkey 相关跑法与样例。
+  适合看 Memrix、Framix、Monkey 相关场景和回归写法。
 - [背景与架构](../generated/architecture/)  
   适合看系统分层、模型矩阵和工程摘要。
 - [维护者指南](../generated/maintainer-guide/)  

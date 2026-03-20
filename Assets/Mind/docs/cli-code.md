@@ -145,63 +145,82 @@ global_rule: <<<
 ```
 ``````
 
-## 完整蓝本示例
+## 最小结构示例
 ``````
 ```cfg
-global_prefix: <<<
-base_url = http://127.0.0.1:18080
-time_out = 10
-concurrency = 2
->>>
+item_prefix: |
+  本任务块开始前，先确认目标服务已启动，且测试环境可用。
 ```
 
 # name: http
-请求 /http 来验证解析与 ok 判定。
+对单个 HTTP 接口执行一次请求，并验证状态码与业务 ok 字段。
 
-request = {
-    "kind": "json"
-}
-
-# rule: <<<
-# PASS 条件：
-# - ok == true
-# - type == "http"
-# - detail.response.status == 200
-# - detail.response.body_json 不为空
-# - detail.response.body_json.ok == true
-# >>>
----
-
-# name: sse
-从 /sse 拉取前 5 条事件，并验证 event/id/data 字段齐全。
-
-request = {
-    "max_events": 5,
-    "interval_ms": 20,
-    "coalesce": true
-}
+steps = [
+  {
+    "tool": "nexus_http_request",
+    "args": {
+      "request": {
+        "method": "GET",
+        "url": "http://127.0.0.1:18080/http"
+      },
+      "extract": {
+        "status": "response.status",
+        "ok": "response.body_json.ok"
+      },
+      "asserts": [
+        {"path": "response.status", "op": "eq", "value": 200},
+        {"path": "response.body_json.ok", "op": "eq", "value": true}
+      ],
+      "name": "http_case"
+    }
+  }
+]
 
 # rule: <<<
 # PASS 条件：
-# - step.type == "sse"
-# - step.ok == true
-# - step.detail.status == 200
-# - step.detail.events 长度 == 5
+# - steps.0.data.ok == true
+# - steps.0.data.assert_ok == true
 # >>>
 ---
-
-# name: ws
-连接 ws://127.0.0.1:18080/ws，依次发送 ping 与 close。
-
-request = {
-    "sends": ["ping", "close"]
-}
-
-# rule: <<<
-# PASS 条件：
-# - step.type == "ws"
-# - step.ok == true
-# - step.detail.messages 至少包含 hello 和 echo:ping
-# >>>
 ---
-``````
+`````` 
+
+## 接口蓝本到底是什么意思
+
+`--code` 里的蓝本，不是“再造一套协议参数”，而是把多步工具调用写成一份可批跑、可回放、可加规则的执行脚本。
+
+如果你只想发一次请求：
+- 直接用 `nexus_http_request`
+- 或直接在 `chat / fast` 里自然语言发起
+
+如果你要做下面这些事，才值得写蓝本：
+- 一次批跑里串多步请求
+- 前一步结果要进入后一步
+- 需要统一前后置、统一规则、统一留证
+- 需要按 `repeat / attempts / stop_on_fail` 跑回归
+
+一句话理解：
+- 工具：做一次动作
+- 蓝本：把多次动作编排成一条可执行链
+
+## 复杂接口蓝本怎么读
+
+复杂蓝本这里不再展开长结构。你只需要记住三点：
+
+1. 蓝本可以把多个接口步骤串起来  
+例如：
+- 先登录拿 token，再访问 profile
+- 先做签名准备，再访问受保护接口
+
+2. 蓝本可以把不同协议串起来  
+例如：
+- 先消费 SSE，再查详情接口
+- 先用 WebSocket 触发，再用 HTTP 校验状态
+
+3. 蓝本可以把接口和其它工具域串起来  
+例如：
+- 接口成功后补截图
+- 接口轮询完成后导出日志或留证
+
+如果你要看“高层自然语言蓝本该怎么写”，直接看 [蓝本实战样例](code-blueprints.md)。  
+如果你要看字段、层级和最小结构，继续看这一页前面的最小结构示例即可。

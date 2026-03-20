@@ -8,6 +8,7 @@ DOC_FILES = (
     "README.md",
     "docs/README.md",
     "docs/cli-code.md",
+    "docs/code-blueprints.md",
     "docs/api-playbook.md",
     "docs/template-playbook.md",
     "docs/security-playbook.md",

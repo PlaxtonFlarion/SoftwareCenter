@@ -9,6 +9,8 @@
 ## 文档目录
 - [星图协议深入说明](cli-code.md)  
   适合看 `--code`、`cfg`、前后置和蓝本规则层。
+- [蓝本实战样例](code-blueprints.md)  
+  适合看跨域 `--code` 编排的高层自然语言写法，以及什么时候该写蓝本。
 - [接口实战教学](api-playbook.md)  
   适合看 `bench.nexus` 协议边界、批量蓝本和验收结构。
 - [模板能力实战](template-playbook.md)  
