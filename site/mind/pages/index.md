@@ -12,8 +12,15 @@
 
 ## 一眼上手
 
+第一步：
+
 ```bash
 mind --apply YOUR_LICENSE_CODE
+```
+
+第二步：
+
+```bash
 mind --pref
 ```
 
@@ -35,7 +42,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
   </a>
   <a class="mind-card mind-card-link" href="./getting-started/">
     <h3>配置模型</h3>
-    <p>使用 <code>--pref</code> 配置默认的 api、model 与 apikey。</p>
+    <p>使用 <code>--pref</code> 拉起本地前端页，配置两个模型槽位。</p>
     <span class="mind-card-arrow">查看命令 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./getting-started/">
@@ -74,7 +81,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./generated/cli-code/">
-    <h3>蓝本编排</h3>
+    <h3>星图协议</h3>
     <p>通过 <code>--code</code> 做批跑回归、前后置与结构化执行编排。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>

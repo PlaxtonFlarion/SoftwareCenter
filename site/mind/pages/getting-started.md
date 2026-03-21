@@ -9,49 +9,32 @@
 
 ## 激活与配置
 
+### 第一步：激活授权
+
 ```bash
 mind --apply YOUR_LICENSE_CODE
+```
+
+`--apply` 用于写入激活码并申请本地授权文件。
+
+### 第二步：配置模型偏好
+
+```bash
 mind --pref
 ```
 
-`--apply` 用于写入激活码并申请本地授权文件。  
-`--pref` 用于配置默认模型参数，至少建议填写：
+`--pref` 会拉起本地偏好设置前端页，用于配置两个模型槽位：
 
-- `api`
+- `primary`
+- `secondary`
+
+每个槽位当前包含：
+
+- `api`：目前支持 `OpenAI` 或 `Groq`
+- `type`：`Text` 或 `Multimodal`
 - `model`
 - `apikey`
 - `base_url`（可选）
-
-当前推荐填写方式：
-
-```json
-{
-  "api": "OpenAI",
-  "model": "gpt-4o-mini",
-  "apikey": "sk-...",
-  "base_url": ""
-}
-```
-
-```json
-{
-  "api": "Groq",
-  "model": "llama-3.3-70b-versatile",
-  "apikey": "gsk_...",
-  "base_url": ""
-}
-```
-
-如果你走代理、中转或兼容网关，也可以填写：
-
-```json
-{
-  "api": "OpenAI",
-  "model": "gpt-4o-mini",
-  "apikey": "sk-...",
-  "base_url": "https://your-proxy.example.com/v1"
-}
-```
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含授权、环境变量、激活与基础使用说明。
 
@@ -62,12 +45,16 @@ mind --pref
 - Windows 与 macOS 都建议先把 `mind` 所在目录加入 `PATH`
 - 不推荐默认配置系统代理或挂 VPN；只有明确需要兼容网关时，再单独配置 `base_url`
 
+macOS：
+
 ```bash
 # Mind 示例
 echo 'export PATH="/Applications/Mind.app/Contents/MacOS:$PATH"' >> ~/.zshrc
 
 source ~/.zshrc
 ```
+
+Windows：
 
 ```powershell
 # Mind 示例（默认安装目录）

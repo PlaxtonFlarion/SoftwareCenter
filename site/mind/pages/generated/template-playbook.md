@@ -199,7 +199,7 @@ request = {
 
 ## 什么时候优先看这页
 
-- 你在写 `bench.nexus` 蓝本
+- 你在写 `bench.nexus` 星图
 - 你要做 query / body / header 的模板化构造
 - 你要准备签名前置材料
 - 你想知道模板层和 `security_*` 的边界

@@ -17,7 +17,7 @@
 - `mind --apply YOUR_LICENSE_CODE`  
   用于写入激活码并申请本地授权文件。
 - `mind --pref`  
-  用于配置默认 `api / model / apikey / base_url`。
+  会拉起本地偏好设置前端页，用于配置 `primary / secondary` 两个模型槽位。
 - `mind --chat "..."`  
   适合探索、问答和临时任务。
 - `mind --fast "..."`  
@@ -27,6 +27,47 @@
 
 如果你要看完整填写示例、环境变量和常见问题，直接跳到 [快速开始](../getting-started/)。
 
+## 星图结构速读
+
+如果你在看 `--code`，可以先把它拆成两部分：
+
+- 包裹结构：谁包谁
+- 覆盖关系：默认值和单任务覆盖值怎么选
+
+真正的包裹结构是：
+
+```text
+整次批跑
+└─ 每一轮
+   └─ 每个任务块
+      └─ 当前任务正文
+```
+
+字段归属：
+
+1. 最外层：整次批跑
+   - `loop_prefix / loop_suffix`
+2. 第二层：每一轮
+   - `round_prefix / round_suffix`
+3. 第三层：每个任务块
+   - `item_prefix / item_suffix`
+4. 第四层：当前任务正文
+   - `message`
+
+覆盖关系：
+
+- `prefix` 覆盖 `global_prefix`
+- `suffix` 覆盖 `global_suffix`
+- `rule` 覆盖 `global_rule`
+
+也就是说：
+- `global_prefix / prefix` 是同一位置的默认值和覆盖值
+- `global_suffix / suffix` 是同一位置的默认值和覆盖值
+- `global_rule / rule` 是同一位置的默认值和覆盖值
+
+执行控制层：
+- `repeat / pattern / attempts / stop_on_fail`
+
 ## 文档导航
 - [项目总览](../generated/overview/)  
   第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。
@@ -34,8 +75,8 @@
   已经知道要找什么时，从这里按专题跳文档最快。
 - [星图协议](../generated/cli-code/)  
   适合看 `--code` 的字段、层级、前后置和规则结构。
-- [蓝本样例](../generated/code-blueprints/)  
-  适合看 `--code` 的高层自然语言样例，以及什么时候该写蓝本。
+- [星图样例](../generated/code-blueprints/)  
+  适合看 `--code` 的高层自然语言样例，以及什么时候该写星图。
 - [接口实战](../generated/api-playbook/)  
   适合看 `bench.nexus` 的协议边界、提取、断言和批量请求。
 - [模板能力](../generated/template-playbook/)  

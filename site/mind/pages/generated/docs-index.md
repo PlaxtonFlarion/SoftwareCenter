@@ -8,11 +8,11 @@
 
 ## 文档目录
 - [星图协议深入说明](cli-code.md)  
-  适合看 `--code`、`cfg`、前后置和蓝本规则层。
-- [蓝本实战样例](code-blueprints.md)  
-  适合看跨域 `--code` 编排的高层自然语言写法，以及什么时候该写蓝本。
+  适合看 `--code`、`cfg`、前后置和星图规则层。
+- [星图实战样例](code-blueprints.md)  
+  适合看跨域 `--code` 编排的高层自然语言写法，以及什么时候该写星图。
 - [接口实战教学](api-playbook.md)  
-  适合看 `bench.nexus` 协议边界、批量蓝本和验收结构。
+  适合看 `bench.nexus` 协议边界、批量星图和验收结构。
 - [模板能力实战](template-playbook.md)  
   适合看 `bench.nexus` 的模板 helper、签名前置材料和模板层边界。
 - [安全工具实战](security-playbook.md)  
@@ -26,7 +26,7 @@
 - [多媒体链路实战教学](media-playbook.md)  
   适合看抽帧、裁剪、转码、拼接和音频处理。
 - [性能实战教学](performance-playbook.md)  
-  适合看 Framix、Memrix、Monkey 和性能蓝本样例。
+  适合看 Framix、Memrix、Monkey 和性能星图样例。
 - [背景与架构](architecture.md)  
   适合看系统分层、工具域、云端增强和推理集群。
 - [维护者指南](maintainer-guide.md)  

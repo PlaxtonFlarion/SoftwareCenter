@@ -38,7 +38,7 @@
 补充：
 - 接口能力不是独立 `api` 域，而是落在 `bench.nexus`
 - `free_rule` 属于 `plan` 执行期能力
-- `global_rule / rule` 属于 `--code` 的蓝本规则层
+- `global_rule / rule` 属于 `--code` 的星图规则层
 
 ## 典型能力摘要
 

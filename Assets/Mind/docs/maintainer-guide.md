@@ -7,7 +7,7 @@
 - 模式边界：`chat / fast / plan`
 - 工具域边界：`device / bench / common / media`
 - 接口执行面：`bench.nexus`
-- 蓝本执行链：`--code`
+- 星图执行链：`--code`
 - 文档拆分与同步：`README.md`、`docs/*.md`、`.github/workflows/sync-to-software-center.yml`
 
 ## 系统骨架
@@ -47,7 +47,7 @@ device / bench / common / media
 - 接口能力不是独立 `api` 域，而是落在 `bench.nexus`
 - 如果工具注册名、域名或能力归属变更，README 和 `docs/architecture.md`、`docs/api-playbook.md` 都要一起改
 
-## 蓝本执行链
+## 星图执行链
 `--code` 承担批跑、循环、规则和前后置编排。
 
 维护时要一起检查：
@@ -64,7 +64,7 @@ device / bench / common / media
 - `docs/README.md`：长文档索引
 - `docs/api-playbook.md`：接口约定与协议说明
 - `docs/media-playbook.md`：媒体命令与链路
-- `docs/performance-playbook.md`：性能蓝本与典型跑法
+- `docs/performance-playbook.md`：性能星图与典型跑法
 - `docs/interactive-mode.md`：REPL 说明
 - `docs/architecture.md`：背景、云端架构、推理集群
 - `website/mind/pages/`：官网展示壳与站点入口页
