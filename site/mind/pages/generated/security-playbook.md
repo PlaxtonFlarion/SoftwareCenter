@@ -281,8 +281,18 @@ security_sign_text(
 
 例如：
 
-- `extract` 提取 `response.status`、`response.body_json.code`
-- `asserts` 校验状态码、签名验签结果、业务字段
+```text
+extract:
+- status 取 response.status
+- code 取 response.body_json.code
+```
+
+```text
+asserts:
+- response.status 等于 200
+- response.body_json.code 等于 0
+- 签名验签结果为通过
+```
 
 这样结构更清晰：
 
