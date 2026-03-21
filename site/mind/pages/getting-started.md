@@ -131,7 +131,7 @@ mind
 - 某些 VPN 或代理会中断 CLI 长连接、SSE 或流式响应，表现为一直 `timeout`
 - 先在直连网络下验证；只有明确需要兼容网关时，再配置 `base_url`
 
-### 2. 出现 `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)`？
+### 2. 出现 SSL 证书错误？
 
 - 这类问题优先归到证书链被改写，常见原因是抓包工具做了 HTTPS 中间人代理
 - 先关闭抓包工具后再试；如果仍然开启证书注入，也会继续报这个错误
