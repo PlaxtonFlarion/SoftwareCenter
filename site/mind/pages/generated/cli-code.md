@@ -145,7 +145,7 @@ global_rule: <<<
 ```
 ``````
 
-## 最小结构示例
+## 最小蓝本示例
 ``````
 ```cfg
 item_prefix: |
@@ -153,37 +153,17 @@ item_prefix: |
 ```
 
 # name: http
-对单个 HTTP 接口执行一次请求，并验证状态码与业务 ok 字段。
-
-steps = [
-  {
-    "tool": "nexus_http_request",
-    "args": {
-      "request": {
-        "method": "GET",
-        "url": "http://127.0.0.1:18080/http"
-      },
-      "extract": {
-        "status": "response.status",
-        "ok": "response.body_json.ok"
-      },
-      "asserts": [
-        {"path": "response.status", "op": "eq", "value": 200},
-        {"path": "response.body_json.ok", "op": "eq", "value": true}
-      ],
-      "name": "http_case"
-    }
-  }
-]
+对单个 HTTP 接口执行一次请求，并确认状态码和业务返回都正常。
 
 # rule: <<<
 # PASS 条件：
-# - steps.0.data.ok == true
-# - steps.0.data.assert_ok == true
+# - 请求成功
+# - 返回结构符合预期
 # >>>
----
----
 `````` 
+
+这里故意不展开底层结构。
+这一页的重点是蓝本层级、前后置和规则怎么组织，不是把接口参数整块摊开。
 
 ## 接口蓝本到底是什么意思
 
@@ -223,4 +203,4 @@ steps = [
 - 接口轮询完成后导出日志或留证
 
 如果你要看“高层自然语言蓝本该怎么写”，直接看 [蓝本实战样例](code-blueprints.md)。  
-如果你要看字段、层级和最小结构，继续看这一页前面的最小结构示例即可。
+如果你要看 `request / env / items / extract / asserts` 的真实字段边界，直接看 [接口实战教学](api-playbook.md)。

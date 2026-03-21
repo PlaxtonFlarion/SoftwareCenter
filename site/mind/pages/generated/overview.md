@@ -579,8 +579,7 @@ README 这里只保留入口层信息。
 ### 核心要点
 - 接口能力统一落在 `bench.nexus`
 - 协议覆盖 `HTTP / SSE / WebSocket / GraphQL / TCP / UDP / SMTP / IMAP / FTP`
-- 单请求优先写 `request = {...}`，批量任务把共享项写进 `env = {...}`、差异项写进 `items[].request`
-- 提取与验收统一落在 `extract = {...}` / `asserts = [...]`
+- 单请求、批量请求、提取和验收都有稳定字段边界，细节直接看接口专题页
 - 安全场景重点看蓝本结构、模板变量和通过条件，不必在 README 里保留运行回放
 
 ### 协议速览

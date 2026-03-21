@@ -31,75 +31,17 @@ item_prefix: |
 ```
 
 # name: performance-001
-录制一次完整交互流程，再生成 Framix 阶段报告。
-
-steps = [
-  {
-    "tool": "scrcpy_record",
-    "args": {
-      "directory": "/tmp/mind_perf/e2e",
-      "fps": 30
-    }
-  },
-  {
-    "tool": "app_foreground",
-    "args": {
-      "package": "com.example.app"
-    }
-  },
-  {
-    "tool": "wait_element",
-    "args": {
-      "by": "text",
-      "value": "输入框",
-      "timeout": 10,
-      "state": "exists"
-    }
-  },
-  {
-    "tool": "click",
-    "args": {
-      "by": "text",
-      "value": "输入框"
-    }
-  },
-  {
-    "tool": "input_text",
-    "args": {
-      "value": "你好"
-    }
-  },
-  {
-    "tool": "press_enter",
-    "args": {}
-  },
-  {
-    "tool": "wait_element",
-    "args": {
-      "by": "text",
-      "value": "回复完成",
-      "timeout": 20,
-      "state": "exists"
-    }
-  },
-  {
-    "tool": "scrcpy_close",
-    "args": {}
-  },
-  {
-    "tool": "fx_frame_analyzer",
-    "args": {
-      "title": "performance_e2e",
-      "scale": 0.4
-    }
-  },
-  {
-    "tool": "fx_frame_reporter",
-    "args": {}
-  }
-]
+开始一段覆盖完整交互流程的录屏，
+让应用进入目标页面并完成一次典型操作，
+随后停止录制，
+最后基于录制结果生成 Framix 阶段报告。
 ---
 `````` 
+
+这个蓝本真正表达的是：
+- 先保留真实交互视频
+- 再做视觉真值分析
+- 最后把阶段结果沉淀成报告
 
 ## Android 内存基线
 ``````
@@ -111,50 +53,17 @@ loop_suffix: |
 ```
 
 # name: performance-001
-对首页进入流程做重复采样，建立内存基线。
-
-steps = [
-  {
-    "tool": "mx_sample_mem",
-    "args": {
-      "focus": "com.example.app",
-      "title": "mem_baseline"
-    }
-  },
-  {
-    "tool": "app_foreground",
-    "args": {
-      "package": "com.example.app"
-    }
-  },
-  {
-    "tool": "wait_element",
-    "args": {
-      "by": "text",
-      "value": "首页",
-      "timeout": 10,
-      "state": "exists"
-    }
-  },
-  {
-    "tool": "sleep",
-    "args": {
-      "delay": 5
-    }
-  },
-  {
-    "tool": "mx_task_final",
-    "args": {}
-  },
-  {
-    "tool": "mx_mem_reporter",
-    "args": {
-      "layer": true
-    }
-  }
-]
+围绕首页进入这一条稳定路径做重复采样，
+每轮都让应用进入首页并短暂停留，
+采样结束后统一收束，
+最后输出一份分层内存基线报告。
 ---
 `````` 
+
+这个蓝本真正表达的是：
+- 先做稳定路径采样
+- 再做统一收束
+- 最后看基线趋势，而不是只看单次数字
 
 ## Android 内存泄漏
 ``````
@@ -164,63 +73,16 @@ loop_suffix: |
 ```
 
 # name: performance-001
-围绕同一业务流重复进出页面，观察内存是否持续抬升。
-
-steps = [
-  {
-    "tool": "mx_sample_mem",
-    "args": {
-      "focus": "com.example.app",
-      "title": "mem_leak"
-    }
-  },
-  {
-    "tool": "app_foreground",
-    "args": {
-      "package": "com.example.app"
-    }
-  },
-  {
-    "tool": "wait_element",
-    "args": {
-      "by": "text",
-      "value": "首页",
-      "timeout": 10,
-      "state": "exists"
-    }
-  },
-  {
-    "tool": "scroll_into_view",
-    "args": {
-      "by": "text",
-      "value": "详情",
-      "direction": "down",
-      "timeout": 10,
-      "max_swipes": 6,
-      "should_click": true
-    }
-  },
-  {
-    "tool": "go_back",
-    "args": {}
-  },
-  {
-    "tool": "sleep",
-    "args": {
-      "delay": 3
-    }
-  },
-  {
-    "tool": "mx_task_final",
-    "args": {}
-  },
-  {
-    "tool": "mx_mem_reporter",
-    "args": {}
-  }
-]
+围绕同一业务流重复进入和退出页面，
+观察一段时间后内存是否持续抬升，
+全部轮次结束后统一输出内存报告，
+用来判断是否存在泄漏倾向。
 ---
 `````` 
+
+这个蓝本真正表达的是：
+- 不是看某一刻的内存大小
+- 而是看重复进入退出后的趋势变化
 
 ## Android 流畅度
 ``````
@@ -230,99 +92,23 @@ loop_suffix: |
 ```
 
 # name: performance-001
-对典型页面滚动和进入流程做图形采样，输出流畅度报告。
-
-steps = [
-  {
-    "tool": "mx_sample_gfx",
-    "args": {
-      "focus": "com.example.app",
-      "title": "gfx_baseline"
-    }
-  },
-  {
-    "tool": "app_foreground",
-    "args": {
-      "package": "com.example.app"
-    }
-  },
-  {
-    "tool": "wait_element",
-    "args": {
-      "by": "text",
-      "value": "首页",
-      "timeout": 10,
-      "state": "exists"
-    }
-  },
-  {
-    "tool": "scroll",
-    "args": {
-      "direction": "down",
-      "x": 500,
-      "y": 1200,
-      "duration": 350
-    }
-  },
-  {
-    "tool": "scroll",
-    "args": {
-      "direction": "up",
-      "x": 500,
-      "y": 600,
-      "duration": 350
-    }
-  },
-  {
-    "tool": "sleep",
-    "args": {
-      "delay": 3
-    }
-  },
-  {
-    "tool": "mx_task_final",
-    "args": {}
-  },
-  {
-    "tool": "mx_gfx_reporter",
-    "args": {}
-  }
-]
+围绕首页进入、页面滚动和停留这类典型图形路径做采样，
+全部轮次完成后统一生成流畅度报告，
+用于观察 FPS、掉帧和卡顿趋势。
 ---
 `````` 
+
+这个蓝本真正表达的是：
+- 关注的是图形路径上的流畅度表现
+- 不是单次点击是否成功
 
 ## Android Monkey
 ``````
 # name: monkey-001
-对目标应用执行一次固定参数的 Monkey 扰动，并保留日志证据。
-
-steps = [
-  {
-    "tool": "file_logcat_clean",
-    "args": {}
-  },
-  {
-    "tool": "injection",
-    "args": {
-      "package": "com.example.app",
-      "seed": 42,
-      "throttle_ms": 150,
-      "touch": 65,
-      "motion": 20,
-      "nav": 10,
-      "events": 10000
-    }
-  },
-  {
-    "tool": "file_logcat_dump",
-    "args": {
-      "keywords": ["Crash", "ANR", "FATAL EXCEPTION"],
-      "level": "W",
-      "max_lines": 200,
-      "saved": "/tmp/mind_perf/monkey_logcat"
-    }
-  }
-]
+对目标应用执行一次固定参数的 Monkey 扰动，
+测试前先清理日志，
+扰动结束后导出关键异常日志，
+用来判断是否出现崩溃、ANR 或明显异常。
 ---
 `````` 
 
