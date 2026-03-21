@@ -1,304 +1,347 @@
 # 蓝本实战样例
 
-README 只保留入口层信息；如果你需要系统理解 `--code` 在真实任务里的编排价值，直接看这里。
+README 只保留入口层信息；如果你要看一份蓝本到底应该写到什么粒度，直接看这里。
 
-## 这页解决什么问题
+这页只做两件事：
+- 给出贴近现有工具能力的蓝本规格样例
+- 用接近真实环境的接口写法表达步骤，接口地址可用 example 占位
 
-- 蓝本到底适合解决什么问题
-- 什么时候该直接调工具，什么时候该写蓝本
-- 跨域蓝本应该怎么组织步骤
-- 怎么把 `device / bench / common / media` 串成一条可回放链路
+这页不做的事：
+- 不重复解释所有协议字段
+- 不把样例写成底层执行 AST
+- 不写工具根本不支持的能力
 
-## 推荐模式怎么看
+## 接口占位约定
 
-- `fast`：只适合单步动作、短链路验证或临时试一下，不适合带证据、带规则的回归链
-- `chat`：适合临时排查、交互式探索和中短链路任务，但不强调批次控制
-- `plan`：适合前后依赖明显、需要统一规则、留证、重复执行或跨多个工具域的任务
+样例里的接口按真实请求结构写，但域名和部分业务值可以用 example 占位。
 
-后面的每个示例都会标 `推荐模式`。它表达的不是“只能这样跑”，而是“按这个场景的复杂度，哪种入口最顺”。
+- HTTP 基地址建议写成 https://api.example.com
+- WebSocket 基地址建议写成 wss://ws.example.com
+- 文档重点是请求结构、断言、提取和步骤依赖，不是要求你真的连这个地址
+- 如果你有真实环境，只需要把 env 里的 example 值替换掉
 
-## 先定边界
+## 写蓝本的基本规则
 
-蓝本不是新协议，也不是新工具域。
+- 该写目标时，直接写目标。
+- 该写参数时，只写真正决定行为的参数。
+- 该写断言时，直接写通过条件。
+- 该写提取时，直接写提取路径和变量名。
+- 不要把“接口成功了”“页面应该没问题”这种空话当样例。
 
-蓝本做的事情只有一件：
-- 把已有工具调用组织成一条有顺序、有前后依赖、有规则和可批跑能力的执行链
+## 蓝本样例 1：登录接口成功后，再确认首页已经真的起来
 
-所以判断标准很简单：
-
-直接调工具更合适的场景：
-- 只做一次动作
-- 没有前后依赖
-- 不需要统一规则、前后置和回归结构
-
-写蓝本更合适的场景：
-- 多步动作之间有依赖
-- 既要执行，也要留证
-- 需要统一规则、重复执行、失败处理或批次控制
-
-一句话理解：
-- 工具是“做一步”
-- 蓝本是“把多步排成一条链”
-
-## 示例 1：登录接口后做页面验收
-
-推荐模式：
-- `plan` 优先。这个场景有明显前后依赖，且最终通过条件是“接口 + 页面”双重成立。
-
-这个蓝本的价值：
-- 前半段走接口校验
-- 后半段走设备页面确认
-- 用同一个任务块把“接口成功”和“页面结果正确”串起来
+蓝本名：api_login_then_ui_verify
 
 ``````
 ```cfg
-item_prefix: |
-  本条任务开始前，确保测试账号和目标设备都已准备就绪。
-
-global_rule: <<<
-- 任一步失败，本任务直接判失败
-- 接口成功不等于页面成功，最终需要同时满足接口和页面两段条件
->>>
+global_rule: |
+  接口断言、页面等待条件和留证动作都必须明确，不接受空描述。
 ```
 
 # name: api_login_then_ui_verify
-先调用登录接口，确认登录结果里已经拿到有效 token；
-随后把应用收敛到前台，等待首页稳定出现；
-只有接口成功且首页确认无误时，本任务才算通过。
----
-`````` 
+前置变量：
+- base_url = {{ env.base_url }}
+- username = {{ env.username }}
+- password = {{ env.password }}
+- package = com.example.app
+- activity = .MainActivity
 
-为什么这里要用蓝本：
-- 前一步接口结果要进入后一步页面验收语境
-- 最终成功条件不是单一接口成功，而是“接口成功 + 页面成功”
+接口约定：
+- base_url 可写为 https://api.example.com
+- 登录接口使用 POST /api/login
+- 首页准备检查使用 GET /api/home/ready?package={{ package }}
+- 成功时返回 token，供后续首页确认复用
 
-如果不用蓝本，最小替代方案是：
-- 先单独验证登录接口
-- 再单独做首页确认
-- 但这样证据和规则会分散，不适合回归
+执行链：
+- 发送 POST {{ base_url }}/api/login
+- 请求头包含 Content-Type: application/json
+- 请求体带 username 和 password
+- 断言 response.status == 200
+- 断言 response.body_json.ok == true
+- 断言 response.body_json.data.token 为非空字符串
+- 提取 token = response.body_json.data.token
+- 发送 GET {{ base_url }}/api/home/ready?package={{ package }}
+- 请求头包含 Authorization: Bearer {{ token }}
+- 断言 response.status == 200
+- 断言 response.body_json.data.ready == true
+- 断言 response.body_json.data.title == 首页
+- 将应用拉起到前台
+- 目标包名为 {{ package }}
+- 目标 Activity 为 {{ activity }}
+- 最长等待 15 秒
+- 轮询间隔 0.5 秒
+- 页面同时满足存在文本 首页 和资源 id com.example.app:id/bottom_nav
+- 截当前页面
 
-## 示例 2：录屏后抽关键帧，再做帧级报告
+通过标准：
+- 登录接口断言全部通过
+- 首页准备接口断言全部通过
+- 首页标题可见
+- 底部导航栏可见
+- 截图成功
+``````
 
-推荐模式：
-- `plan` 优先。录屏、收束、分析、报告是严格顺序链，步骤化执行更稳。
+为什么值得写成蓝本：
+- 登录成功不等于首页真的起来
+- 这里只有把接口确认、前台收敛和页面等待串起来，验收才完整
 
-这个蓝本的价值：
-- 先做真实设备录屏
-- 再把视频交给媒体链路处理
-- 最后把结果喂给性能链路沉淀报告
+## 蓝本样例 2：签名接口不是一句“先签名再请求”，要把签名串写清楚
+
+蓝本名：signed_request_regression
 
 ``````
-# name: record_then_extract_then_report
-先开始一段设备录屏，覆盖你关心的交互流程；
-录制结束后立即收束会话；
-然后基于刚得到的视频做帧分析，并生成阶段报告。
----
-`````` 
+```cfg
+global_rule: |
+  签名串来源、摘要算法和签名落点都必须可回放。
+```
 
-说明：
-- 这里的重点不是手写视频处理参数，而是把“录制 -> 收束 -> 分析 -> 报告”固定成一条链
-- 如果你已经有现成视频文件，而不是来自录屏链路，更适合直接做媒体处理任务
-
-为什么这里要用蓝本：
-- 录屏、收束、分析、报告天然是前后依赖链
-- 任何一步单独拿出来都不完整
-
-如果不用蓝本，最小替代方案是：
-- 手动依次完成录制、停止、分析和报告
-- 适合临时调试，不适合批跑和回归
-
-## 示例 3：先抓日志，再补截图，再导出接口证据
-
-推荐模式：
-- `plan` 或 `chat` 都可以。
-- 想沉淀成固定回归链时用 `plan`；临时排查一次问题时用 `chat` 也够。
-
-这个蓝本的价值：
-- 同一任务里同时留接口证据、设备截图和日志
-- 比单独跑三个工具更适合回归场景
-
-``````
-# name: api_device_evidence_chain
-先请求关键业务接口，确认接口返回正常；
-然后马上补一张设备截图；
-最后导出过滤后的 logcat，和接口结果、截图一起形成一条完整证据链。
----
-`````` 
-
-为什么这里要用蓝本：
-- 这类任务的重点不是“调哪个工具”，而是“把接口、截图、日志放进同一条证据链”
-- 证据链统一后，回放和归档都更稳定
-
-如果不用蓝本，最小替代方案是：
-- 分别执行接口、截图和日志导出
-- 但每一步都要靠人工再去拼成一组证据
-
-## 示例 4：安全计算 + 接口调用 + 规则验收
-
-推荐模式：
-- `plan` 优先。签名准备、摘要计算、发请求是顺序依赖链，写成步骤更不容易出错。
-
-这个蓝本的价值：
-- 不把签名逻辑塞进模板层
-- 明确区分“拼文本”“算摘要”“发请求”“验结果”
-
-``````
 # name: signed_request_regression
-先生成签名前文本，再计算签名值；
-随后把签名放进请求头访问受保护接口；
-最终按状态码和业务返回一起做验收。
----
-`````` 
+前置变量：
+- base_url = {{ env.base_url }}
+- app_id = {{ env.app_id }}
+- app_secret = {{ env.app_secret }}
+- order_id = {{ env.order_id }}
+- amount = {{ env.amount }}
+- ts = {{ now_s() }}
+- nonce = {{ nonce(16) }}
 
-为什么这里要用蓝本：
-- 签名文本、摘要值、最终请求三者天然有依赖关系
-- 用蓝本可以把“准备值 -> 算值 -> 发请求”完整固定下来
+接口约定：
+- base_url 可写为 https://api.example.com
+- 支付接口使用 POST /api/secure/pay
+- 服务端校验 X-App-Id、X-Timestamp、X-Nonce、X-Sign 和请求体中的 order_id、amount
+- app_id、app_secret、order_id、amount 都可用 example 值占位
 
-如果不用蓝本，最小替代方案是：
-- 先手动准备签名文本
-- 再手动计算摘要
-- 最后再把结果带进请求
+执行链：
+- 先准备待签名字段 app_id、ts、nonce、order_id、amount
+- 使用 security_sign_text 生成 query-like 签名原文
+- 原文形态应为 app_id={{ app_id }}&ts={{ ts }}&nonce={{ nonce }}&order_id={{ order_id }}&amount={{ amount }}
+- 再使用 security_digest(kind="hmac_sha256") 基于上面的原文计算签名
+- 输出格式使用 hex
+- 发送 POST {{ base_url }}/api/secure/pay
+- 请求头包含 Content-Type: application/json
+- 请求头包含 X-App-Id: {{ app_id }}
+- 请求头包含 X-Timestamp: {{ ts }}
+- 请求头包含 X-Nonce: {{ nonce }}
+- 请求头包含 X-Sign: {{ sign }}
+- 请求体包含 order_id 和 amount
+- 断言 response.status == 200
+- 断言 response.body_json.code == 0
+- 断言 response.body_json.data.status == PAID
+- 提取 pay_status = response.body_json.data.status
+- 提取 trace_id = response.body_json.data.trace_id
 
-## 示例 5：WebSocket 触发任务，再轮询 HTTP，再截图留证
+通过标准：
+- 签名串成功生成
+- 摘要成功计算
+- 支付接口断言全部通过
+``````
 
-推荐模式：
-- `plan` 优先。这个场景包含协议切换和轮询声明，步骤化比临场对话更清晰。
+为什么值得写成蓝本：
+- 现有工具支持拼签名串和算签名，但它们是两步，不是一句模糊的自动签名
+- 如果不把签名原文写清楚，读者不知道现有能力到底能不能覆盖
 
-这个蓝本的价值：
-- 不同协议各做自己擅长的事
-- WebSocket 负责触发
-- HTTP 负责查状态
-- 设备侧负责留证
+## 蓝本样例 3：WebSocket 触发任务后，再用 HTTP 轮询状态
+
+蓝本名：ws_trigger_http_poll_and_capture
 
 ``````
+```cfg
+global_rule: |
+  先确认触发消息被接受，再确认轮询最终收敛，最后补证据。
+```
+
 # name: ws_trigger_http_poll_and_capture
-先通过 WebSocket 触发后台任务；
-再用一段轮询逻辑反复查询 HTTP 状态；
-状态达到预期后，补一张截图作为现场证据。
----
-`````` 
+前置变量：
+- ws_url = {{ env.ws_url }}
+- base_url = {{ env.base_url }}
+- job_id = {{ env.job_id }}
+- package = com.example.app
 
-说明：
-- 这里的重点是“协议 A 触发，协议 B 校验，设备侧留证”
-- 如果你的目标只是简单查一次状态，不需要为了“看起来复杂”硬上蓝本
+接口约定：
+- ws_url 可写为 wss://ws.example.com
+- WebSocket 地址使用 /ws/task
+- HTTP 轮询地址使用 GET /api/job/status?id={{ job_id }}
+- 任务触发后，状态通常会从 PROCESSING 收敛到 DONE
 
-为什么这里要用蓝本：
-- 单步工具都没问题，但只有蓝本能把跨协议链路固定下来
+执行链：
+- 连接 {{ ws_url }}/ws/task
+- 发送一次 JSON 消息，内容包含 action = start_job 和 job_id = {{ job_id }}
+- 断言首条响应消息存在
+- 断言 response.messages.0.body_json.ok == true
+- 轮询 GET {{ base_url }}/api/job/status?id={{ job_id }}
+- 请求方法为 GET
+- 轮询超时 20 秒
+- 轮询间隔 1 秒
+- 停止条件为 response.status == 200 且 response.body_json.data.status == DONE
+- 提取 job_status = response.body_json.data.status
+- 提取 result_id = response.body_json.data.result_id
+- 把 {{ package }} 拉到前台
+- 截图
 
-如果不用蓝本，最小替代方案是：
-- 先手动触发
-- 再反复手动查询状态
-- 最后补一次截图
-- 适合临时调试，不适合标准化回归
+通过标准：
+- WebSocket 响应确认成功
+- 轮询在超时前进入 DONE
+- 截图成功
+``````
 
-## 示例 6：偏回归风格的蓝本
+为什么值得写成蓝本：
+- 这里不是单一协议能力，而是 WS 触发、HTTP 轮询和设备留证的组合
 
-推荐模式：
-- `plan`。这类任务本身就是为回归、重复执行和统一规则设计的。
+## 蓝本样例 4：接口、截图、logcat 三段证据要放在同一条链里
 
-这个蓝本的价值：
-- 不只是把步骤串起来，还把重试、重复、统一规则和统一前后置一起写进去
-- 更接近真实回归任务，而不是一次性探索
+蓝本名：api_device_evidence_chain
+
+``````
+```cfg
+global_rule: |
+  证据链必须同时覆盖接口结果、页面留证和运行日志。
+```
+
+# name: api_device_evidence_chain
+前置变量：
+- base_url = {{ env.base_url }}
+- token = {{ env.token }}
+- order_id = {{ env.order_id }}
+- package = com.example.app
+
+接口约定：
+- base_url 可写为 https://api.example.com
+- 订单详情接口使用 GET /api/order/detail?id={{ order_id }}
+- Authorization 使用 Bearer {{ token }}
+- order_id、token 都可用 example 值占位，但返回结构要能支撑断言和提取
+
+执行链：
+- 发送 GET {{ base_url }}/api/order/detail?id={{ order_id }}
+- 请求头包含 Authorization: Bearer {{ token }}
+- 断言 response.status == 200
+- 断言 response.body_json.ok == true
+- 断言 response.body_json.data.status == SUCCESS
+- 提取 order_status = response.body_json.data.status
+- 提取 order_amount = response.body_json.data.amount
+- 将 {{ package }} 拉到前台
+- 截图
+- 导出一次过滤后的 logcat
+- 关键字包含 crash、anr、fatal
+- 日志级别从 W 开始
+
+通过标准：
+- 接口断言全部通过
+- 截图成功
+- logcat 导出成功
+``````
+
+为什么值得写成蓝本：
+- 如果接口、截图、日志分开跑，最后只能人工拼证据
+
+## 蓝本样例 5：录屏结束后，从录屏结果继续拆帧
+
+蓝本名：record_then_extract_then_report
+
+``````
+```cfg
+global_rule: |
+  前一步产物必须被下一步直接消费，不要把媒体链路写成神秘黑盒。
+```
+
+# name: record_then_extract_then_report
+前置变量：
+- base_url = {{ env.base_url }}
+- package = com.example.app
+
+接口约定：
+- base_url 可写为 https://api.example.com
+- 报告回执接口使用 POST /api/media/report
+- 请求体至少包含 video_id、frame_count 和 report_type
+
+执行链：
+- 启动一次 scrcpy 录屏会话
+- fps = 30
+- silence = true
+- 完成目标交互后关闭录屏会话
+- 断言录屏会话成功开始
+- 断言录屏会话成功关闭
+- 断言返回结果里存在可用视频附件
+- 基于录屏结果继续提取关键帧
+- 最多保留 6 张关键帧
+- 如果只是想抽某个固定时间点的图，改用单帧截图更合适
+- 基于这段录屏生成帧级分析报告
+- 发送 POST {{ base_url }}/api/media/report
+- 请求体包含 video_id、frame_count、report_type = frame-analysis
+- 断言 response.status == 200
+- 断言 response.body_json.ok == true
+- 提取 report_id = response.body_json.data.report_id
+
+通过标准：
+- 录屏成功
+- 关键帧提取成功
+- 报告生成成功
+- 报告回执接口断言通过
+``````
+
+为什么值得写成蓝本：
+- 现有能力支持录制和拆帧，但它们不是一个工具，需要蓝本把前后依赖写出来
+- 这里不需要写死文件夹，重点是后一步吃前一步的结果
+
+## 蓝本样例 6：重复执行登录首页链，观察稳定性
+
+蓝本名：regression_login_home
 
 ``````
 ```cfg
 repeat: 3
 attempts: 2
 stop_on_fail: true
-
-item_prefix: |
-  每个任务块开始前，先确认环境、账号和测试数据状态符合回归前提。
-
-item_suffix: |
-  每个任务块结束后，统一补截图和日志归档动作，方便回放和问题追踪。
-
-global_rule: <<<
-- PASS 条件：接口成功、页面成功、日志中没有明显 Crash/ANR 关键字
-- 任一轮次出现稳定失败，应保留本轮证据用于回归比对
->>>
+global_rule: |
+  每轮都必须同时保留接口结果、首页状态和日志快照。
 ```
 
 # name: regression_login_home
-每一轮都先重置应用状态，再完成登录并确认首页稳定进入；
-任务块结束后统一补截图和日志；
-整份蓝本按 repeat、attempts 和 stop_on_fail 规则执行，用来观察回归稳定性。
----
-`````` 
+前置变量：
+- base_url = {{ env.base_url }}
+- username = {{ env.username }}
+- password = {{ env.password }}
+- package = com.example.app
 
-这个例子里，蓝本真正提供的不是“能登录”，而是：
-- 重复执行
-- 失败重试
-- 统一留证
-- 统一规则
+接口约定：
+- base_url 可写为 https://api.example.com
+- 登录接口使用 POST /api/login
+- 首页准备检查使用 GET /api/home/ready?package={{ package }}
+- 用户名、密码可用 example 值占位，但返回结构要稳定支持回归断言
 
-这些都不是单次工具调用能替代的。
+每轮动作：
+- 重置应用状态
+- 发送 POST {{ base_url }}/api/login
+- 请求体带 username 和 password
+- 确认 response.status == 200
+- 确认 response.body_json.ok == true
+- 确认 response.body_json.data.token 非空
+- 提取 token = response.body_json.data.token
+- 发送 GET {{ base_url }}/api/home/ready?package={{ package }}
+- 请求头包含 Authorization: Bearer {{ token }}
+- 确认 response.status == 200
+- 确认 response.body_json.data.ready == true
+- 将 {{ package }} 拉到前台
+- 等待首页出现 首页 标题和底部导航栏
+- 截图
+- 导出一次 logcat 快照
 
-为什么这里要用蓝本：
-- 这里真正重要的是批次控制，不是某一步工具能力
-- `repeat / attempts / stop_on_fail / item_prefix / item_suffix / global_rule` 都属于蓝本层价值
-
-如果不用蓝本，最小替代方案是：
-- 手工重复执行同一组动作
-- 手工判断哪一轮失败、哪一轮该补证据
-- 成本高，而且回归一致性差
-
-## 示例 7：四域联动的完整回归链
-
-推荐模式：
-- `plan`。跨四个工具域的完整链路，更适合在计划执行面稳定落地。
-
-这个蓝本的价值：
-- `common` 负责确定性签名计算
-- `bench` 负责接口执行
-- `device` 负责页面动作
-- `media` 负责录屏和结果沉淀
-
-它更接近一条完整的业务回归链，而不是单点能力演示。
-
+整轮通过标准：
+- 接口断言全部通过
+- 首页成功出现
+- 截图成功
+- 日志导出成功
 ``````
-```cfg
-global_rule: <<<
-- 最终 PASS 需要同时满足：
-  - 安全签名步骤成功
-  - 接口返回成功
-  - 页面成功进入目标状态
-  - 已生成录屏和截图证据
->>>
-```
 
-# name: full_regression_chain
-先生成签名并完成一次受保护接口访问；
-随后在设备上完成目标页面进入和页面确认；
-过程中保留录屏和截图；
-最后按接口、页面和证据三部分一起做总验收。
----
-`````` 
+为什么值得写成蓝本：
+- 这里重点不是登录本身，而是重复执行、失败重试和统一留证
 
-这个例子最适合用来告诉读者：
-- 蓝本的价值不在某一个工具
-- 蓝本的价值在于把多个工具域排成一条可执行、可回放、可验收的链
-
-为什么这里要用蓝本：
-- 四个域都只解决自己那一段问题
-- 只有蓝本能把“安全 -> 接口 -> 页面 -> 录屏/截图”固定成一条完整业务链
-
-如果不用蓝本，最小替代方案是：
-- 分别单独执行四个域的能力
-- 再人工判断顺序、依赖和最终通过条件
-- 适合一次性排查，不适合稳定回归
-
-## 示例 8：什么时候不要写蓝本
-
-推荐模式：
-- `chat` 或 `fast`。
-- 如果只是单步动作或短链路任务，优先直接调工具，不必先进入蓝本编排。
+## 蓝本样例 7：什么时候不需要写蓝本
 
 下面这些场景通常不值得单独写蓝本：
-
-1. 只做一次接口请求
-2. 只截一次图
-3. 只拉一次 logcat
-4. 只做一次摘要或签名计算
+- 只做一次接口请求
+- 只截一次图
+- 只拉一次 logcat
+- 只做一次摘要或签名计算
 
 这些动作直接调工具更清楚。
 
@@ -310,23 +353,23 @@ global_rule: <<<
 
 ## 常见误区
 
-1. 把蓝本当成新的协议层
-蓝本不会替代具体工具，它只是编排它们。
+- 只写一句“先登录，再看页面”
+这不够。接口地址、请求体、断言和页面条件都应该写清。
 
-2. 一个工具也要硬写蓝本
-如果只有一步动作，直接调工具通常更清楚。
+- 只写一句“先签名，再发请求”
+这不够。签名串怎么拼、摘要怎么算、签名放到哪里，都应该写清。
 
-3. 把复杂计算都塞到模板层
-模板层适合轻量准备值；签名、JWT、AES、RSA 这类确定性安全能力更适合交给专用工具。
+- 把录制和拆帧写成一个神秘动作
+现有能力是先录制，再关闭，再基于录屏结果处理，不是一个万能工具。
 
-4. 只写步骤，不写规则
-没有规则的蓝本适合探索；要做回归，就应该明确 PASS 条件、失败条件和证据要求。
+- 把所有细节都写成参数清单
+也不对。只有真正决定行为的参数才需要写，普通动作直接自然语言描述即可。
 
 ## 相关文档
 
 - [星图协议深入说明](cli-code.md)
 - [接口实战教学](api-playbook.md)
+- [安全工具实战](security-playbook.md)
 - [设备域实战](device-playbook.md)
 - [多媒体链路实战教学](media-playbook.md)
-- [安全工具实战](security-playbook.md)
 - [文档索引](README.md)

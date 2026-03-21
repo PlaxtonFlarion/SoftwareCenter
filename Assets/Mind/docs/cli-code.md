@@ -152,18 +152,30 @@ item_prefix: |
   本任务块开始前，先确认目标服务已启动，且测试环境可用。
 ```
 
-# name: http
-对单个 HTTP 接口执行一次请求，并确认状态码和业务返回都正常。
+# name: api_login_then_ui_verify
+前置变量：
+- `base_url = {{ env.base_url }}`
+- `username = {{ env.username }}`
+- `password = {{ env.password }}`
 
-# rule: <<<
-# PASS 条件：
-# - 请求成功
-# - 返回结构符合预期
-# >>>
+发送登录请求到 `{{ base_url }}/api/login`。
+请求方法为 `POST`。
+请求体使用：
+{
+  "username": "{{ username }}",
+  "password": "{{ password }}"
+}
+
+断言：
+- `response.status == 200`
+- `response.body_json.ok == true`
+
+提取：
+- `token = response.body_json.data.token`
 `````` 
 
-这里故意不展开底层结构。
-这一页的重点是蓝本层级、前后置和规则怎么组织，不是把接口参数整块摊开。
+这里故意只保留一个最小规格样例。
+这一页的重点是蓝本层级、前后置和规则怎么组织；真正完整的蓝本粒度，直接看 [蓝本实战样例](code-blueprints.md)。
 
 ## 接口蓝本到底是什么意思
 
@@ -185,11 +197,16 @@ item_prefix: |
 
 ## 复杂接口蓝本怎么读
 
-复杂蓝本这里不再展开长结构。你只需要记住三点：
+复杂蓝本不要写成“先做这个，再做那个”这种空描述。
 
-- 蓝本可以把多个接口步骤串起来，例如先登录拿 token，再访问 profile；或者先做签名准备，再访问受保护接口。
-- 蓝本可以把不同协议串起来，例如先消费 SSE，再查详情接口；或者先用 WebSocket 触发，再用 HTTP 校验状态。
-- 蓝本可以把接口和其它工具域串起来，例如接口成功后补截图；或者接口轮询完成后导出日志或留证。
+至少要写清这几件事：
 
-如果你要看“高层自然语言蓝本该怎么写”，直接看 [蓝本实战样例](code-blueprints.md)。  
+- 请求发到哪里
+- 方法是什么
+- 关键请求头或请求体是什么
+- 断言什么才算通过
+- 提取什么变量给后一步继续用
+- 页面或媒体动作的成功条件是什么
+
+如果你要看完整规格样例，直接看 [蓝本实战样例](code-blueprints.md)。  
 如果你要看 `request / env / items / extract / asserts` 的真实字段边界，直接看 [接口实战教学](api-playbook.md)。
