@@ -2,28 +2,25 @@
 
 如果你只想先跑起来，先按下面顺序看：
 
-1. 先激活：`--apply`
-2. 再配置：`--pref`
+1. 先打开后台管理中心：`--hello`
+2. 配置主模型 / 副模型
 3. 再选模式：`chat / fast / plan`
 4. 最后跑一个最小示例
 
-## 激活与配置
+## 后台管理中心与配置
 
-### 第一步：激活授权
-
-```bash
-mind --apply YOUR_LICENSE_CODE
-```
-
-`--apply` 用于写入激活码并申请本地授权文件。
-
-### 第二步：配置模型偏好
+### 第一步：打开后台管理中心
 
 ```bash
-mind --pref
+mind --hello
 ```
 
-`--pref` 会拉起本地偏好设置前端页，用于配置两个模型槽位：
+`--hello` 会拉起本地后台管理中心面板，统一管理：
+
+- 查看日志
+- 查看服务状态
+
+主副模型槽位为：
 
 - `primary`
 - `secondary`
@@ -36,7 +33,7 @@ mind --pref
 - `apikey`
 - `base_url`（可选）
 
-如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含授权、环境变量、激活与基础使用说明。
+如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含环境变量、后台管理中心与基础使用说明。
 
 ## 推荐终端与环境变量
 
@@ -124,12 +121,11 @@ mind
 - 先关闭抓包工具后再试；如果仍然开启证书注入，也会继续报这个错误
 - `timeout` 和证书校验失败是两类问题：前者偏链路中断，后者偏 TLS 证书被替换或无法被系统信任
 
-### 3. 授权、环境变量、激活说明在哪里？
+### 3. 配置、环境变量和服务状态说明在哪里？
 
 - [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前页面
-- `mind --apply <code>`
-- `mind --pref`
+- `mind --hello`
 
 ## 下一步看什么
 

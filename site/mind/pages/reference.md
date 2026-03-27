@@ -14,10 +14,8 @@
 
 ## CLI 速查
 
-- `mind --apply YOUR_LICENSE_CODE`  
-  用于写入激活码并申请本地授权文件。
-- `mind --pref`  
-  会拉起本地偏好设置前端页，用于配置 `primary / secondary` 两个模型槽位。
+- `mind --hello`  
+  会拉起后台管理中心面板，统一管理 `primary / secondary` 模型槽位、日志与服务状态。
 - `mind --chat "..."`  
   适合探索、问答和临时任务。
 - `mind --fast "..."`  

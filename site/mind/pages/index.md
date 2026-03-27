@@ -15,13 +15,13 @@
 第一步：
 
 ```bash
-mind --apply YOUR_LICENSE_CODE
+mind --hello
 ```
 
 第二步：
 
 ```bash
-mind --pref
+mind --chat "概述当前系统的核心能力与边界"
 ```
 
 ## 模式命令
@@ -32,17 +32,17 @@ mind --fast "对 path/to/video.mp4 提取关键帧并返回证据"
 mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ```
 
-## 激活与配置
+## 管理中心与配置
 
 <div class="mind-card-grid mind-card-grid-compact">
   <a class="mind-card mind-card-link" href="./getting-started/">
-    <h3>激活授权</h3>
-    <p>使用 <code>--apply</code> 写入激活码并申请本地授权文件。</p>
+    <h3>后台管理中心</h3>
+    <p>使用 <code>--hello</code> 拉起后台管理中心面板，统一管理模型配置、日志与服务状态。</p>
     <span class="mind-card-arrow">查看命令 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./getting-started/">
     <h3>配置模型</h3>
-    <p>使用 <code>--pref</code> 拉起本地前端页，配置两个模型槽位。</p>
+    <p>在管理中心里配置主模型与副模型，并查看日志和服务状态。</p>
     <span class="mind-card-arrow">查看命令 →</span>
   </a>
   <a class="mind-card mind-card-link" href="./getting-started/">
