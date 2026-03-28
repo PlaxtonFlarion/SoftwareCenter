@@ -27,7 +27,7 @@ mind --hello
 
 每个槽位当前包含：
 
-- `api`：目前支持 `OpenAI` 或 `Groq`
+- `api`：目前支持 `OpenAI`
 - `type`：`Text` 或 `Multimodal`
 - `model`
 - `apikey`

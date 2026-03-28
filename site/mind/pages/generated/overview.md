@@ -92,7 +92,7 @@ mind --hello
 
 每个槽位当前包含：
 
-- `api`：目前支持 `OpenAI` 或 `Groq`
+- `api`：目前支持 `OpenAI`
 - `type`：`Text` 或 `Multimodal`
 - `model`
 - `apikey`
@@ -100,7 +100,7 @@ mind --hello
 
 填写建议：
 
-- `api`：写 `OpenAI` 或 `Groq`
+- `api`：写 `OpenAI`
 - `type`：按文本模型或多模态模型选择
 - `model`：填写对应平台支持的模型名
 - `apikey`：填写该平台的访问密钥
