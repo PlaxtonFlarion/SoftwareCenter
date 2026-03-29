@@ -1,35 +1,11 @@
-<div class="mind-hero mind-hero-wide">
+<div class="mind-hero">
   <div class="mind-hero-copy">
     <span class="mind-eyebrow">ENGINEERING AGENT RUNTIME</span>
     <h1>Mind 代理思维</h1>
-    <p>把自然语言目标拆成可执行动作，并用统一工具协议把设备控制、接口验证、媒体处理和批跑编排串成可回放链路。</p>
-    <div class="mind-pill-row">
-      <span class="mind-pill">chat / fast / plan</span>
-      <span class="mind-pill">device / bench / common / media</span>
-      <span class="mind-pill">CLI first</span>
-    </div>
+    <p>面向工程交付，强调可观测、可复盘和可扩展。</p>
     <div class="mind-cta-row">
-      <a class="mind-cta mind-cta-primary" href="./getting-started/">先跑起来</a>
-      <a class="mind-cta mind-cta-secondary" href="./reference/">按专题看文档</a>
-    </div>
-  </div>
-  <div class="mind-hero-side">
-    <div class="mind-stat-grid">
-      <div class="mind-stat">
-        <span class="mind-stat-label">适合做什么</span>
-        <strong>执行而不是只回答</strong>
-        <p>面向工程交付，强调可观测、可复盘和可扩展。</p>
-      </div>
-      <div class="mind-stat">
-        <span class="mind-stat-label">怎么进入</span>
-        <strong><code>--hello</code> → 选模式 → 发目标</strong>
-        <p>先配置运行环境，再按任务类型选 `chat / fast / plan`。</p>
-      </div>
-      <div class="mind-stat">
-        <span class="mind-stat-label">什么时候继续深读</span>
-        <strong>批跑、接口、设备、多媒体</strong>
-        <p>进入具体执行面后，再沿专题正文继续深入，而不是在首页堆满所有细节。</p>
-      </div>
+      <a class="mind-cta mind-cta-primary" href="./getting-started/">快速开始</a>
+      <a class="mind-cta mind-cta-secondary" href="./reference/">参考文档</a>
     </div>
   </div>
 </div>
