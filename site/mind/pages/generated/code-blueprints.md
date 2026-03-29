@@ -372,4 +372,4 @@ global_rule: |
 - [安全工具实战](security-playbook.md)
 - [设备域实战](device-playbook.md)
 - [多媒体链路实战教学](media-playbook.md)
-- [文档索引](README.md)
+- [文档索引](docs-index.md)

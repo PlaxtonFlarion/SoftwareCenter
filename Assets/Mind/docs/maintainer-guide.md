@@ -61,18 +61,20 @@ device / bench / common / media
 
 ## 文档分层规则
 - `README.md`：入口页，只保留最小上手、边界、速查和跳转
-- `docs/README.md`：长文档索引
+- `docs/README.md`：长文档索引，由 `website/mind/docs_manifest.json` 生成
 - `docs/api-playbook.md`：接口约定与协议说明
 - `docs/media-playbook.md`：媒体命令与链路
 - `docs/performance-playbook.md`：性能星图与典型跑法
 - `docs/interactive-mode.md`：REPL 说明
 - `docs/architecture.md`：背景、云端架构、推理集群
 - `website/mind/pages/`：官网展示壳与站点入口页
+- `website/mind/docs_manifest.json`：官网生成层的正文清单与专题摘要
 - `website/mind/CLOUDFLARE.md`：Cloudflare Pages 部署说明
 
 维护原则：
 - 用户入口变重时，优先下沉到 `docs/`
 - 维护者说明不要反向塞回 README
+- `website/mind/pages/generated/` 只当生成产物看，不要手改
 
 ## 文档维护约定
 - 标题统一使用中文标题，不再在标题尾部追加英文副标题
@@ -83,12 +85,15 @@ device / bench / common / media
 - 只要改了 `README.md`、`docs/*.md` 或 `LICENSE.md`，都应判断是否需要同步到 SoftwareCenter
 
 ### 工具文档约定
-`backend/mcp_tools/automator/` 这类对模型直接暴露的工具，doc block 必须按“模型可读”标准维护，不能把实现注释直接暴露成工具说明。
+`backend/mcp_tools/` 下对模型直接暴露的工具，说明文本必须按“模型可读”和“MCP 客户端可消费”标准维护，不能把实现注释直接暴露成工具说明。
 
 维护要求：
 - 文档必须按真实能力写，不要承诺代码没有实现的行为
 - 优先写“做什么 / 不做什么 / 前置条件或限制”，避免堆实现细节
 - 工具说明应帮助模型判断是否该调用该工具，而不是解释内部实现过程
+- 工具对外描述优先写在 `@mcp.tool(description=...)`，不要依赖函数 docstring
+- 不要在 description 中重复 `domain / class / action / return` 这类内部标签；这些信息应由工具名、`meta` 和返回结构承担
+- 不要在 description 中罗列完整参数清单；字段级说明应落到 `inputSchema`，优先用 `Annotated[..., Field(description=...)]` 或 Pydantic 输入模型
 - 能力边界要写清：
   - 是否只下发命令
   - 是否会等待最终状态
@@ -106,8 +111,11 @@ device / bench / common / media
 - 第 1 句：这个工具实际执行什么动作
 - 第 2 句：它不负责什么，或它的边界在哪里
 - 第 3 句：它依赖什么条件，或在哪些情况下可能无效果/失败
+- 句子里只点名真正影响选工具的关键参数，例如 `kind`、`saved`、`activity`
+- 复杂参数多到一段 description 说不清时，优先补字段 description，不要把工具 description 写成参数手册
 
 避免这样写：
+- `D: / C: / A: / P: / R: / N:` 这类内部标签块
 - “万能入口”“智能处理”“自动完成页面操作” 这类泛化表述
 - 只写底层 adb 命令，不写实际能力边界
 - 把内部增强层、helper、临时实现细节写成用户契约
@@ -133,11 +141,12 @@ SoftwareCenter/site/mind/
 维护要求：
 - README 和 `docs/README.md` 必须使用仓库内相对路径，不要写本机绝对路径
 - 如果新增 `docs/*.md`，要确认：
-  - `docs/README.md` 已补索引
+  - `website/mind/docs_manifest.json` 已补清单
+  - 运行 `website/mind/scripts/sync_docs.py` 后，`docs/README.md` 已自动补索引
   - README 是否需要补入口
   - 同步后相对路径仍可达
 - 如果改了 `website/mind/`，要确认同步后仍映射到 `SoftwareCenter/site/mind/`
-- 如果改了正文文档结构，记得同步检查 `website/mind/scripts/sync_docs.py` 的映射
+- 如果改了正文文档结构，记得同步检查 `website/mind/docs_manifest.json`
 - 同步 workflow 会先运行 `website/mind/scripts/sync_docs.py`，再复制官网壳到公共仓库
 
 ## 变更检查清单

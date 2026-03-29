@@ -207,5 +207,5 @@ request = {
 ## 相关文档
 
 - [接口实战教学](api-playbook.md)
-- [文档索引](README.md)
+- [文档索引](docs-index.md)
 - [星图协议深入说明](cli-code.md)

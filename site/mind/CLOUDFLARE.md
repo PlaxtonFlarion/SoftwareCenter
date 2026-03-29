@@ -37,6 +37,7 @@ SoftwareCenter/
    - `Assets/Mind/README.md`
    - `Assets/Mind/docs/*.md`
    - `site/mind/mkdocs.yml`
+   - `site/mind/docs_manifest.json`
    - `site/mind/requirements.txt`
    - `site/mind/scripts/sync_docs.py`
 
@@ -67,6 +68,7 @@ Cloudflare Pages 的构建过程分三步：
 2. 运行 `scripts/sync_docs.py`
    - 从 `Assets/Mind/README.md`
    - 以及 `Assets/Mind/docs/*.md`
+   - 按 `site/mind/docs_manifest.json` 的清单
    - 生成 `site/mind/pages/generated/*.md`
 3. 运行 `mkdocs build`
    - 输出静态 HTML 到 `site/`

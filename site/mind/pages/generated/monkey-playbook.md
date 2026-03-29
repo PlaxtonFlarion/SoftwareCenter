@@ -350,4 +350,4 @@ adb -s <serial> shell monkey -p <package> \
 - [设备域实战](device-playbook.md)
 - [性能实战教学](performance-playbook.md)
 - [星图协议深入说明](cli-code.md)
-- [文档索引](README.md)
+- [文档索引](docs-index.md)

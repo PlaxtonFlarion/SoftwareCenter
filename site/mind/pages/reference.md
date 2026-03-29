@@ -11,6 +11,7 @@
 - 再看“文档索引”，按专题找到对应正文
 - 只有当你要看字段、协议或执行结构时，再进入协议型文档
 - 只有维护或二次开发时再看维护者指南
+- 官网侧边栏只保留入口页，不再重复把整套正文列一遍
 
 ## CLI 速查
 
@@ -66,38 +67,20 @@
 执行控制层：
 - `repeat / pattern / attempts / stop_on_fail`
 
-## 文档导航
+## 文档入口
 - [项目总览](../generated/overview/)  
   第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。
 - [文档索引](../generated/docs-index/)  
-  已经知道要找什么时，从这里按专题跳文档最快。
-- [星图协议](../generated/cli-code/)  
-  适合看 `--code` 的字段、层级、前后置和规则结构。
-- [星图样例](../generated/code-blueprints/)  
-  适合看 `--code` 的高层自然语言样例，以及什么时候该写星图。
-- [接口实战](../generated/api-playbook/)  
-  适合看 `bench.nexus` 的协议边界、提取、断言和批量请求。
-- [模板能力](../generated/template-playbook/)  
-  适合看 `bench.nexus` 模板 helper、签名前置材料和模板层边界。
-- [安全工具](../generated/security-playbook/)  
-  适合看 `security_*` 的摘要、JWT、RSA、AES 和安全层边界。
-- [设备域实战](../generated/device-playbook/)  
-  适合看设备能力分层、稳定执行建议和自然语言任务写法。
-- [Monkey 扰动](../generated/monkey-playbook/)  
-  适合看 `device.monkey.injection` 的全部参数、执行流程和返回结构。
-- [交互模式](../generated/interactive-mode/)  
-  适合看 REPL 指令、状态切换和输入约束。
-- [多媒体链路](../generated/media-playbook/)  
-  适合看媒体能力边界、自然语言任务写法和证据链思路。
-- [性能实战](../generated/performance-playbook/)  
-  适合看 Memrix、Framix、Monkey 相关场景和回归写法。
-- [背景与架构](../generated/architecture/)  
-  适合看系统分层、模型矩阵和工程摘要。
-- [维护者指南](../generated/maintainer-guide/)  
-  适合在维护文档、官网壳和同步链路时阅读。
+  这页是完整正文目录；所有专题页统一从这里继续跳转，不再由官网壳重复维护第二份目录。
+- [专题目录](../generated/catalog/)  
+  这页由文档清单自动生成，保留官网侧需要的专题导览摘要，但不再手写维护。
+- [快速开始](../getting-started/)  
+  只关心安装、模式选择和最小命令时，先看这里。
 
 ## 生成方式
 
+- 参考文档清单由 `website/mind/docs_manifest.json` 统一维护
+- 官网专题目录页会由 `scripts/sync_docs.py` 按清单自动生成
 - 站点参考文档由 `scripts/sync_docs.py` 从正文文档源生成
 - 私有仓库下，正文文档源是仓库根目录的 `README.md` 与 `docs/*.md`
 - 同步到 `SoftwareCenter` 后，正文文档源变成 `Assets/Mind/README.md` 与 `Assets/Mind/docs/*.md`

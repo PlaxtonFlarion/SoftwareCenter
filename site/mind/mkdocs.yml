@@ -50,14 +50,4 @@ nav:
       - 阅读导览: reference.md
       - 项目总览: generated/overview.md
       - 文档索引: generated/docs-index.md
-      - 星图协议: generated/cli-code.md
-      - 接口实战: generated/api-playbook.md
-      - 模板能力: generated/template-playbook.md
-      - 安全工具: generated/security-playbook.md
-      - 设备域实战: generated/device-playbook.md
-      - Monkey 扰动: generated/monkey-playbook.md
-      - 交互模式: generated/interactive-mode.md
-      - 多媒体链路: generated/media-playbook.md
-      - 性能实战: generated/performance-playbook.md
-      - 背景与架构: generated/architecture.md
-      - 维护者指南: generated/maintainer-guide.md
+      - 专题目录: generated/catalog.md

@@ -331,4 +331,4 @@ README 只保留入口层信息；如果你需要系统理解 `device` 域的能
 - [交互模式详解](interactive-mode.md)
 - [星图协议深入说明](cli-code.md)
 - [多媒体链路实战教学](media-playbook.md)
-- [文档索引](README.md)
+- [文档索引](docs-index.md)

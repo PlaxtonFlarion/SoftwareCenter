@@ -1,0 +1,88 @@
+{
+  "entries": [
+    {
+      "source": "README.md",
+      "target": "overview.md",
+      "label": "项目总览",
+      "summary": "第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。"
+    },
+    {
+      "source": "docs/README.md",
+      "target": "docs-index.md",
+      "label": "文档索引",
+      "summary": "完整正文目录入口；已经知道要找什么时，从这里按专题跳文档最快。"
+    },
+    {
+      "source": "docs/cli-code.md",
+      "target": "cli-code.md",
+      "label": "星图协议",
+      "summary": "适合看 --code 的字段、层级、前后置和规则结构。"
+    },
+    {
+      "source": "docs/code-blueprints.md",
+      "target": "code-blueprints.md",
+      "label": "星图样例",
+      "summary": "适合看跨域 --code 编排的高层自然语言样例，以及什么时候该写星图。"
+    },
+    {
+      "source": "docs/api-playbook.md",
+      "target": "api-playbook.md",
+      "label": "接口实战",
+      "summary": "适合看 bench.nexus 的协议边界、提取、断言和批量请求。"
+    },
+    {
+      "source": "docs/template-playbook.md",
+      "target": "template-playbook.md",
+      "label": "模板能力",
+      "summary": "适合看 bench.nexus 模板 helper、签名前置材料和模板层边界。"
+    },
+    {
+      "source": "docs/security-playbook.md",
+      "target": "security-playbook.md",
+      "label": "安全工具",
+      "summary": "适合看 security_* 的摘要、JWT、RSA、AES 和安全层边界。"
+    },
+    {
+      "source": "docs/device-playbook.md",
+      "target": "device-playbook.md",
+      "label": "设备域实战",
+      "summary": "适合看设备能力分层、多设备广播模型和稳定执行建议。"
+    },
+    {
+      "source": "docs/monkey-playbook.md",
+      "target": "monkey-playbook.md",
+      "label": "Monkey 扰动",
+      "summary": "适合看 device.monkey.injection 的全部参数、执行流程和返回结构。"
+    },
+    {
+      "source": "docs/interactive-mode.md",
+      "target": "interactive-mode.md",
+      "label": "交互模式",
+      "summary": "适合看 REPL 指令、状态切换和输入约束。"
+    },
+    {
+      "source": "docs/media-playbook.md",
+      "target": "media-playbook.md",
+      "label": "多媒体链路",
+      "summary": "适合看抽帧、裁剪、转码、拼接和音频处理。"
+    },
+    {
+      "source": "docs/performance-playbook.md",
+      "target": "performance-playbook.md",
+      "label": "性能实战",
+      "summary": "适合看 Framix、Memrix、Monkey 和性能星图样例。"
+    },
+    {
+      "source": "docs/architecture.md",
+      "target": "architecture.md",
+      "label": "背景与架构",
+      "summary": "适合看系统分层、工具域、云端增强和推理集群。"
+    },
+    {
+      "source": "docs/maintainer-guide.md",
+      "target": "maintainer-guide.md",
+      "label": "维护者指南",
+      "summary": "适合在维护文档、官网壳和同步链路时阅读。"
+    }
+  ]
+}

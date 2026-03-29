@@ -312,4 +312,4 @@ asserts:
 
 - [模板能力实战](template-playbook.md)
 - [接口实战教学](api-playbook.md)
-- [文档索引](README.md)
+- [文档索引](docs-index.md)
