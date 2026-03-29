@@ -171,7 +171,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
-  margin-top: 0.72rem;
+  margin-top: 1.08rem;
 }
 
 .mind-cta {
@@ -216,6 +216,12 @@
   gap: 0.9rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   margin: 0.95rem 0 1.1rem;
+}
+
+.mind-card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
 }
 
 .mind-card-grid-compact {

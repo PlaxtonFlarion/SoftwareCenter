@@ -53,7 +53,7 @@
 下面这组分法和仓库内 `docs/README.md`、自动生成的 `catalog.md` 保持一致。  
 如果你在 repo 内和官网之间来回切换，阅读路径不会变。
 
-<div class="mind-card-grid">
+<div class="mind-card-grid mind-card-stack">
   <div class="mind-card">
     <h3>入门与入口</h3>
     <p>适合你已经会跑主命令，但想补齐 REPL 指令、状态切换和交互边界时阅读。</p>
