@@ -1,34 +1,60 @@
 # 文档索引
 
-这里收纳从主 README 拆出的长文档。主 README 只保留上手入口、能力边界和最小速查。
-这页由 `website/mind/docs_manifest.json` 自动生成；如果新增、下线或调整专题顺序，应优先修改文档清单。
+这里收纳从主 README 拆出的长文档。主 README 只保留上手入口、能力边界和最小速查，完整正文统一从这里继续跳转。
+这页由 `website/mind/docs_manifest.json` 自动生成；如果新增、下线、重命名或调整专题顺序，应优先修改文档清单，而不是手改索引页。
 
-## 使用说明
-- 先看主 README，确认怎么启动、怎么选模式、怎么跑最小示例
-- 需要某一块的完整说明时，再跳到对应文档
+## 先按阅读状态进入
+- 第一次进入项目：先看主 README，确认怎么启动、怎么选模式、怎么跑最小命令
+- 已经知道任务类型：直接按下面的专题分组跳正文，不必把所有长文都读一遍
+- 需要回到站点入口：官网壳负责导航和导览，`docs` 负责完整正文
+- 正在排查某条链路：只读和当前任务相关的专题，不要把索引页当成长文正文
 
-## 文档目录
+## 按任务方向阅读
+### 入门与入口
+适合补齐交互入口、REPL 切换和输入约束。
+
+- [交互模式](interactive-mode.md)  
+  适合看 REPL 指令、状态切换和输入约束。
+
+### 编排与协议
+适合处理 `--code`、协议校验、模板层和批量执行结构。
+
 - [星图协议](cli-code.md)  
   适合看 --code 的字段、层级、前后置和规则结构。
 - [星图样例](code-blueprints.md)  
   适合看跨域 --code 编排的高层自然语言样例，以及什么时候该写星图。
-- [接口实战](api-playbook.md)  
+- [接口实战](playbook.api.md)  
   适合看 bench.nexus 的协议边界、提取、断言和批量请求。
-- [模板能力](template-playbook.md)  
+- [模板能力](playbook.template.md)  
   适合看 bench.nexus 模板 helper、签名前置材料和模板层边界。
-- [安全工具](security-playbook.md)  
-  适合看 security_* 的摘要、JWT、RSA、AES 和安全层边界。
-- [设备域实战](device-playbook.md)  
+
+### 执行与取证
+适合处理设备动作、多媒体证据链和端侧执行收束。
+
+- [设备域实战](playbook.device.md)  
   适合看设备能力分层、多设备广播模型和稳定执行建议。
-- [Monkey 扰动](monkey-playbook.md)  
+- [Monkey 扰动](playbook.monkey.md)  
   适合看 device.monkey.injection 的全部参数、执行流程和返回结构。
-- [交互模式](interactive-mode.md)  
-  适合看 REPL 指令、状态切换和输入约束。
-- [多媒体链路](media-playbook.md)  
+- [多媒体链路](playbook.media.md)  
   适合看抽帧、裁剪、转码、拼接和音频处理。
-- [性能实战](performance-playbook.md)  
+
+### 性能与安全
+适合处理性能回归、稳定性诊断、签名和加解密链路。
+
+- [安全工具](playbook.security.md)  
+  适合看 security_* 的摘要、JWT、RSA、AES 和安全层边界。
+- [性能实战](playbook.performance.md)  
   适合看 Framix、Memrix、Monkey 和性能星图样例。
+
+### 结构与维护
+适合继续读系统骨架、站点同步链路和维护约定。
+
 - [背景与架构](architecture.md)  
   适合看系统分层、工具域、云端增强和推理集群。
 - [维护者指南](maintainer-guide.md)  
   适合在维护文档、官网壳和同步链路时阅读。
+
+## 阅读建议
+- 先解决当前任务，再回来看结构文档；索引页负责导航，不负责替代正文
+- 如果你正在补协议、模板、设备或媒体链路，优先读对应专题，再回到 README 看入口说明
+- 如果你在维护官网壳或同步链路，优先看 `维护者指南` 和 `背景与架构`

@@ -1,83 +1,152 @@
 # 参考文档
 
-官网壳只负责入口和导航，完整正文仍然来自同步后的文档源。
+官网壳只负责入口和导航，完整正文仍然来自同步后的文档源。  
+这页的目标不是把所有长文档再抄一遍，而是帮你更快判断“下一页该去哪”。
 
-!!! note "阅读建议"
-    先从“项目总览”或“文档索引”进入；只有在已经明确目标时，再直接跳到具体专题页。
+<div class="mind-panel-grid mind-panel-grid-tight">
+  <div class="mind-panel mind-panel-accent">
+    <span class="mind-kicker">先这样读</span>
+    <h3>先定目标，再进正文</h3>
+    <p>先用入口页确认自己是在看入门、边界、专题还是维护说明，然后再进入对应正文，不要一开始就在完整目录里盲翻。</p>
+  </div>
+  <div class="mind-panel">
+    <span class="mind-kicker">这页不做什么</span>
+    <ul class="mind-mini-list">
+      <li>不重复维护整套正文目录</li>
+      <li>不替代 `docs-index` 和专题正文</li>
+      <li>不承诺实现中不存在的能力</li>
+    </ul>
+  </div>
+</div>
 
-## 怎么读
+## 先走哪条阅读路径
 
-- 先看“项目总览”，确认整体入口和模式边界
-- 再看“文档索引”，按专题找到对应正文
-- 只有当你要看字段、协议或执行结构时，再进入协议型文档
-- 只有维护或二次开发时再看维护者指南
-- 官网侧边栏只保留入口页，不再重复把整套正文列一遍
+<div class="mind-route-grid">
+  <a class="mind-route-card" href="../getting-started/">
+    <span class="mind-route-meta">Path A</span>
+    <h3>我还没跑起来</h3>
+    <p>先看环境、管理中心、模式选择和最小命令，不要直接跳长文。</p>
+    <span class="mind-card-arrow">去快速开始 →</span>
+  </a>
+  <a class="mind-route-card" href="../generated/overview/">
+    <span class="mind-route-meta">Path B</span>
+    <h3>我先想看整体入口</h3>
+    <p>先扫项目总览，确认 Mind 的定位、模式边界和常见使用路径。</p>
+    <span class="mind-card-arrow">去项目总览 →</span>
+  </a>
+  <a class="mind-route-card" href="../generated/docs-index/">
+    <span class="mind-route-meta">Path C</span>
+    <h3>我已经知道要找什么</h3>
+    <p>直接走完整目录，按专题跳文档最快，不必先读所有入口页。</p>
+    <span class="mind-card-arrow">去文档索引 →</span>
+  </a>
+  <a class="mind-route-card" href="../generated/catalog/">
+    <span class="mind-route-meta">Path D</span>
+    <h3>我想按专题浏览</h3>
+    <p>看自动生成的专题目录，用摘要快速筛掉当前不需要的正文。</p>
+    <span class="mind-card-arrow">去专题目录 →</span>
+  </a>
+</div>
+
+## 按同一套专题分组找正文
+
+下面这组分法和仓库内 `docs/README.md`、自动生成的 `catalog.md` 保持一致。  
+如果你在 repo 内和官网之间来回切换，阅读路径不会变。
+
+<div class="mind-card-grid">
+  <div class="mind-card">
+    <h3>入门与入口</h3>
+    <p>适合你已经会跑主命令，但想补齐 REPL 指令、状态切换和交互边界时阅读。</p>
+    <ul class="mind-mini-list">
+      <li><a href="../generated/interactive-mode/">交互模式</a></li>
+    </ul>
+  </div>
+  <div class="mind-card">
+    <h3>编排与协议</h3>
+    <p>适合你正在处理 `--code`、批量协议、模板层和验收结构时阅读。</p>
+    <ul class="mind-mini-list">
+      <li><a href="../generated/cli-code/">星图协议</a></li>
+      <li><a href="../generated/code-blueprints/">星图样例</a></li>
+      <li><a href="../generated/playbook.api/">接口实战</a></li>
+      <li><a href="../generated/playbook.template/">模板能力</a></li>
+    </ul>
+  </div>
+  <div class="mind-card">
+    <h3>执行与取证</h3>
+    <p>适合你正在处理设备动作、多媒体证据链和稳定性扰动时阅读。</p>
+    <ul class="mind-mini-list">
+      <li><a href="../generated/playbook.device/">设备域实战</a></li>
+      <li><a href="../generated/playbook.media/">多媒体链路</a></li>
+      <li><a href="../generated/playbook.monkey/">Monkey 扰动</a></li>
+    </ul>
+  </div>
+  <div class="mind-card">
+    <h3>性能与安全</h3>
+    <p>适合你正在做性能回归、证据留痕、签名和加解密链路时阅读。</p>
+    <ul class="mind-mini-list">
+      <li><a href="../generated/playbook.performance/">性能实战</a></li>
+      <li><a href="../generated/playbook.security/">安全工具</a></li>
+    </ul>
+  </div>
+  <div class="mind-card">
+    <h3>结构与维护</h3>
+    <p>适合你正在看系统骨架、站点壳和同步链路，或准备二次开发时阅读。</p>
+    <ul class="mind-mini-list">
+      <li><a href="../generated/architecture/">背景与架构</a></li>
+      <li><a href="../generated/maintainer-guide/">维护者指南</a></li>
+    </ul>
+  </div>
+</div>
 
 ## CLI 速查
 
-- `mind --hello`  
-  会拉起后台管理中心面板，统一管理 `primary / secondary` 模型槽位、日志与服务状态。
-- `mind --chat "..."`  
-  适合探索、问答和临时任务。
-- `mind --fast "..."`  
-  适合接口、媒体和短链路处理。
-- `mind --plan "..."`  
-  适合巡检、固定流程和回归任务。
+<div class="mind-panel-grid mind-panel-grid-tight">
+  <div class="mind-panel">
+    <span class="mind-kicker">配置入口</span>
+    <p><code>mind --hello</code> 会拉起后台管理中心面板，统一管理 <code>primary / secondary</code> 模型槽位、日志与服务状态。</p>
+  </div>
+  <div class="mind-panel">
+    <span class="mind-kicker">模式速记</span>
+    <ul class="mind-mini-list">
+      <li><code>mind --chat "..."</code>：探索、问答、临时任务</li>
+      <li><code>mind --fast "..."</code>：接口、媒体、短链路处理</li>
+      <li><code>mind --plan "..."</code>：巡检、固定流程、回归</li>
+    </ul>
+  </div>
+</div>
 
 如果你要看完整填写示例、环境变量和常见问题，直接跳到 [快速开始](../getting-started/)。
 
 ## 星图结构速读
 
-如果你在看 `--code`，可以先把它拆成两部分：
+<div class="mind-step-grid">
+  <div class="mind-step-card">
+    <span class="mind-step-index">L1</span>
+    <h3>整次批跑</h3>
+    <p>最外层控制整轮执行，常见字段是 <code>loop_prefix / loop_suffix</code>。</p>
+  </div>
+  <div class="mind-step-card">
+    <span class="mind-step-index">L2</span>
+    <h3>每一轮</h3>
+    <p>轮次级控制放在 <code>round_prefix / round_suffix</code>。</p>
+  </div>
+  <div class="mind-step-card">
+    <span class="mind-step-index">L3</span>
+    <h3>每个任务块</h3>
+    <p>任务块级 hook 放在 <code>item_prefix / item_suffix</code>。</p>
+  </div>
+  <div class="mind-step-card">
+    <span class="mind-step-index">L4</span>
+    <h3>当前任务正文</h3>
+    <p>正文层由 <code>message</code> 承载；默认值和覆盖值分别落在 <code>global_* / *</code>。</p>
+  </div>
+</div>
 
-- 包裹结构：谁包谁
-- 覆盖关系：默认值和单任务覆盖值怎么选
+<div class="mind-command-note">
+  <strong>覆盖关系：</strong><code>prefix</code> 覆盖 <code>global_prefix</code>，<code>suffix</code> 覆盖 <code>global_suffix</code>，<code>rule</code> 覆盖 <code>global_rule</code>。执行控制层主要看 <code>repeat / pattern / attempts / stop_on_fail</code>。
+</div>
 
-真正的包裹结构是：
-
-```text
-整次批跑
-└─ 每一轮
-   └─ 每个任务块
-      └─ 当前任务正文
-```
-
-字段归属：
-
-1. 最外层：整次批跑
-   - `loop_prefix / loop_suffix`
-2. 第二层：每一轮
-   - `round_prefix / round_suffix`
-3. 第三层：每个任务块
-   - `item_prefix / item_suffix`
-4. 第四层：当前任务正文
-   - `message`
-
-覆盖关系：
-
-- `prefix` 覆盖 `global_prefix`
-- `suffix` 覆盖 `global_suffix`
-- `rule` 覆盖 `global_rule`
-
-也就是说：
-- `global_prefix / prefix` 是同一位置的默认值和覆盖值
-- `global_suffix / suffix` 是同一位置的默认值和覆盖值
-- `global_rule / rule` 是同一位置的默认值和覆盖值
-
-执行控制层：
-- `repeat / pattern / attempts / stop_on_fail`
-
-## 文档入口
-- [项目总览](../generated/overview/)  
-  第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。
-- [文档索引](../generated/docs-index/)  
-  这页是完整正文目录；所有专题页统一从这里继续跳转，不再由官网壳重复维护第二份目录。
-- [专题目录](../generated/catalog/)  
-  这页由文档清单自动生成，保留官网侧需要的专题导览摘要，但不再手写维护。
-- [快速开始](../getting-started/)  
-  只关心安装、模式选择和最小命令时，先看这里。
-
-## 生成方式
+## 这套文档怎么来的
 
 - 参考文档清单由 `website/mind/docs_manifest.json` 统一维护
 - 官网专题目录页会由 `scripts/sync_docs.py` 按清单自动生成
