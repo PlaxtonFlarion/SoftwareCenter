@@ -71,7 +71,7 @@ Mind 有两种运行方式：
 - **命令行模式**：每条命令执行一次任务，适合脚本/CI
 - **交互式模式**：进入循环交互，可在 chat/fast/plan 间随时切换，适合探索与调试
 
-### 0. 先打开管理中心
+### 打开管理中心
 
 首次使用，建议先打开后台管理中心面板：
 
@@ -108,7 +108,7 @@ mind --hello
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含环境变量、后台管理中心与基础使用说明。
 
-### 1. 推荐终端与环境变量
+### 推荐终端与环境变量
 
 - Windows：推荐使用 `Windows Terminal`
 - macOS：推荐使用 `iTerm2` 或系统 `Terminal`
@@ -139,7 +139,7 @@ Windows：
 $env:Path += ";C:\Program Files\Mind"
 ```
 
-### 2. 最小上手
+### 最小上手
 ```
 # chat：先确认能力边界和做法
 mind --chat "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
@@ -153,7 +153,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 
 如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `--code`，以及后面的 [接口实战教学](#api-playbook)。
 
-### 3. 交互式运行
+### 交互式运行
 启动 REPL：
 ```
 mind
@@ -182,26 +182,26 @@ mind
 REPL 是交互入口；真正决定执行方式的是 chat/fast/plan 三种模式。  
 如果你需要完整指令说明，继续看后面的 [交互模式详解](#interactive-mode)。
 
-### 4. 常见问题解答
+### 常见问题解答
 
-**1. 已经联网，但一直 timeout？**
+**已经联网，但一直 timeout？**
 
 - 这类问题优先归到网络链路问题，先关闭 VPN、本地代理和系统代理
 - 某些 VPN 或代理会中断 CLI 长连接、SSE 或流式响应，表现为一直 `timeout`
 - 先在直连网络下验证；只有明确需要兼容网关时，再单独配置 `base_url`
 
-**2. 出现 SSL 证书错误？**
+**出现 SSL 证书错误？**
 
 - 这通常是本地证书链被改写，常见原因是抓包工具、HTTPS 代理或证书注入。
 - 先关闭抓包/代理并恢复系统证书信任，再重试；它和 `timeout` 不是同一类问题。
 
-**3. 配置、环境变量和服务状态应该去哪里看？**
+**配置、环境变量和服务状态应该去哪里看？**
 
 - [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前仓库的 [快速开始](#quick-start)
 - `mind --hello`
 
-**4. `--hello` 里至少应该先配什么？**
+**`--hello` 里至少应该先配什么？**
 
 - `primary.api`
 - `primary.model`
