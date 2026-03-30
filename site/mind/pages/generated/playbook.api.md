@@ -31,7 +31,7 @@
 
 ## 统一约定
 - 单请求场景里，把协议原生参数写进 `request`
-- 批量场景里，把共享默认值写进 `env`，逐项差异写进 `items[].request`
+- 批量场景里，把共享默认值写进 `env`，逐项差异直接写进 `items[]`
 - 提取结果统一放在 `extract`
 - 验收规则统一放在 `asserts`
 - 需要批次级默认行为时，用 `cfg / global_rule / global_prefix / global_suffix`
@@ -44,7 +44,8 @@
 
 如果你只记一条：
 
-- 协议原生参数留在 `request`
+- 单请求的协议原生参数留在 `request`
+- 批量请求的协议原生参数直接写进 `items[]`
 - 批量共享默认值留在 `env`
 - 提取写 `extract`
 - 验收写 `asserts`
@@ -77,8 +78,8 @@ env = {
 }
 
 items = [
-  {"request": {"method": "GET", "url": "/health"}},
-  {"request": {"method": "GET", "url": "/profile"}}
+  {"method": "GET", "url": "/health"},
+  {"method": "GET", "url": "/profile"}
 ]
 ```
 
@@ -89,8 +90,9 @@ items = [
 - `PackBuilder`：只负责构造统一返回包，不再承载检查逻辑
 
 ### Nexus 字段边界
-- `request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
-- `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；同名字段始终由当前 `request` 覆盖
+- 单请求里，`request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
+- 批量请求里，协议原生字段直接写进 `items[]`，不再额外包一层 `request`
+- `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；同名字段始终由当前请求项覆盖
 - `extract` 和 `asserts` 都作用于最终结果包中的 `data`
 - 如果你只想确认模板展开结果，用 `render`
 - 如果你想先检查必填字段和请求结构，用 `validate`
@@ -111,9 +113,9 @@ items = [
 
 ### SSE 批量字段放置规则
 - `env` 只放所有 `items` 共享且不随 case 变化的默认参数
-- `items[].request` 只放当前 case 的差异字段
-- `user_input` 必须写入 `items[].request.json.user_input`
-- `current_time` 必须写入 `items[].request.json.current_time`
+- `items[]` 只放当前 case 的差异字段
+- `user_input` 必须写入 `items[].json.user_input`
+- `current_time` 必须写入 `items[].json.current_time`
 - 不要把 `current_time` 放入 `env.json`
 - 不要把 `user_input` 放入 `template_vars`
 - 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
@@ -153,14 +155,12 @@ args:
       platform: Android
       conversation_id: 0
   items:
-    - request:
-        json:
-          user_input: 第一条 case 的原文
-          current_time: 第一条 case 的毫秒时间戳
-    - request:
-        json:
-          user_input: 第二条 case 的原文
-          current_time: 第二条 case 的毫秒时间戳
+    - json:
+        user_input: 第一条 case 的原文
+        current_time: 第一条 case 的毫秒时间戳
+    - json:
+        user_input: 第二条 case 的原文
+        current_time: 第二条 case 的毫秒时间戳
 ```
 
 错误示意 1：
@@ -170,8 +170,7 @@ args:
   template_vars:
     user_input: xxx
   items:
-    - request:
-        json: {}
+    - json: {}
 ```
 
 原因：
@@ -185,12 +184,10 @@ args:
     json:
       current_time: {{now_ms()}}
   items:
-    - request:
-        json:
-          user_input: A
-    - request:
-        json:
-          user_input: B
+    - json:
+        user_input: A
+    - json:
+        user_input: B
 ```
 
 原因：
@@ -244,7 +241,7 @@ args:
 - `ftp`：`response.welcome`、`response.list`、`response.download_binary`、`response.upload_text`、`response.upload_binary`、`response.media`
 
 ## 模板 Helper
-- 当前模板层已支持轻量 helper，可直接在 `request`、`env`、`items[].request`、`template_vars` 中使用 `{{ ... }}`
+- 当前模板层已支持轻量 helper，可直接在 `request`、`env`、`items[]`、`template_vars` 中使用 `{{ ... }}`
 - 适合迁入模板层的是轻量、纯函数、无副作用的数据准备逻辑
 - `JWT / RSA / AES / HMAC / 签名串` 这类确定性安全逻辑仍建议留在专用安全工具中
 - 如果你要系统看 helper 分类、组合写法和模板层边界，直接看 [模板能力](playbook.template.md)

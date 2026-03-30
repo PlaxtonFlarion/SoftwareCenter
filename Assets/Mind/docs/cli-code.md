@@ -187,9 +187,9 @@ global_prefix: <<<
 
 字段放置规则：
 - env 只放所有 items 共享且不随 case 变化的默认参数
-- items[].request 只放当前 case 的差异字段
-- user_input 必须写入 items[].request.json.user_input
-- current_time 必须写入 items[].request.json.current_time
+- items[] 只放当前 case 的差异字段
+- user_input 必须写入 items[].json.user_input
+- current_time 必须写入 items[].json.current_time
 - 不要把 current_time 放入 env.json
 - 不要把 user_input 放入 template_vars
 - 不要依赖 {{user_input}} 在 batch 中按 item 自动替换

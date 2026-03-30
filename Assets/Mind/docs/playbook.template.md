@@ -5,7 +5,7 @@
 
 ## 先判断是不是这页的范围
 
-- 你要在 `request / env / template_vars / items[].request` 里准备动态值：看这里
+- 你要在 `request / env / template_vars / items[]` 里准备动态值：看这里
 - 你要做时间戳、nonce、query 规范化、轻量编码转换：看这里
 - 你要做摘要、JWT、RSA、AES、HMAC 等确定性安全计算：优先去安全工具文档
 - 你只是想确认协议字段该怎么写：先回接口文档，不必先把模板文档读完
@@ -21,7 +21,7 @@
 - 模板层到底能做什么
 - 哪些逻辑适合放模板里
 - 哪些逻辑应该交给 `security_*`
-- `request / env / template_vars / items[].request` 里怎么用模板
+- `request / env / template_vars / items[]` 里怎么用模板
 
 ## 设计定位
 
@@ -53,7 +53,7 @@
 - `request`
 - `env`
 - `template_vars`
-- `items[].request`
+- `items[]`
 
 常见使用方式：
 
@@ -68,14 +68,14 @@ request = {
 ```
 
 - 这层只负责把动态值准备好，不负责描述完整请求结构
-- batch 只有一份全局 `template_vars`；如果每个 item 都有独立值，必须直接写进各自的 `items[].request`
+- batch 只有一份全局 `template_vars`；如果每个 item 都有独立值，必须直接写进各自的 `items[]`
 
 SSE batch 特别注意：
 
 - 不要把每条 case 的 `user_input` 放进全局 `template_vars`
 - 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
 - 不要把每条 case 的 `current_time` 放进 `env.json`
-- 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].request.json`
+- 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].json`
 - `env` 和 `items` 必须传原生结构化对象，不要传字符串化 JSON
 - `concurrency` 和 `fail_fast` 应按预期行为显式传值，不要在校验失败后通过省略字段回退默认值
 
