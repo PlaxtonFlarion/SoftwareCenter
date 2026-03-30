@@ -51,6 +51,7 @@
 
 ### 最新星图接口约定
 - 单请求星图统一使用：`request`、`template_vars`
+- 单请求的 `render / validate` 可额外接收 `env`，用于预览或校验共享默认值，不会改变正式执行工具的输入边界
 - 批量星图统一使用：`env`、`items`、`template_vars`、`concurrency`、`fail_fast`
 - 不再使用旧的单体 `payload = {...}` 形式，也不再使用 `options.fail_fast` / `vars`
 - MCP 工具边界：
@@ -89,11 +90,112 @@ items = [
 
 ### Nexus 字段边界
 - `request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
-- `env` 只在批量任务里出现，用作共享默认值；`items[].request` 会覆盖同名字段
+- `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；同名字段始终由当前 `request` 覆盖
 - `extract` 和 `asserts` 都作用于最终结果包中的 `data`
 - 如果你只想确认模板展开结果，用 `render`
 - 如果你想先检查必填字段和请求结构，用 `validate`
 - 如果你要真实发请求，才用 `*_request` 或 `*_batch`
+
+### SSE 批量硬性约束
+- SSE 单条请求用 `nexus_sse_request`
+- SSE 多条独立用例用 `nexus_sse_batch`
+- `1` 条 case = `items` 中的 `1` 个独立 item
+- 多条 `user_input` 必须展开成多个独立 `items`
+- 不允许把多条 `user_input` 合并进同一个 `request`
+- 不允许把 case 级字段写到 `env`
+- 不允许把 case 级字段写到全局 `template_vars`
+- 不允许假设 batch 会为每个 item 自动注入独立变量
+
+### SSE 批量字段放置规则
+- `env` 只放所有 `items` 共享且不随 case 变化的默认参数
+- `items[].request` 只放当前 case 的差异字段
+- `user_input` 必须写入 `items[].request.json.user_input`
+- `current_time` 必须写入 `items[].request.json.current_time`
+- 不要把 `current_time` 放入 `env.json`
+- 不要把 `user_input` 放入 `template_vars`
+- 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
+- 若使用占位符，必须在提交工具前由上层先展开成最终字面值
+
+### SSE 批量执行规则
+- `concurrency > 1` 表示并发执行多个 SSE 请求
+- `fail_fast = true` 表示任一 item 失败后，尽快停止剩余未完成项
+- `fail_fast = false` 表示继续执行剩余 item
+- 若后续 item 依赖前一步提取结果参与模板渲染，必须使用 `concurrency = 1`
+- 若只是多条独立 `user_input` 并发压测或回放，优先使用 batch
+
+正确示意：
+
+```text
+tool: nexus_sse_batch
+args:
+  concurrency: 5
+  fail_fast: true
+  env:
+    method: POST
+    url: http://10.0.80.65:8081/light1d/light/sse/generate
+    timeout: 60
+    headers:
+      Accept: text/event-stream
+      Content-Type: application/json
+      Authorization: Bearer es_fuzzy_search_token_2024
+    json:
+      user_id: dage
+      device_id: SS20250029_588C810F0842
+      type: text
+      language: zh
+      zone: GMT+8
+      sku: PD20250029
+      platform: Android
+      conversation_id: 0
+  items:
+    - request:
+        json:
+          user_input: 第一条 case 的原文
+          current_time: 第一条 case 的毫秒时间戳
+    - request:
+        json:
+          user_input: 第二条 case 的原文
+          current_time: 第二条 case 的毫秒时间戳
+```
+
+错误示意 1：
+
+```text
+args:
+  template_vars:
+    user_input: xxx
+  items:
+    - request:
+        json: {}
+```
+
+原因：
+- batch 只有一份全局 `template_vars`，不能为每个 item 提供独立 `user_input`
+
+错误示意 2：
+
+```text
+args:
+  env:
+    json:
+      current_time: {{now_ms()}}
+  items:
+    - request:
+        json:
+          user_input: A
+    - request:
+        json:
+          user_input: B
+```
+
+原因：
+- `env` 会在批次级统一渲染，通常导致整批 item 共用同一个时间戳
+
+展开规则：
+- 若一组有 `5` 条 `user_input`，则展开为 `5` 个 `items`
+- 使用一次 `nexus_sse_batch` 提交
+- `concurrency` 设为 `5`
+- 每个 item 单独写自己的 `user_input` 和 `current_time`
 
 常见提取路径：
 - `http / graphql`：`response.status`、`response.body_json`、`response.media`

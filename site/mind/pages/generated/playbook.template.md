@@ -68,6 +68,14 @@ request = {
 ```
 
 - 这层只负责把动态值准备好，不负责描述完整请求结构
+- batch 只有一份全局 `template_vars`；如果每个 item 都有独立值，必须直接写进各自的 `items[].request`
+
+SSE batch 特别注意：
+
+- 不要把每条 case 的 `user_input` 放进全局 `template_vars`
+- 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
+- 不要把每条 case 的 `current_time` 放进 `env.json`
+- 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].request.json`
 
 ## Helper 分类
 

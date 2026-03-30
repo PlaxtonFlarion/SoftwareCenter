@@ -165,6 +165,54 @@ global_rule: <<<
 ```
 ``````
 
+## SSE Batch 约束示例
+``````
+```cfg
+global_prefix: <<<
+请求类型：
+- SSE
+- 单条请求使用 nexus_sse_request
+- 批量请求使用 nexus_sse_batch
+
+硬性约束：
+- 1 条 case = items 中的 1 个独立 item
+- 多条 user_input = 多个独立 items
+- 不允许把多条 user_input 合并进同一个 request
+- 不允许把 case 级字段写到 env
+- 不允许把 case 级字段写到全局 template_vars
+- 不允许假设 batch 会为每个 item 自动注入独立变量
+
+字段放置规则：
+- env 只放所有 items 共享且不随 case 变化的默认参数
+- items[].request 只放当前 case 的差异字段
+- user_input 必须写入 items[].request.json.user_input
+- current_time 必须写入 items[].request.json.current_time
+- 不要把 current_time 放入 env.json
+- 不要把 user_input 放入 template_vars
+- 不要依赖 {{user_input}} 在 batch 中按 item 自动替换
+- 若使用占位符，必须在提交工具前由上层先展开成最终字面值
+
+工具规则：
+- 单条用例：nexus_sse_request
+- 批量用例：nexus_sse_batch
+- nexus_sse_batch args 包含：items、env、template_vars、concurrency、fail_fast
+
+批量执行规则：
+- concurrency > 1 表示并发执行多个 SSE 请求
+- fail_fast = true 表示任一 item 失败后，尽快停止剩余未完成项
+- fail_fast = false 表示继续执行剩余 item
+- 若后续 item 依赖前一步提取结果参与模板渲染，必须使用 concurrency=1
+- 若只是多条独立 user_input 并发压测或回放，优先使用 batch
+
+展开规则：
+- 若一组有 5 条 user_input，则展开为 5 个 items
+- 使用一次 nexus_sse_batch 提交
+- concurrency 设为 5
+- 每个 item 单独写自己的 user_input 和 current_time
+>>>
+```
+``````
+
 ## 最小星图示例
 ``````
 ```cfg
