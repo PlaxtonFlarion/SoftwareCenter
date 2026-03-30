@@ -32,13 +32,14 @@
 ## 统一约定
 - 单请求场景里，把协议原生参数写进 `request`
 - 批量场景里，把共享默认值写进 `env`，逐项差异直接写进 `items[]`
+- 执行前会先把 `env + 当前 request/item` 物化成最终请求；不要假设所有字段都是简单覆盖
 - 提取结果统一放在 `extract`
 - 验收规则统一放在 `asserts`
 - 需要批次级默认行为时，用 `cfg / global_rule / global_prefix / global_suffix`
 
 再强调一次边界：
-- `render`：只做模板展开和默认值合并，不执行协议请求
-- `validate`：只做模板展开和基础字段校验，不执行协议请求
+- `render`：只做模板展开和默认值物化，不执行协议请求
+- `validate`：只做模板展开、默认值物化和基础字段校验，不执行协议请求
 - `*_request`：执行单个协议请求
 - `*_batch`：执行一组同协议请求
 
@@ -92,7 +93,8 @@ items = [
 ### Nexus 字段边界
 - 单请求里，`request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
 - 批量请求里，协议原生字段直接写进 `items[]`，不再额外包一层 `request`
-- `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；同名字段始终由当前请求项覆盖
+- `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；执行前会先物化最终请求
+- 当前默认物化语义：标量字段由当前请求覆盖，`headers / json / json_body / params / form / variables` 做对象合并，其余字段按当前请求覆盖
 - `extract` 和 `asserts` 都作用于最终结果包中的 `data`
 - 如果你只想确认模板展开结果，用 `render`
 - 如果你想先检查必填字段和请求结构，用 `validate`

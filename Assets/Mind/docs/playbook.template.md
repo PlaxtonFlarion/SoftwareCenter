@@ -32,7 +32,7 @@
 - 时间戳、随机值、请求 ID、nonce
 - JSON / Base64 / Hex / URL 编解码
 - query 拼装、字典排序、稳定 query 串生成
-- 轻量 request/env 合并
+- 轻量 request/env 物化与合并
 - 在模板里做纯函数、无副作用的数据准备
 
 它不适合做：
@@ -78,6 +78,7 @@ SSE batch 特别注意：
 - 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].json`
 - `env` 和 `items` 必须传原生结构化对象，不要传字符串化 JSON
 - `concurrency` 和 `fail_fast` 应按预期行为显式传值，不要在校验失败后通过省略字段回退默认值
+- `render / validate / execute` 现在共享同一套 `env + request` 物化语义；不要再假设预执行和执行期会看到不同请求
 
 ## Helper 分类
 

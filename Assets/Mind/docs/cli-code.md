@@ -184,6 +184,7 @@ global_prefix: <<<
 - env 和 items 必须传原生结构化对象，不要传字符串化 JSON
 - concurrency 和 fail_fast 必须按预期行为显式传值，不要省略后依赖默认值
 - 若出现参数校验错误，修正字段类型或结构，不要通过删除字段绕过校验
+- env 里的共享字段会在执行前与每个 item 物化成最终请求；HTTP/GraphQL 的对象字段不是简单整段覆盖
 
 字段放置规则：
 - env 只放所有 items 共享且不随 case 变化的默认参数
