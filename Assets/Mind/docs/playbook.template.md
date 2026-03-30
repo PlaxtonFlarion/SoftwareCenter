@@ -76,6 +76,8 @@ SSE batch 特别注意：
 - 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
 - 不要把每条 case 的 `current_time` 放进 `env.json`
 - 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].request.json`
+- `env` 和 `items` 必须传原生结构化对象，不要传字符串化 JSON
+- `concurrency` 和 `fail_fast` 应按预期行为显式传值，不要在校验失败后通过省略字段回退默认值
 
 ## Helper 分类
 

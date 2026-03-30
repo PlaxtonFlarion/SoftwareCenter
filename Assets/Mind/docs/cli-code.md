@@ -181,6 +181,9 @@ global_prefix: <<<
 - 不允许把 case 级字段写到 env
 - 不允许把 case 级字段写到全局 template_vars
 - 不允许假设 batch 会为每个 item 自动注入独立变量
+- env 和 items 必须传原生结构化对象，不要传字符串化 JSON
+- concurrency 和 fail_fast 必须按预期行为显式传值，不要省略后依赖默认值
+- 若出现参数校验错误，修正字段类型或结构，不要通过删除字段绕过校验
 
 字段放置规则：
 - env 只放所有 items 共享且不随 case 变化的默认参数
@@ -201,6 +204,8 @@ global_prefix: <<<
 - concurrency > 1 表示并发执行多个 SSE 请求
 - fail_fast = true 表示任一 item 失败后，尽快停止剩余未完成项
 - fail_fast = false 表示继续执行剩余 item
+- 若预期 5 条并发执行，必须显式传 concurrency=5
+- 若预期失败后继续执行剩余项，必须显式传 fail_fast=false
 - 若后续 item 依赖前一步提取结果参与模板渲染，必须使用 concurrency=1
 - 若只是多条独立 user_input 并发压测或回放，优先使用 batch
 
@@ -208,6 +213,7 @@ global_prefix: <<<
 - 若一组有 5 条 user_input，则展开为 5 个 items
 - 使用一次 nexus_sse_batch 提交
 - concurrency 设为 5
+- fail_fast 按预期行为显式写出
 - 每个 item 单独写自己的 user_input 和 current_time
 >>>
 ```

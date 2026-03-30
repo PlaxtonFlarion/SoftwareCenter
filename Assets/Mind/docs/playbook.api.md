@@ -105,6 +105,9 @@ items = [
 - 不允许把 case 级字段写到 `env`
 - 不允许把 case 级字段写到全局 `template_vars`
 - 不允许假设 batch 会为每个 item 自动注入独立变量
+- `env` 和 `items` 必须传原生结构化对象，不要传字符串化 JSON
+- `concurrency` 和 `fail_fast` 需要按预期行为显式传值，不要省略后依赖默认值
+- 若出现参数校验错误，必须修正字段类型或结构，不要通过删除字段绕过校验
 
 ### SSE 批量字段放置规则
 - `env` 只放所有 `items` 共享且不随 case 变化的默认参数
@@ -120,6 +123,8 @@ items = [
 - `concurrency > 1` 表示并发执行多个 SSE 请求
 - `fail_fast = true` 表示任一 item 失败后，尽快停止剩余未完成项
 - `fail_fast = false` 表示继续执行剩余 item
+- 若预期 `5` 条并发执行，就必须显式传 `concurrency: 5`，省略字段不算传对参数
+- 若预期失败后继续执行剩余项，就必须显式传 `fail_fast: false`，省略字段不算传对参数
 - 若后续 item 依赖前一步提取结果参与模板渲染，必须使用 `concurrency = 1`
 - 若只是多条独立 `user_input` 并发压测或回放，优先使用 batch
 
@@ -191,10 +196,41 @@ args:
 原因：
 - `env` 会在批次级统一渲染，通常导致整批 item 共用同一个时间戳
 
+错误示意 3：
+
+```text
+args:
+  env: {...}
+  items: [...]
+```
+
+原因：
+- 如果你的目标是 `5` 条并发且失败后继续执行，就不能省略 `concurrency` 和 `fail_fast`
+- 省略后会回退到工具默认值，通常等价于 `concurrency = 1`、`fail_fast = true`
+- 这不算参数传递正确
+
+错误示意 4：
+
+```text
+args:
+  concurrency: "5"
+  fail_fast: "false"
+  env: "{...}"
+  items: "[...]"
+```
+
+原因：
+- `concurrency` 必须是整数
+- `fail_fast` 必须是布尔值
+- `env` 必须是对象
+- `items` 必须是数组对象
+- 参数校验失败后，应修正类型，不要删除字段绕过校验
+
 展开规则：
 - 若一组有 `5` 条 `user_input`，则展开为 `5` 个 `items`
 - 使用一次 `nexus_sse_batch` 提交
 - `concurrency` 设为 `5`
+- `fail_fast` 按预期行为显式写出，不要省略
 - 每个 item 单独写自己的 `user_input` 和 `current_time`
 
 常见提取路径：
