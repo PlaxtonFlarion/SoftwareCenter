@@ -64,7 +64,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">CODE</span>
     <h3>蓝图协议</h3>
-    <p>适合批跑、前后置和固定流程回归。需要规则化执行时优先切到这里。继续看 <a href="./generated/cli-code/">星图协议</a> 和 <a href="./generated/cli-code-advanced/">星图深入说明</a>。</p>
+    <p>适合批跑、前后置和固定流程回归。继续看 <a href="./generated/cli-code/">星图协议</a> 和 <a href="./generated/cli-code-advanced/">星图深入说明</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">AGENT</span>
