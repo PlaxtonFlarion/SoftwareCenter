@@ -48,9 +48,9 @@
   </div>
 </div>
 
-## 四种入口
+## 入口方式
 
-<div class="mind-card-grid mind-card-grid-compact">
+<div class="mind-card-grid mind-card-stack">
   <div class="mind-card">
     <h3>命令行模式</h3>
     <p><code>mind --chat "..."</code>、<code>mind --fast "..."</code>、<code>mind --plan "..."</code></p>
