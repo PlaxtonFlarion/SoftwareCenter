@@ -50,42 +50,26 @@
 
 ## 入口方式
 
-<div class="mind-card-grid mind-card-stack">
-  <div class="mind-card">
+<div class="mind-step-grid">
+  <div class="mind-step-card">
+    <span class="mind-step-index">CLI</span>
     <h3>命令行模式</h3>
-    <p><code>mind --chat "..."</code>、<code>mind --fast "..."</code>、<code>mind --plan "..."</code></p>
-    <ul class="mind-mini-list">
-      <li>适合一次性任务、脚本执行和 CI</li>
-      <li>已经知道目标，只差执行时优先用</li>
-      <li>继续看 <a href="./getting-started/">快速开始</a></li>
-    </ul>
+    <p>适合一次性任务、脚本执行和 CI。已经知道目标，只差执行时优先用。继续看 <a href="./getting-started/">快速开始</a>。</p>
   </div>
-  <div class="mind-card">
+  <div class="mind-step-card">
+    <span class="mind-step-index">REPL</span>
     <h3>交互式模式</h3>
-    <p><code>mind</code></p>
-    <ul class="mind-mini-list">
-      <li>适合持续对话、边问边跑</li>
-      <li>适合反复试探能力边界</li>
-      <li>继续看 <a href="./generated/interactive-mode/">交互模式</a></li>
-    </ul>
+    <p>适合持续对话、边问边跑，也适合反复试探能力边界。继续看 <a href="./generated/interactive-mode/">交互模式</a>。</p>
   </div>
-  <div class="mind-card">
+  <div class="mind-step-card">
+    <span class="mind-step-index">CODE</span>
     <h3>蓝图协议</h3>
-    <p><code>mind --chat --code api_batch.md</code> 或 <code>mind --plan --code workflow.md</code></p>
-    <ul class="mind-mini-list">
-      <li>适合批跑、前后置和固定流程回归</li>
-      <li>需要规则化执行时优先切到这里</li>
-      <li>继续看 <a href="./generated/cli-code/">星图协议</a>、<a href="./generated/cli-code-advanced/">星图深入说明</a></li>
-    </ul>
+    <p>适合批跑、前后置和固定流程回归。需要规则化执行时优先切到这里。继续看 <a href="./generated/cli-code/">星图协议</a> 和 <a href="./generated/cli-code-advanced/">星图深入说明</a>。</p>
   </div>
-  <div class="mind-card">
+  <div class="mind-step-card">
+    <span class="mind-step-index">AGENT</span>
     <h3>订阅</h3>
-    <p><code>mind --agent</code></p>
-    <ul class="mind-mini-list">
-      <li>适合远端任务下发和长链路监听</li>
-      <li>适合恢复重连场景</li>
-      <li>继续看 <a href="./generated/agent-mode/">订阅模式</a></li>
-    </ul>
+    <p>适合远端任务下发、长链路监听和恢复重连场景。继续看 <a href="./generated/agent-mode/">订阅模式</a>。</p>
   </div>
 </div>
 
