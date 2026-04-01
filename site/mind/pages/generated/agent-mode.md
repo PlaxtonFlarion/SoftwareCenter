@@ -105,15 +105,15 @@ mind.received
 
 `mind.forward.payload.profile` 目前只允许：
 - 空字符串：按普通单次请求执行
-- `code`：走 `mind_pack(...)`，把 `subject` 当作星图蓝本入口
+- `code`：走 `mind_pack(...)`，把 `message` 当作星图蓝本入口
 
 映射关系：
 - 普通任务：`mind.calling(message=..., mode=...)`
-- 星图任务：`mind.mind_pack([subject], mode, ...)`
+- 星图任务：`mind.mind_pack([message], mode, ...)`
 
 关键约束：
 - `mode` 不是任意字符串，只能落回本地现有三种执行面
-- `profile=code` 时必须提供 `subject`
+- `message` 始终必填；`profile=code` 时直接作为星图源输入
 - 非 `code` 任务必须提供 `message`
 - 本地会先发 `mind.received`，再把实际执行放到后台任务里，避免阻塞 WS 心跳
 
@@ -170,7 +170,7 @@ mind.received
 优先确认：
 - 是否收到了 `mind.forward`
 - `payload.mode` 是否是 `chat / fast / plan`
-- `payload.profile=code` 时是否提供了 `subject`
+- `payload.message` 是否存在且非空
 - 消息是否因为缺少 `message_id / call_id / cid / sid` 被本地丢弃
 
 ### 怀疑任务被重复执行

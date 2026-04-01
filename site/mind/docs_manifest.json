@@ -34,6 +34,13 @@
       "summary": "适合看跨域 --code 编排的高层自然语言样例，以及什么时候该写星图。"
     },
     {
+      "source": "docs/cli-code-source-design.md",
+      "target": "cli-code-source-design.md",
+      "label": "星图源抽象设计",
+      "category": "编排与协议",
+      "summary": "适合看 --code 如何从本机文件路径升级为统一 source 抽象。"
+    },
+    {
       "source": "docs/playbook.api.md",
       "target": "playbook.api.md",
       "label": "接口实战",

@@ -345,6 +345,9 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 
 用于装载一个或多个批量执行星图，并按选定协议执行。
 - 支持 `.md / .txt`
+- 也支持 `--code -` 从标准输入读取
+- 也支持 `--code inline:...` 直接执行内联星图
+- 也支持 `--code https://...` 从 URL 拉取星图
 - 可与 `--chat / --fast / --plan` 组合：决定这批星图按哪种主模式执行
 - 一次可装载多份星图：`--code a.md b.md c.md`
 
