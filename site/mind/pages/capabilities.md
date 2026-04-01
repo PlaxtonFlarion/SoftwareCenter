@@ -29,106 +29,63 @@
   <div class="mind-step-card">
     <span class="mind-step-index">入口</span>
     <h3>先判断是不是一次性任务</h3>
-    <p>如果你已经知道要做什么，只想立刻执行一条任务，先走命令行模式，不必先进入交互循环。</p>
+    <p>已经知道要做什么，只想立刻执行一条任务，先走命令行。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">互动</span>
     <h3>需要边问边试时进入交互式</h3>
-    <p>如果你还在确认能力边界、做法和路径，交互式更合适，可以持续对话和反复调整。</p>
+    <p>还在确认能力边界、做法和路径时，交互式更合适。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">批量</span>
     <h3>需要批跑和规则时改走蓝图协议</h3>
-    <p>如果你要把多条任务组织成可回放、可复用、可回归的执行蓝本，就不要再堆命令行，直接走 <code>--code</code>。</p>
+    <p>需要批跑、前后置和回归时，不要再堆命令行，直接走 <code>--code</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">下发</span>
     <h3>需要远端调度时走订阅</h3>
-    <p>如果任务不是你在本地主动发起，而是等待服务端下发，就直接进入 <code>--agent</code>。</p>
+    <p>任务不是本地主动发起，而是等待服务端下发时，直接进入 <code>--agent</code>。</p>
   </div>
 </div>
 
-## 命令行模式
+## 四种入口
 
-<div class="mind-card-grid">
+<div class="mind-card-grid mind-card-grid-compact">
   <div class="mind-card">
-    <h3>适合什么</h3>
-    <ul class="mind-mini-list">
-      <li>一次性任务</li>
-      <li>脚本执行和 CI</li>
-      <li>已经知道目标，只差执行</li>
-    </ul>
-  </div>
-  <div class="mind-card">
-    <h3>典型写法</h3>
+    <h3>命令行模式</h3>
     <p><code>mind --chat "..."</code>、<code>mind --fast "..."</code>、<code>mind --plan "..."</code></p>
-  </div>
-  <div class="mind-card">
-    <h3>继续看哪里</h3>
-    <p>先去 <a href="./getting-started/">快速开始</a>，再根据任务类型跳到设备、协议、多媒体或性能正文。</p>
-  </div>
-</div>
-
-## 交互式模式
-
-<div class="mind-card-grid">
-  <div class="mind-card">
-    <h3>适合什么</h3>
     <ul class="mind-mini-list">
-      <li>持续对话</li>
-      <li>边问边跑</li>
-      <li>反复试探能力边界</li>
+      <li>适合一次性任务、脚本执行和 CI</li>
+      <li>已经知道目标，只差执行时优先用</li>
+      <li>继续看 <a href="./getting-started/">快速开始</a></li>
     </ul>
   </div>
   <div class="mind-card">
-    <h3>典型写法</h3>
-    <p>直接执行 <code>mind</code> 进入 REPL，再在交互中持续推进当前任务。</p>
-  </div>
-  <div class="mind-card">
-    <h3>继续看哪里</h3>
-    <p>去 <a href="./generated/interactive-mode/">交互模式</a>，补齐 REPL 指令、输入边界和切换方式。</p>
-  </div>
-</div>
-
-## 蓝图协议
-
-<div class="mind-card-grid">
-  <div class="mind-card">
-    <h3>适合什么</h3>
+    <h3>交互式模式</h3>
+    <p><code>mind</code></p>
     <ul class="mind-mini-list">
-      <li>批跑</li>
-      <li>前后置和规则化执行</li>
-      <li>固定流程回归</li>
+      <li>适合持续对话、边问边跑</li>
+      <li>适合反复试探能力边界</li>
+      <li>继续看 <a href="./generated/interactive-mode/">交互模式</a></li>
     </ul>
   </div>
   <div class="mind-card">
-    <h3>典型写法</h3>
+    <h3>蓝图协议</h3>
     <p><code>mind --chat --code api_batch.md</code> 或 <code>mind --plan --code workflow.md</code></p>
-  </div>
-  <div class="mind-card">
-    <h3>继续看哪里</h3>
-    <p>先读 <a href="./generated/cli-code/">星图协议</a>，再读 <a href="./generated/cli-code-advanced/">星图深入说明</a> 和 <a href="./generated/code-blueprints/">星图样例</a>。</p>
-  </div>
-</div>
-
-## 订阅
-
-<div class="mind-card-grid">
-  <div class="mind-card">
-    <h3>适合什么</h3>
     <ul class="mind-mini-list">
-      <li>远端任务下发</li>
-      <li>本地长链路监听</li>
-      <li>恢复重连场景</li>
+      <li>适合批跑、前后置和固定流程回归</li>
+      <li>需要规则化执行时优先切到这里</li>
+      <li>继续看 <a href="./generated/cli-code/">星图协议</a>、<a href="./generated/cli-code-advanced/">星图深入说明</a></li>
     </ul>
   </div>
   <div class="mind-card">
-    <h3>典型写法</h3>
+    <h3>订阅</h3>
     <p><code>mind --agent</code></p>
-  </div>
-  <div class="mind-card">
-    <h3>继续看哪里</h3>
-    <p>去 <a href="./generated/agent-mode/">订阅模式</a>，看会话、长链路、恢复链路和排障说明。</p>
+    <ul class="mind-mini-list">
+      <li>适合远端任务下发和长链路监听</li>
+      <li>适合恢复重连场景</li>
+      <li>继续看 <a href="./generated/agent-mode/">订阅模式</a></li>
+    </ul>
   </div>
 </div>
 

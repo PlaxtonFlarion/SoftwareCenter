@@ -28,14 +28,6 @@
 - `*_request`：执行单个请求
 - `*_batch`：执行一组同协议请求
 
-[## 统一约定
-- 单请求场景里，把协议原生参数写进 `request`
-- 批量场景里，把共享默认值写进 `env`，逐项差异写进 `items[].request`
-- 执行前会先把 `env + 当前 item.request` 物化成最终请求；不要假设所有字段都是简单覆盖
-- 提取结果统一放在 `extract`
-- 验收规则统一放在 `asserts`
-- 需要批次级默认行为时，用 `cfg / global_rule / global_prefix / global_suffix`]()
-
 再强调一次边界：
 - `render`：只做模板展开和默认值物化，不执行协议请求
 - `validate`：只做模板展开、默认值物化和基础字段校验，不执行协议请求
@@ -237,14 +229,31 @@ args:
 - 每个 item 单独写自己的 `user_input` 和 `current_time`
 
 常见提取路径：
-- `http / graphql`：`response.status`、`response.body_json`、`response.media`
-- `sse`：`response.events`、`response.media`
-- `ws`：`response.messages`、`response.media`
-- `tcp`：`response.body_text`、`response.messages`、`response.remote`、`response.body_hex`
-- `udp`：`response.body_text`、`response.remote`、`response.body_hex`
-- `smtp`：`response.action`、`response.ehlo`、`response.noop`、`response.send`、`response.attachments`
-- `imap`：`response.login`、`response.select`、`response.search`、`response.fetch`、`response.parsed_messages`、`response.media`
-- `ftp`：`response.welcome`、`response.list`、`response.download_binary`、`response.upload_text`、`response.upload_binary`、`response.media`
+
+### Web 类协议
+
+- `http / graphql`
+  常见路径：`response.status`、`response.body_json`、`response.media`
+- `sse`
+  常见路径：`response.events`、`response.media`
+- `ws`
+  常见路径：`response.messages`、`response.media`
+
+### 低层报文
+
+- `tcp`
+  常见路径：`response.body_text`、`response.messages`、`response.remote`、`response.body_hex`
+- `udp`
+  常见路径：`response.body_text`、`response.remote`、`response.body_hex`
+
+### 邮件与文件传输
+
+- `smtp`
+  常见路径：`response.action`、`response.ehlo`、`response.noop`、`response.send`、`response.attachments`
+- `imap`
+  常见路径：`response.login`、`response.select`、`response.search`、`response.fetch`、`response.parsed_messages`、`response.media`
+- `ftp`
+  常见路径：`response.welcome`、`response.list`、`response.download_binary`、`response.upload_text`、`response.upload_binary`、`response.media`
 
 ## 模板 Helper
 - 当前模板层已支持轻量 helper，可直接在 `request`、`env`、`items[].request`、`template_vars` 中使用 `{{ ... }}`
@@ -253,7 +262,8 @@ args:
 - 如果你要系统看 helper 分类、组合写法和模板层边界，直接看 [模板能力](playbook.template.md)
 - 如果你要看 `security_digest / security_jwt / security_crypto / security_aes` 的能力边界，直接看 [安全工具](playbook.security.md)
 
-已支持的 helper：
+### 标识与时间
+
 - `now_s()`
   返回当前 Unix 秒级时间戳。适合请求头时间、签名前的轻量时间字段、简单时序标记。
 - `now_ms()`
@@ -268,10 +278,16 @@ args:
   生成随机 UUID。适合请求 ID、trace ID、幂等键、一次性业务标识。
 - `nonce(n)`
   生成指定长度的随机 nonce。适合轻量防重放字段、随机串参数、临时 token 片段。
+
+### 取值与回退
+
 - `pick(obj, "a.b.0", default)`
   从对象路径中取值，取不到时回退到默认值。适合从 `env`、提取结果或复杂对象中安全读取嵌套字段。
 - `coalesce(a, b, c)`
   返回第一个非空值。适合多来源回退，例如优先业务值，缺失时回退到默认值或环境变量。
+
+### 编解码
+
 - `b64encode(v)`
   把值编码成 Base64。适合基础认证、二进制转文本、接口要求 Base64 载荷的场景。
 - `b64decode(v)`
@@ -284,6 +300,9 @@ args:
   把对象序列化成 JSON 字符串。适合接口字段本身要求字符串化 JSON，而不是对象结构的场景。
 - `json_loads(v)`
   把 JSON 字符串解析成对象。适合上游给的是 JSON 文本，但当前模板逻辑需要对象字段时使用。
+
+### URL 与结构
+
 - `urlencode(obj)`
   把对象编码成 URL query 字符串。适合拼查询串、表单串、回调参数。
 - `urldecode(text)`
@@ -294,6 +313,9 @@ args:
   按 key 排序对象。适合生成稳定字典结构，便于签名前预处理或做稳定比对。
 - `canonical_query(obj)`
   把对象转成稳定排序的 query 字符串。适合签名前 query 归一化、稳定串比较、可重复构造 URL 参数。
+
+### 压缩与二进制转换
+
 - `gzip_encode(v)`
   用 gzip 压缩值。适合服务端要求 gzip 载荷，或要模拟压缩上传的场景。
 - `gzip_decode(v)`

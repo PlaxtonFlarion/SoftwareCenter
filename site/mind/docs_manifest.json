@@ -78,9 +78,9 @@
     {
       "source": "docs/agent-mode.md",
       "target": "agent-mode.md",
-      "label": "驻留与订阅模式",
+      "label": "订阅模式",
       "category": "入门与入口",
-      "summary": "适合看 --agent 的驻留会话、长链路监听、任务下发和恢复链路。"
+      "summary": "适合看 --agent 的会话、长链路监听、任务下发和恢复链路。"
     },
     {
       "source": "docs/playbook.media.md",
