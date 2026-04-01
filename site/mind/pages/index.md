@@ -14,7 +14,7 @@
   <div class="mind-panel mind-panel-accent">
     <span class="mind-kicker">阅读路线</span>
     <h3>先判断你要怎么使用，再进入对应正文</h3>
-    <p>首页重点不是解释 `chat / fast / plan` 怎么选，而是先帮你判断应该走 CLI 命令行、REPL 交互式、`--code` 星图协议，还是 `--agent` 订阅模式。</p>
+    <p>首页先帮你判断应该走 CLI 命令行、REPL 交互式、`--code` 星图协议，还是 `--agent` 订阅模式，再进入对应正文。</p>
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">典型使用场景</span>
@@ -112,11 +112,6 @@ mind --agent
   <a class="mind-card mind-card-link" href="./generated/playbook.security/">
     <h3>安全工具</h3>
     <p>摘要、JWT、RSA、AES 与签名前置的边界拆分。</p>
-    <span class="mind-card-arrow">查看详情 →</span>
-  </a>
-  <a class="mind-card mind-card-link" href="./generated/cli-code/">
-    <h3>星图协议</h3>
-    <p>先看结构层：字段、层级、文件格式和最小写法。需要覆盖优先级和执行语义时，再继续跳到星图深入说明。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
 </div>
