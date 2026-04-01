@@ -22,7 +22,7 @@
       <li>用一条 CLI 命令直接完成一次任务</li>
       <li>进入 REPL 持续交互，边问边跑</li>
       <li>用 `--code` 组织批跑、前后置和回归</li>
-      <li>用 `--agent` 常驻订阅，等待远端下发任务</li>
+      <li>用 `--agent` 进入订阅，等待远端下发任务</li>
     </ul>
   </div>
 </div>
@@ -39,7 +39,7 @@
   <a class="mind-route-card" href="./capabilities/">
     <span class="mind-route-meta">Step 2</span>
     <h3>能力概览</h3>
-    <p>适合先确认能力边界、工具域分工，以及本地主动执行和订阅执行分别覆盖什么。</p>
+    <p>适合先确认能力边界、主要能力分别覆盖什么，以及本地主动执行和订阅执行分别覆盖什么。</p>
     <span class="mind-card-arrow">看边界 →</span>
   </a>
   <a class="mind-route-card" href="./reference/">
@@ -80,7 +80,7 @@ mind
 mind --chat --code api_batch.md
 ```
 
-### 需要驻留监听时切到 `--agent`
+### 需要订阅监听时切到 `--agent`
 
 ```bash
 mind --agent
@@ -116,7 +116,7 @@ mind --agent
   </a>
 </div>
 
-## 四种使用方式
+## 使用方式
 
 <div class="mind-panel-grid mind-panel-grid-tight">
   <a class="mind-panel mind-panel-link" href="./getting-started/">
@@ -155,7 +155,7 @@ mind --agent
     <span class="mind-kicker">如果你已经知道任务类型</span>
     <ul class="mind-mini-list">
       <li>去 <a href="./reference/">参考文档</a> 按专题继续读</li>
-      <li>或直接看 <a href="./generated/docs-index/">文档索引</a></li>
+      <li>或直接看 <a href="./generated/docs-index/">完整目录页</a></li>
     </ul>
   </div>
 </div>

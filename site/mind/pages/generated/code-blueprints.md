@@ -368,7 +368,7 @@ global_rule: |
 
 只有当你开始需要下面这些能力时，星图才真正有价值：
 - 步骤之间有依赖
-- 要跨多个工具域
+- 要跨多个能力方向
 - 要统一规则、重试或重复
 - 要系统性留证
 
@@ -392,6 +392,6 @@ global_rule: |
 - [星图深入说明](cli-code-advanced.md)
 - [接口实战](playbook.api.md)
 - [安全工具](playbook.security.md)
-- [设备域实战](playbook.device.md)
+- [设备与 UI 实战](playbook.device.md)
 - [多媒体链路](playbook.media.md)
 - [文档索引](docs-index.md)

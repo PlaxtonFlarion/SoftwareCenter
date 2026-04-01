@@ -7,7 +7,7 @@
 
 - 你已经知道 `--code` 的基本格式，但不确定前后置到底谁包谁、谁覆盖谁：看这里
 - 你要理解 `repeat / pattern / attempts / stop_on_fail` 的执行语义：看这里
-- 你要区分 `global_rule / rule` 和 `plan.free_rule`：看这里
+- 你要区分 `global_rule / rule` 和计划执行时的规则判断：看这里
 - 你只是第一次接触星图：先看 `星图协议`
 - 你想照着真实任务样例写：先看 `星图样例`
 
@@ -138,15 +138,15 @@ rule   = 当前任务 rule   或 global_rule
 - `attempts` 决定单条失败后怎么补救
 - `stop_on_fail` 决定失败后整包是否继续
 
-## `global_rule / rule` 和 `free_rule` 的边界
+## `global_rule / rule` 和执行期规则判断的边界
 这是最容易混写的地方。
 
 - `global_rule / rule`：属于 `--code` 的星图规则层
-- `free_rule`：属于 `plan` 执行面的执行期规则判断
+- 执行期规则判断：属于 `plan` 执行面
 
 不要混淆成同一种东西：
 - 星图规则层关注的是“当前任务块应该按什么规则验收、约束或留证”
-- `plan.free_rule` 关注的是“计划执行时如何做自由规则判断”
+- 计划执行时的规则判断关注的是“计划执行时如何做规则判断”
 
 所以：
 - 改星图结构时，优先看 `global_rule / rule`
@@ -195,7 +195,7 @@ mind --chat --code a.md b.md c.md
 
 它负责筛选，不负责改写任务天然顺序。
 
-### 把 `global_rule / rule` 写成 `plan.free_rule`
+### 把 `global_rule / rule` 写成计划执行时的规则判断
 不对。
 
 这会把星图规则层和执行面规则层混成一层，后续维护会非常乱。

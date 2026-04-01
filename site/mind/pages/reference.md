@@ -13,7 +13,7 @@
     <span class="mind-kicker">这页不做什么</span>
     <ul class="mind-mini-list">
       <li>不重复维护整套正文目录</li>
-      <li>不替代 `docs-index` 和专题正文</li>
+      <li>不替代完整目录页和专题正文</li>
       <li>不承诺实现中不存在的能力</li>
     </ul>
   </div>
@@ -50,16 +50,16 @@
 
 ## 按同一套专题分组找正文
 
-下面这组分法和仓库内 `docs/README.md`、自动生成的 `catalog.md` 保持一致。  
+下面这组分法和仓库内的长文档索引、自动生成的专题目录保持一致。  
 如果你在 repo 内和官网之间来回切换，阅读路径不会变。
 
 <div class="mind-card-grid mind-card-stack">
   <div class="mind-card">
     <h3>入门与入口</h3>
-    <p>适合你已经会跑主命令，但想补齐 REPL 指令、状态切换、驻留订阅和交互边界时阅读。</p>
+    <p>适合你已经会跑主命令，但想补齐 REPL 指令、状态切换、订阅和交互边界时阅读。</p>
     <ul class="mind-mini-list">
       <li><a href="../generated/interactive-mode/">交互模式</a></li>
-      <li><a href="../generated/agent-mode/">驻留与订阅模式</a></li>
+      <li><a href="../generated/agent-mode/">订阅模式</a></li>
     </ul>
   </div>
   <div class="mind-card">
@@ -77,7 +77,7 @@
     <h3>执行与取证</h3>
     <p>适合你正在处理设备动作、多媒体证据链和稳定性扰动时阅读。</p>
     <ul class="mind-mini-list">
-      <li><a href="../generated/playbook.device/">设备域实战</a></li>
+      <li><a href="../generated/playbook.device/">设备与 UI 实战</a></li>
       <li><a href="../generated/playbook.media/">多媒体链路</a></li>
       <li><a href="../generated/playbook.monkey/">Monkey 扰动</a></li>
     </ul>
@@ -117,7 +117,7 @@
       <li><code>mind --chat "..."</code>：探索、问答、临时任务</li>
       <li><code>mind --fast "..."</code>：接口、媒体、短链路处理</li>
       <li><code>mind --plan "..."</code>：巡检、固定流程、回归</li>
-      <li><code>mind --agent</code>：驻留监听、远端任务下发、长链路恢复</li>
+      <li><code>mind --agent</code>：订阅监听、远端任务下发、长链路恢复</li>
     </ul>
   </div>
 </div>
@@ -155,8 +155,7 @@
 
 ## 这套文档怎么来的
 
-- 参考文档清单由 `website/mind/docs_manifest.json` 统一维护
-- 官网专题目录页会由 `scripts/sync_docs.py` 按清单自动生成
-- 站点参考文档由 `scripts/sync_docs.py` 从正文文档源生成
-- 私有仓库下，正文文档源是仓库根目录的 `README.md` 与 `docs/*.md`
-- 同步到 `SoftwareCenter` 后，正文文档源变成 `Assets/Mind/README.md` 与 `Assets/Mind/docs/*.md`
+- 参考文档清单由站点生成层统一维护
+- 官网专题目录页会按清单自动生成
+- 站点参考文档会从正文来源自动同步生成
+- 私有仓库和公共站点会共享同一套正文内容，只是承载位置不同

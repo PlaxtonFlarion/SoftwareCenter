@@ -30,7 +30,7 @@ device / bench / common / media
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
 - `plan`：先生成计划，再按步骤顺序执行，并承载 `free_rule` 这类执行期规则判断能力
-- `agent`：驻留订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
+- `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 
 维护要求：
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
@@ -70,7 +70,7 @@ device / bench / common / media
 - `docs/playbook.media.md`：媒体命令与链路
 - `docs/playbook.performance.md`：性能星图与典型跑法
 - `docs/interactive-mode.md`：REPL 说明
-- `docs/agent-mode.md`：驻留订阅模式说明
+- `docs/agent-mode.md`：订阅模式说明
 - `docs/cli-code-advanced.md`：星图执行语义与深入说明
 - `docs/architecture.md`：背景、云端架构、推理集群
 - `website/mind/pages/`：官网展示壳与站点入口页

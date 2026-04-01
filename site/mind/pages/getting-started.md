@@ -55,6 +55,7 @@ mind --hello
 
 - `api`：目前支持 `OpenAI`
 - `type`：`Text` 或 `Multimodal`
+- `route`：`Responses` 或 `chat_completions`
 - `model`
 - `apikey`
 - `base_url`（可选）
@@ -122,7 +123,7 @@ $env:Path += ";C:\Program Files\Mind"
 </div>
 
 <div class="mind-command-note">
-  <strong>补充：</strong><code>agent</code> 不是第四个 REPL 状态，而是独立驻留订阅入口。它适合本地常驻、等待服务端下发任务；协议细节直接看 <a href="./generated/agent-mode/">驻留与订阅模式</a>。
+  <strong>补充：</strong><code>agent</code> 不属于 REPL 内部状态，而是独立订阅入口。它适合本地常驻、等待服务端下发任务；协议细节直接看 <a href="./generated/agent-mode/">订阅模式</a>。
 </div>
 
 ## 最小命令
@@ -168,7 +169,7 @@ mind
 ```
 
 <div class="mind-command-note">
-  <strong>理解边界：</strong>REPL 只是交互入口，真正决定执行行为的是 <code>chat / fast / plan</code> 三种模式。<code>agent</code> 不在 REPL 里切换，它是独立驻留入口。
+  <strong>理解边界：</strong>REPL 只是交互入口，真正决定执行行为的是 <code>chat / fast / plan</code> 这些执行模式。<code>agent</code> 不在 REPL 里切换，它是独立订阅入口。
 </div>
 
 ## 常见问题
@@ -197,7 +198,7 @@ mind
   <a class="mind-route-card" href="./capabilities/">
     <span class="mind-route-meta">Next</span>
     <h3>能力概览</h3>
-    <p>继续确认三种模式和四个工具域各自承担什么，不承担什么。</p>
+    <p>继续确认不同执行模式和主要能力各自承担什么，不承担什么。</p>
     <span class="mind-card-arrow">查看边界 →</span>
   </a>
   <a class="mind-route-card" href="./reference/">
