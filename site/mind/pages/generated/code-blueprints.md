@@ -394,4 +394,4 @@ global_rule: |
 - [安全工具](playbook.security.md)
 - [设备与 UI 实战](playbook.device.md)
 - [多媒体链路](playbook.media.md)
-- [专题目录](docs-index.md)
+- [正文目录](docs-index.md)
