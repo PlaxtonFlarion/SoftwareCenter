@@ -147,10 +147,8 @@ mind --plan --code media.md
 
 # name: media_evidence_chain
 从 `/path/to/demo.mp4` 中裁出第 `15` 秒到第 `28` 秒的问题片段。
-输出到 `./artifacts/media/demo_trim.mp4`。
 从裁剪结果里提取关键帧，最多保留 `6` 张。
-输出目录写到 `./artifacts/media/keyframes`。
-抽出音轨到 `./artifacts/media/demo_trim.mp3`。
+抽出音轨。
 播放一次，确认音频结果正常。
 ```
 
