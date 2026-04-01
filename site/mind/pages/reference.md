@@ -79,22 +79,26 @@
 ## 按任务类型找正文
 
 <div class="mind-card-grid mind-card-grid-compact">
-  <div class="mind-card">
+  <a class="mind-card mind-card-link" href="../generated/playbook.device/">
     <h3>设备与 UI</h3>
     <p>应用生命周期、页面交互、滚动点击和执行留证。</p>
-  </div>
-  <div class="mind-card">
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/playbook.api/">
     <h3>接口与协议</h3>
     <p>HTTP、SSE、WebSocket、GraphQL 和批量请求结构。</p>
-  </div>
-  <div class="mind-card">
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/playbook.media/">
     <h3>多媒体</h3>
     <p>抽帧、裁剪、转码、音轨处理和证据链任务。</p>
-  </div>
-  <div class="mind-card">
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/playbook.performance/">
     <h3>性能与稳定性</h3>
     <p>Framix、Memrix、Monkey 与性能回归链路。</p>
-  </div>
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
 </div>
 
 ## 按常见目的进入
