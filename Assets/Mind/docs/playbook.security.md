@@ -1,6 +1,6 @@
 # 安全工具
 
-主 README 只负责入口；`security_*` 的边界、典型用法和与模板层的分工继续看这里。
+入口页只负责入口；`security_*` 的边界、典型用法和与模板层的分工继续看这里。
 重点是选对签名、摘要、JWT、RSA、AES 这些确定性安全能力，并和模板层分工。
 
 ## 先判断是不是这页的范围
@@ -331,4 +331,4 @@ asserts:
 
 - [模板能力](playbook.template.md)
 - [接口实战](playbook.api.md)
-- [文档索引](README.md)
+- [专题目录](README.md)

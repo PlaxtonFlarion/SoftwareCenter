@@ -1,7 +1,7 @@
 # 快速开始
 
 如果你只想尽快把 Mind 跑起来，不需要先把所有专题正文看完。  
-按这条路径走就够了：先确认环境，再选模式，最后发一条最小命令。
+按这条路径走就够了：先确认环境，再发一条最小命令，最后再决定是否进入交互式、蓝图协议或订阅。
 
 <div class="mind-step-grid">
   <div class="mind-step-card">
@@ -15,9 +15,9 @@
     <p>把可执行目录加入 PATH，避免每次都手动定位安装目录。</p>
   </div>
   <div class="mind-step-card">
-    <span class="mind-step-index">模式</span>
-    <h3>按任务选择模式</h3>
-    <p>本地主动执行看 <code>chat / fast / plan</code>；如果要常驻监听远端任务，下沉到 <code>agent</code>。</p>
+    <span class="mind-step-index">路径</span>
+    <h3>先跑通，再决定怎么继续</h3>
+    <p>先确认一条最小命令能跑通；后面是进入交互循环、批跑蓝图，还是订阅远端任务，再按需要继续分流。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">命令</span>
@@ -27,7 +27,7 @@
 </div>
 
 <div class="mind-command-note">
-  <strong>一条最短路径：</strong><code>mind --hello</code> → 选 <code>chat / fast / plan</code> → 发一条最小命令。需要远端调度和长链路监听时，再改走 <code>mind --agent</code>。
+  <strong>一条最短路径：</strong><code>mind --hello</code> → 发一条最小命令 → 再按需要进入交互式、蓝图协议或订阅。
 </div>
 
 ## 先确认后台管理中心
@@ -102,51 +102,27 @@ Windows：
 $env:Path += ";C:\Program Files\Mind"
 ```
 
-## 模式怎么选
-
-<div class="mind-panel-grid mind-panel-grid-tight">
-  <div class="mind-panel mind-panel-accent">
-    <span class="mind-kicker">chat</span>
-    <h3>先确认能力边界</h3>
-    <p>适合探索、问答、诊断和混合型任务。模型可边想边做，工具边界最宽。</p>
-  </div>
-  <div class="mind-panel">
-    <span class="mind-kicker">fast</span>
-    <h3>先跑短链路任务</h3>
-    <p>适合接口、媒体和文本处理。工具集更窄，执行路径更干净。</p>
-  </div>
-  <div class="mind-panel">
-    <span class="mind-kicker">plan</span>
-    <h3>先拿稳路径</h3>
-    <p>适合巡检、固定流程和回归。先生成计划，再按序执行。</p>
-  </div>
-</div>
-
-<div class="mind-command-note">
-  <strong>补充：</strong><code>agent</code> 不属于 REPL 内部状态，而是独立订阅入口。它适合本地常驻、等待服务端下发任务；协议细节直接看 <a href="./generated/agent-mode/">订阅模式</a>。
-</div>
-
 ## 最小命令
 
-### 先用 `chat` 确认整体边界
+### 先跑一条最小命令
 
 ```bash
 mind --chat "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
 ```
 
-### 再用 `fast` 跑一个短任务
+### 需要持续交互时进入 REPL
 
 ```bash
-mind --fast "对 path/to/video.mp4 进行关键帧抽取，并返回可用证据"
+mind
 ```
 
-### 需要稳路径时切到 `plan`
+### 需要批跑和回归时用 `--code`
 
 ```bash
-mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
+mind --chat --code api_batch.md
 ```
 
-### 需要常驻监听时用 `agent`
+### 需要等待远端任务时用 `--agent`
 
 ```bash
 mind --agent
@@ -160,17 +136,13 @@ mind --agent
 mind
 ```
 
-进入 REPL 后可随时切换：
+进入 REPL 后可继续输入目标：
 
 ```text
-/chat
-/fast
-/plan
+概述当前系统的核心能力与边界
+对 path/to/video.mp4 做关键帧抽取，并输出证据
+打开系统设置，稳定等待 2 秒后返回桌面
 ```
-
-<div class="mind-command-note">
-  <strong>理解边界：</strong>REPL 只是交互入口，真正决定执行行为的是 <code>chat / fast / plan</code> 这些执行模式。<code>agent</code> 不在 REPL 里切换，它是独立订阅入口。
-</div>
 
 ## 常见问题
 

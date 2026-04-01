@@ -38,7 +38,7 @@
     <span class="mind-route-meta">Path C</span>
     <h3>我已经知道要找什么</h3>
     <p>直接走完整目录，按专题跳文档最快，不必先读所有入口页。</p>
-    <span class="mind-card-arrow">去文档索引 →</span>
+    <span class="mind-card-arrow">去专题目录 →</span>
   </a>
   <a class="mind-route-card" href="../generated/catalog/">
     <span class="mind-route-meta">Path D</span>
@@ -50,7 +50,7 @@
 
 ## 按同一套专题分组找正文
 
-下面这组分法和仓库内的长文档索引、自动生成的专题目录保持一致。  
+下面这组分法和长文档的专题目录保持一致。  
 如果你在 repo 内和官网之间来回切换，阅读路径不会变。
 
 <div class="mind-card-grid mind-card-stack">

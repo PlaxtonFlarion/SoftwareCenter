@@ -1,6 +1,6 @@
 # Monkey 扰动
 
-主 README 只负责入口；`device.monkey` 的参数、流程和返回结构继续看这里。
+入口页只负责入口；`device.monkey` 的参数、流程和返回结构继续看这里。
 重点是看什么时候该用扰动、参数怎么调，以及哪些返回结果能直接拿来验收和排错。
 
 ## 先判断是不是这页的范围
@@ -8,7 +8,7 @@
 - 你要做随机事件扰动、稳定性压测、异常发现：看这里
 - 你要调 `seed / throttle_ms / touch / motion / nav / events` 这些参数：看这里
 - 你要做稳定页面点击、输入和等待，不要先从 Monkey 文档开始
-- 你只是想知道 device 域整体分层，先去 `playbook.device.md`
+- 你只是想知道设备与 UI 执行的整体分层，先去设备与 UI 实战
 
 ## 怎么读这页
 
@@ -367,4 +367,4 @@ adb -s <serial> shell monkey -p <package> \
 - [性能实战](playbook.performance.md)
 - [星图协议](cli-code.md)
 - [星图深入说明](cli-code-advanced.md)
-- [文档索引](docs-index.md)
+- [专题目录](docs-index.md)
