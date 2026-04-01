@@ -5,7 +5,7 @@
 
 ## 先判断是不是这页的范围
 
-- 你要在 `request / env / template_vars / items[]` 里准备动态值：看这里
+- 你要在 `request / env / template_vars / items[].request` 里准备动态值：看这里
 - 你要做时间戳、nonce、query 规范化、轻量编码转换：看这里
 - 你要做摘要、JWT、RSA、AES、HMAC 等确定性安全计算：优先去安全工具文档
 - 你只是想确认协议字段该怎么写：先回接口文档，不必先把模板文档读完
@@ -21,11 +21,11 @@
 - 模板层到底能做什么
 - 哪些逻辑适合放模板里
 - 哪些逻辑应该交给 `security_*`
-- `request / env / template_vars / items[]` 里怎么用模板
+- `request / env / template_vars / items[].request` 里怎么用模板
 
 ## 设计定位
 
-`backend/nexus/domain/template.py` 现在不是一个“纯字符串替换器”，而是一个轻量的数据准备层。
+当前模板能力已经不是一个“纯字符串替换器”，而是一个轻量的数据准备层。
 
 它适合做：
 
@@ -53,7 +53,7 @@
 - `request`
 - `env`
 - `template_vars`
-- `items[]`
+- `items[].request`
 
 常见使用方式：
 
@@ -68,14 +68,14 @@ request = {
 ```
 
 - 这层只负责把动态值准备好，不负责描述完整请求结构
-- batch 只有一份全局 `template_vars`；如果每个 item 都有独立值，必须直接写进各自的 `items[]`
+- batch 只有一份全局 `template_vars`；如果每个 item 都有独立值，必须直接写进各自的 `items[].request`
 
 SSE batch 特别注意：
 
 - 不要把每条 case 的 `user_input` 放进全局 `template_vars`
 - 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
 - 不要把每条 case 的 `current_time` 放进 `env.json`
-- 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].json`
+- 这类 case 级字段应在提交前先展开成字面值，再写入 `items[].request.json`
 - `env` 和 `items` 必须传原生结构化对象，不要传字符串化 JSON
 - `concurrency` 和 `fail_fast` 应按预期行为显式传值，不要在校验失败后通过省略字段回退默认值
 - `render / validate / execute` 现在共享同一套 `env + request` 物化语义；不要再假设预执行和执行期会看到不同请求
@@ -85,28 +85,26 @@ SSE batch 特别注意：
 ### 1. 标识与时间
 
 - `now_s()`
+  返回当前 Unix 秒级时间戳。适合请求头时间、轻量时间字段、简单时序标记。
 - `now_ms()`
+  返回当前 Unix 毫秒级时间戳。适合请求体时间、事件打点、需要更细粒度时间的字段。
 - `now_iso()`
+  返回当前 ISO 8601 时间字符串。适合可读时间字段、日志时间、要求 ISO 格式的接口。
 - `format_ts(ts, fmt="%Y-%m-%dT%H:%M:%SZ")`
+  把已有时间戳格式化成指定字符串格式。适合把上游时间值转成接口要求的时间文本。
 - `offset_ts(ts=None, seconds=0, minutes=0, hours=0, days=0, out="iso")`
+  基于当前时间或指定时间做偏移，并按目标格式输出。适合生成过期时间、未来时间、窗口起止时间。
 - `uuid4()`
+  生成随机 UUID。适合请求 ID、trace ID、幂等键、关联标识。
 - `nonce(length=16, alphabet=None)`
-
-适合：
-
-- 请求时间戳
-- 重放防护 nonce
-- trace / correlation id
+  生成指定长度的随机字符串。适合防重放 nonce、临时随机参数、一次性标识。
 
 ### 2. 取值与回退
 
 - `pick(obj, "a.b.0", default=None)`
+  按路径从对象中安全取值，取不到时回退到默认值。适合从 `template_vars / env / request` 中读取嵌套字段。
 - `coalesce(a, b, c, ...)`
-
-适合：
-
-- 从 `template_vars / env / request` 里兜底取值
-- 做多级 fallback
+  返回第一个非空值。适合多来源 fallback，例如优先业务值，缺失时回退到环境值或默认值。
 
 示例：
 
@@ -117,31 +115,30 @@ SSE batch 特别注意：
 ### 3. 编解码
 
 - `b64encode(v)`
+  把值编码成 Base64。适合基础认证、二进制转文本、接口要求 Base64 载荷的场景。
 - `b64decode(v, as_text=True)`
+  把 Base64 文本解码回原值。适合服务端返回 Base64 内容后先还原再参与后续拼装。
 - `hex_encode(v)`
+  把值编码成十六进制。适合原始字节、协议字段要求 hex 文本、签名前的中间值表达。
 - `hex_decode(v, as_text=True)`
+  把十六进制文本解码回原值。适合服务端返回 hex 内容后继续参与模板计算。
 - `json_dumps(v, ensure_ascii=False, sort_keys=False)`
+  把对象序列化成 JSON 字符串。适合接口字段要求字符串化 JSON，而不是原生对象时使用。
 - `json_loads(v)`
-
-适合：
-
-- Authorization 基础拼接
-- payload 稳定序列化
-- 把模板变量转成中间字符串
+  把 JSON 字符串解析成对象。适合上游给的是 JSON 文本，但当前模板逻辑需要读取内部字段时使用。
 
 ### 4. URL 与结构
 
 - `urlencode(obj)`
+  把对象编码成 URL query 字符串。适合拼查询串、表单串、回调参数。
 - `urldecode(text)`
+  把 URL 编码文本解码回可读内容。适合先还原已有 query 或编码参数再继续处理。
 - `dict_merge(a, b, c, ...)`
+  合并多个对象，后者覆盖前者。适合构造 headers、params、variables 等共享默认值叠加场景。
 - `sort_keys(obj)`
+  按 key 排序对象。适合生成稳定结构，便于签名前预处理或做稳定比较。
 - `canonical_query(obj)`
-
-适合：
-
-- query 规范化
-- 生成签名前的 canonical query
-- 合并默认头和请求头
+  把对象转成稳定排序的 query 字符串。适合签名前 query 归一化、稳定 URL 参数生成。
 
 示例：
 
@@ -152,14 +149,13 @@ SSE batch 特别注意：
 ### 5. 压缩与二进制转换
 
 - `gzip_encode(v, ...)`
+  用 gzip 压缩值。适合服务端要求 gzip 输入，或要模拟压缩请求体的场景。
 - `gzip_decode(v, ...)`
+  解 gzip 内容。适合服务端返回 gzip 文本或上游给的是压缩内容时先恢复原值。
 - `zlib_encode(v, ...)`
+  用 zlib 压缩值。适合协议明确要求 zlib 编码时使用。
 - `zlib_decode(v, ...)`
-
-适合：
-
-- 需要对请求体做轻量压缩预处理时
-- 兼容特定接口的压缩输入格式
+  解 zlib 内容。适合继续处理 zlib 压缩后的响应或中间值。
 
 ## 常见组合写法
 

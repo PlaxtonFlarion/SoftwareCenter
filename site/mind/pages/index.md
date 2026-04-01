@@ -13,16 +13,16 @@
 <div class="mind-panel-grid mind-panel-grid-tight">
   <div class="mind-panel mind-panel-accent">
     <span class="mind-kicker">阅读路线</span>
-    <h3>先看入口，再看边界，最后看专题正文</h3>
-    <p>首页只负责帮你确认 Mind 适不适合当前任务，不负责把所有协议、参数和执行细节一次讲完。</p>
+    <h3>先判断你要怎么使用，再进入对应正文</h3>
+    <p>首页重点不是解释 `chat / fast / plan` 怎么选，而是先帮你判断应该走 CLI 命令行、REPL 交互式、`--code` 星图协议，还是 `--agent` 订阅模式。</p>
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">典型使用场景</span>
     <ul class="mind-mini-list">
-      <li>打开应用、稳定等待页面、留证截图</li>
-      <li>跑一条 HTTP / SSE / WebSocket 校验链</li>
-      <li>对视频抽帧、转码、裁剪或拼接</li>
-      <li>用 `--code` 做批跑、前后置和回归</li>
+      <li>用一条 CLI 命令直接完成一次任务</li>
+      <li>进入 REPL 持续交互，边问边跑</li>
+      <li>用 `--code` 组织批跑、前后置和回归</li>
+      <li>用 `--agent` 常驻订阅，等待远端下发任务</li>
     </ul>
   </div>
 </div>
@@ -33,13 +33,13 @@
   <a class="mind-route-card" href="./getting-started/">
     <span class="mind-route-meta">Step 1</span>
     <h3>快速开始</h3>
-    <p>适合第一次进项目。先把管理中心、环境变量、模式选择和最小命令跑通。</p>
+    <p>适合第一次进项目。先把管理中心、环境变量、最小命令和四种入口形态跑通。</p>
     <span class="mind-card-arrow">看启动路径 →</span>
   </a>
   <a class="mind-route-card" href="./capabilities/">
     <span class="mind-route-meta">Step 2</span>
     <h3>能力概览</h3>
-    <p>适合先确认 `chat / fast / plan` 的边界、`agent` 的入口定位，以及四个工具域分别负责什么。</p>
+    <p>适合先确认能力边界、工具域分工，以及本地主动执行和订阅执行分别覆盖什么。</p>
     <span class="mind-card-arrow">看边界 →</span>
   </a>
   <a class="mind-route-card" href="./reference/">
@@ -53,7 +53,7 @@
 ## 30 秒跑通
 
 <div class="mind-command-note">
-  <strong>推荐顺序：</strong>先打开管理中心确认环境，再发一条最小命令，最后再决定是否切到更窄或更稳的模式。
+  <strong>推荐顺序：</strong>先打开管理中心确认环境，再跑一次 CLI，接着再决定是否进入 REPL、切到 `--code`，或直接启用 `--agent`。
 </div>
 
 ### 先确认后台管理中心
@@ -62,21 +62,25 @@
 mind --hello
 ```
 
-### 再发一条最小命令
+### 先跑一次 CLI 命令行模式
 
 ```bash
 mind --chat "概述当前系统的核心能力、边界与典型使用场景"
 ```
 
-### 按任务性质切模式
+### 需要持续交互时进入 REPL
 
 ```bash
-mind --chat "概述当前系统的核心能力与边界"
-mind --fast "对 path/to/video.mp4 提取关键帧并返回证据"
-mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
+mind
 ```
 
-### 需要驻留监听时切到 `agent`
+### 需要批跑和回归时用 `--code`
+
+```bash
+mind --chat --code api_batch.md
+```
+
+### 需要驻留监听时切到 `--agent`
 
 ```bash
 mind --agent
@@ -117,28 +121,29 @@ mind --agent
   </a>
 </div>
 
-## 三种模式怎么选
+## 四种使用方式
 
 <div class="mind-panel-grid mind-panel-grid-tight">
-  <a class="mind-panel mind-panel-link" href="./capabilities/#chat">
-    <span class="mind-kicker">chat</span>
-    <h3>最开放</h3>
-    <p>适合探索、问答、诊断和混合型任务，模型可持续发起工具调用。</p>
+  <a class="mind-panel mind-panel-link" href="./getting-started/">
+    <span class="mind-kicker">CLI</span>
+    <h3>命令行模式</h3>
+    <p>适合一次性任务、脚本执行和 CI。用一条命令直接完成当前目标，最快进入执行。</p>
   </a>
-  <a class="mind-panel mind-panel-link" href="./capabilities/#fast">
-    <span class="mind-kicker">fast</span>
-    <h3>最短链路</h3>
-    <p>适合接口、媒体和文本处理，工具集更窄，执行路径更干净。</p>
+  <a class="mind-panel mind-panel-link" href="./generated/interactive-mode/">
+    <span class="mind-kicker">REPL</span>
+    <h3>交互式模式</h3>
+    <p>适合持续对话、边问边跑、反复试探能力边界。进入交互循环后，再在内部切换具体执行状态。</p>
   </a>
-  <a class="mind-panel mind-panel-link" href="./capabilities/#plan">
-    <span class="mind-kicker">plan</span>
-    <h3>最稳路径</h3>
-    <p>先出结构化步骤，再顺序执行，更适合巡检、固定流程和回归任务。</p>
+  <a class="mind-panel mind-panel-link" href="./generated/cli-code/">
+    <span class="mind-kicker">--code</span>
+    <h3>星图协议模式</h3>
+    <p>适合批跑、前后置、规则化执行和回归任务。重点是把多条任务组织成可复用的执行蓝本。</p>
   </a>
-</div>
-
-<div class="mind-command-note">
-  <strong>补充：</strong><code>agent</code> 是独立驻留订阅入口，不在上面三种本地主动执行模式里；需要远端任务下发和恢复重连链路时，直接看 <a href="./generated/agent-mode/">驻留与订阅模式</a>。
+  <a class="mind-panel mind-panel-link" href="./generated/agent-mode/">
+    <span class="mind-kicker">--agent</span>
+    <h3>订阅模式</h3>
+    <p>适合本地常驻监听、远端任务下发和恢复重连链路。它是独立入口，不属于本地主动执行流程。</p>
+  </a>
 </div>
 
 ## 下一步

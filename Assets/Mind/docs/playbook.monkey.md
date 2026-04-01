@@ -34,10 +34,7 @@
 
 - `device.monkey.injection`
 
-代码位置：
-
-- `backend/mcp_tools/automator/ctl_monkey.py`
-- `backend/mcp_hub/hub_monkey.py`
+实现上分成工具定义层和执行层；对使用者来说，只需要记住工具入口即可，不必依赖内部目录结构。
 
 ## 最小参数面
 

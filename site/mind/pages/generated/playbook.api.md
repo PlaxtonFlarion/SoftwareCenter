@@ -29,13 +29,13 @@
 - `*_request`：执行单个请求
 - `*_batch`：执行一组同协议请求
 
-## 统一约定
+[## 统一约定
 - 单请求场景里，把协议原生参数写进 `request`
-- 批量场景里，把共享默认值写进 `env`，逐项差异直接写进 `items[]`
-- 执行前会先把 `env + 当前 request/item` 物化成最终请求；不要假设所有字段都是简单覆盖
+- 批量场景里，把共享默认值写进 `env`，逐项差异写进 `items[].request`
+- 执行前会先把 `env + 当前 item.request` 物化成最终请求；不要假设所有字段都是简单覆盖
 - 提取结果统一放在 `extract`
 - 验收规则统一放在 `asserts`
-- 需要批次级默认行为时，用 `cfg / global_rule / global_prefix / global_suffix`
+- 需要批次级默认行为时，用 `cfg / global_rule / global_prefix / global_suffix`]()
 
 再强调一次边界：
 - `render`：只做模板展开和默认值物化，不执行协议请求
@@ -46,7 +46,7 @@
 如果你只记一条：
 
 - 单请求的协议原生参数留在 `request`
-- 批量请求的协议原生参数直接写进 `items[]`
+- 批量请求的协议原生参数统一写进 `items[].request`
 - 批量共享默认值留在 `env`
 - 提取写 `extract`
 - 验收写 `asserts`
@@ -79,8 +79,8 @@ env = {
 }
 
 items = [
-  {"method": "GET", "url": "/health"},
-  {"method": "GET", "url": "/profile"}
+  {"request": {"method": "GET", "url": "/health"}},
+  {"request": {"method": "GET", "url": "/profile"}}
 ]
 ```
 
@@ -92,7 +92,7 @@ items = [
 
 ### Nexus 字段边界
 - 单请求里，`request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
-- 批量请求里，协议原生字段直接写进 `items[]`，不再额外包一层 `request`
+- 批量请求里，每个 item 都使用统一结构：协议原生字段写进 `items[].request`
 - `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；执行前会先物化最终请求
 - 当前默认物化语义：标量字段由当前请求覆盖，`headers / json / json_body / params / form / variables` 做对象合并，其余字段按当前请求覆盖
 - `extract` 和 `asserts` 都作用于最终结果包中的 `data`
@@ -103,7 +103,7 @@ items = [
 ### SSE 批量硬性约束
 - SSE 单条请求用 `nexus_sse_request`
 - SSE 多条独立用例用 `nexus_sse_batch`
-- `1` 条 case = `items` 中的 `1` 个独立 item
+- `1` 条 case = `items` 中的 `1` 个独立 item，其协议字段写在 `item.request`
 - 多条 `user_input` 必须展开成多个独立 `items`
 - 不允许把多条 `user_input` 合并进同一个 `request`
 - 不允许把 case 级字段写到 `env`
@@ -115,9 +115,9 @@ items = [
 
 ### SSE 批量字段放置规则
 - `env` 只放所有 `items` 共享且不随 case 变化的默认参数
-- `items[]` 只放当前 case 的差异字段
-- `user_input` 必须写入 `items[].json.user_input`
-- `current_time` 必须写入 `items[].json.current_time`
+- `items[].request` 只放当前 case 的差异字段
+- `user_input` 必须写入 `items[].request.json.user_input`
+- `current_time` 必须写入 `items[].request.json.current_time`
 - 不要把 `current_time` 放入 `env.json`
 - 不要把 `user_input` 放入 `template_vars`
 - 不要依赖 `{{user_input}}` 在 batch 中按 item 自动替换
@@ -157,12 +157,14 @@ args:
       platform: Android
       conversation_id: 0
   items:
-    - json:
-        user_input: 第一条 case 的原文
-        current_time: 第一条 case 的毫秒时间戳
-    - json:
-        user_input: 第二条 case 的原文
-        current_time: 第二条 case 的毫秒时间戳
+    - request:
+        json:
+          user_input: 第一条 case 的原文
+          current_time: 第一条 case 的毫秒时间戳
+    - request:
+        json:
+          user_input: 第二条 case 的原文
+          current_time: 第二条 case 的毫秒时间戳
 ```
 
 错误示意 1：
@@ -172,7 +174,8 @@ args:
   template_vars:
     user_input: xxx
   items:
-    - json: {}
+    - request:
+        json: {}
 ```
 
 原因：
@@ -186,10 +189,12 @@ args:
     json:
       current_time: {{now_ms()}}
   items:
-    - json:
-        user_input: A
-    - json:
-        user_input: B
+    - request:
+        json:
+          user_input: A
+    - request:
+        json:
+          user_input: B
 ```
 
 原因：
@@ -243,18 +248,61 @@ args:
 - `ftp`：`response.welcome`、`response.list`、`response.download_binary`、`response.upload_text`、`response.upload_binary`、`response.media`
 
 ## 模板 Helper
-- 当前模板层已支持轻量 helper，可直接在 `request`、`env`、`items[]`、`template_vars` 中使用 `{{ ... }}`
+- 当前模板层已支持轻量 helper，可直接在 `request`、`env`、`items[].request`、`template_vars` 中使用 `{{ ... }}`
 - 适合迁入模板层的是轻量、纯函数、无副作用的数据准备逻辑
 - `JWT / RSA / AES / HMAC / 签名串` 这类确定性安全逻辑仍建议留在专用安全工具中
 - 如果你要系统看 helper 分类、组合写法和模板层边界，直接看 [模板能力](playbook.template.md)
 - 如果你要看 `security_digest / security_jwt / security_crypto / security_aes` 的能力边界，直接看 [安全工具](playbook.security.md)
 
 已支持的 helper：
-- 标识与时间：`now_s()`、`now_ms()`、`now_iso()`、`format_ts(ts)`、`offset_ts(ts, ...)`、`uuid4()`、`nonce(n)`
-- 取值与回退：`pick(obj, "a.b.0", default)`、`coalesce(a, b, c)`
-- 编解码：`b64encode(v)`、`b64decode(v)`、`hex_encode(v)`、`hex_decode(v)`、`json_dumps(v)`、`json_loads(v)`
-- URL 与结构：`urlencode(obj)`、`urldecode(text)`、`dict_merge(a, b)`、`sort_keys(obj)`、`canonical_query(obj)`
-- 压缩：`gzip_encode(v)`、`gzip_decode(v)`、`zlib_encode(v)`、`zlib_decode(v)`
+- `now_s()`
+  返回当前 Unix 秒级时间戳。适合请求头时间、签名前的轻量时间字段、简单时序标记。
+- `now_ms()`
+  返回当前 Unix 毫秒级时间戳。适合请求体里的 `current_time`、事件打点、需要更细粒度时间的接口字段。
+- `now_iso()`
+  返回当前 ISO 8601 时间字符串。适合日志字段、可读时间、服务端要求 ISO 时间格式的场景。
+- `format_ts(ts)`
+  把已有时间戳格式化成标准时间字符串。适合把上游提取出来的时间值转成人类可读格式后再提交。
+- `offset_ts(ts, ...)`
+  在已有时间戳基础上做偏移。适合生成过期时间、延后时间、窗口起止时间等派生字段。
+- `uuid4()`
+  生成随机 UUID。适合请求 ID、trace ID、幂等键、一次性业务标识。
+- `nonce(n)`
+  生成指定长度的随机 nonce。适合轻量防重放字段、随机串参数、临时 token 片段。
+- `pick(obj, "a.b.0", default)`
+  从对象路径中取值，取不到时回退到默认值。适合从 `env`、提取结果或复杂对象中安全读取嵌套字段。
+- `coalesce(a, b, c)`
+  返回第一个非空值。适合多来源回退，例如优先业务值，缺失时回退到默认值或环境变量。
+- `b64encode(v)`
+  把值编码成 Base64。适合基础认证、二进制转文本、接口要求 Base64 载荷的场景。
+- `b64decode(v)`
+  把 Base64 文本解码回原值。适合服务端返回 Base64 内容后，在模板层先还原再继续使用。
+- `hex_encode(v)`
+  把值编码成十六进制。适合原始字节、签名前中间值、协议字段要求 hex 文本的场景。
+- `hex_decode(v)`
+  把十六进制文本解码回原值。适合服务端返回 hex 内容后做后续拼装。
+- `json_dumps(v)`
+  把对象序列化成 JSON 字符串。适合接口字段本身要求字符串化 JSON，而不是对象结构的场景。
+- `json_loads(v)`
+  把 JSON 字符串解析成对象。适合上游给的是 JSON 文本，但当前模板逻辑需要对象字段时使用。
+- `urlencode(obj)`
+  把对象编码成 URL query 字符串。适合拼查询串、表单串、回调参数。
+- `urldecode(text)`
+  解析 URL 编码文本。适合把已有 query 或编码参数还原后再继续处理。
+- `dict_merge(a, b)`
+  合并两个对象，通常用于构造 headers、params、variables 等结构。适合在模板层补默认值再叠加局部覆盖。
+- `sort_keys(obj)`
+  按 key 排序对象。适合生成稳定字典结构，便于签名前预处理或做稳定比对。
+- `canonical_query(obj)`
+  把对象转成稳定排序的 query 字符串。适合签名前 query 归一化、稳定串比较、可重复构造 URL 参数。
+- `gzip_encode(v)`
+  用 gzip 压缩值。适合服务端要求 gzip 载荷，或要模拟压缩上传的场景。
+- `gzip_decode(v)`
+  解 gzip 内容。适合服务端返回 gzip 文本或上游给的是压缩内容时做恢复。
+- `zlib_encode(v)`
+  用 zlib 压缩值。适合协议明确要求 zlib 编码的场景。
+- `zlib_decode(v)`
+  解 zlib 内容。适合继续处理 zlib 压缩后的响应或中间值。
 
 示意：
 
