@@ -15,6 +15,7 @@
 - 先看“这页解决什么问题”和“设计定位”，确认 device 域的职责边界
 - 再看“执行模型”和“能力分层”，判断当前动作应该落在哪一层
 - 最后看定位方式、前台收敛和 system/ui 边界，把稳定性思路建立起来
+- 如果你要把设备动作真正写进 `--code`，结构层先配合 `cli-code.md`，执行语义再配合 `cli-code-advanced.md`
 
 ## 这页解决什么问题
 
@@ -349,5 +350,6 @@
 
 - [交互模式](interactive-mode.md)
 - [星图协议](cli-code.md)
+- [星图深入说明](cli-code-advanced.md)
 - [多媒体链路](playbook.media.md)
 - [文档索引](README.md)

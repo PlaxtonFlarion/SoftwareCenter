@@ -56,16 +56,18 @@
 <div class="mind-card-grid mind-card-stack">
   <div class="mind-card">
     <h3>入门与入口</h3>
-    <p>适合你已经会跑主命令，但想补齐 REPL 指令、状态切换和交互边界时阅读。</p>
+    <p>适合你已经会跑主命令，但想补齐 REPL 指令、状态切换、驻留订阅和交互边界时阅读。</p>
     <ul class="mind-mini-list">
       <li><a href="../generated/interactive-mode/">交互模式</a></li>
+      <li><a href="../generated/agent-mode/">驻留与订阅模式</a></li>
     </ul>
   </div>
   <div class="mind-card">
     <h3>编排与协议</h3>
-    <p>适合你正在处理 `--code`、批量协议、模板层和验收结构时阅读。</p>
+    <p>适合你正在处理 `--code`、批量协议、模板层、执行语义和验收结构时阅读。</p>
     <ul class="mind-mini-list">
       <li><a href="../generated/cli-code/">星图协议</a></li>
+      <li><a href="../generated/cli-code-advanced/">星图深入说明</a></li>
       <li><a href="../generated/code-blueprints/">星图样例</a></li>
       <li><a href="../generated/playbook.api/">接口实战</a></li>
       <li><a href="../generated/playbook.template/">模板能力</a></li>
@@ -98,6 +100,10 @@
   </div>
 </div>
 
+<div class="mind-command-note">
+  <strong>星图阅读顺序：</strong>先读 <code>星图协议</code> 建立结构感，再读 <code>星图深入说明</code> 补执行语义，最后读 <code>星图样例</code> 看真实任务怎么落笔。
+</div>
+
 ## CLI 速查
 
 <div class="mind-panel-grid mind-panel-grid-tight">
@@ -111,6 +117,7 @@
       <li><code>mind --chat "..."</code>：探索、问答、临时任务</li>
       <li><code>mind --fast "..."</code>：接口、媒体、短链路处理</li>
       <li><code>mind --plan "..."</code>：巡检、固定流程、回归</li>
+      <li><code>mind --agent</code>：驻留监听、远端任务下发、长链路恢复</li>
     </ul>
   </div>
 </div>

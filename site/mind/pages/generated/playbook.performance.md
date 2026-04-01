@@ -14,6 +14,7 @@
 - 想看端到端体验：先看 `E2E / ASR / VAD / tokens/s`
 - 想看资源趋势：再看 `Android 内存基线 / 内存泄漏 / 流畅度`
 - 想做稳定性扰动：最后看 `Android Monkey`
+- 如果你要把这些案例真正写成 `--code` 批跑，结构层先配合 `cli-code.md`，执行语义再配合 `cli-code-advanced.md`
 
 一句话理解：
 
@@ -135,3 +136,10 @@ loop_suffix: |
 说明：
 - 同类目标也可以用英文或日文描述，执行语义保持一致
 - 如果更偏批跑回归，建议把 Monkey 任务写入 `--code` 星图统一管理
+
+## 相关文档
+
+- [星图协议](cli-code.md)
+- [星图深入说明](cli-code-advanced.md)
+- [星图样例](code-blueprints.md)
+- [文档索引](docs-index.md)

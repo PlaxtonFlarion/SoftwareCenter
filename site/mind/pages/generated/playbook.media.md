@@ -15,6 +15,7 @@
 - 只想改视频文件：再看 `trim / scale / convert / concat / remux / mute`
 - 只想处理音轨：再看 `extract_audio / replace_audio / convert_audio / play`
 - 想做完整证据链：最后看组合链路和星图任务
+- 如果你要把媒体链路真正写进 `--code`，结构层先配合 `cli-code.md`，执行语义再配合 `cli-code-advanced.md`
 
 一句话理解：
 
@@ -173,3 +174,10 @@ mind --plan --code media.md
 - 先裁剪，再抽帧，再抽音轨，再试听
 - 重点是媒体处理顺序和证据链，不是要求读者手写工具参数
 - 如果只是单步动作，直接用上面的 `mind --fast "..."` 更合适
+
+## 相关文档
+
+- [星图协议](cli-code.md)
+- [星图深入说明](cli-code-advanced.md)
+- [星图样例](code-blueprints.md)
+- [文档索引](docs-index.md)

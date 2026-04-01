@@ -39,7 +39,7 @@
   <a class="mind-route-card" href="./capabilities/">
     <span class="mind-route-meta">Step 2</span>
     <h3>能力概览</h3>
-    <p>适合先确认 `chat / fast / plan` 的边界，以及四个工具域分别负责什么。</p>
+    <p>适合先确认 `chat / fast / plan` 的边界、`agent` 的入口定位，以及四个工具域分别负责什么。</p>
     <span class="mind-card-arrow">看边界 →</span>
   </a>
   <a class="mind-route-card" href="./reference/">
@@ -76,6 +76,12 @@ mind --fast "对 path/to/video.mp4 提取关键帧并返回证据"
 mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ```
 
+### 需要驻留监听时切到 `agent`
+
+```bash
+mind --agent
+```
+
 ## 你会继续用到什么
 
 <div class="mind-card-grid">
@@ -106,7 +112,7 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
   </a>
   <a class="mind-card mind-card-link" href="./generated/cli-code/">
     <h3>星图协议</h3>
-    <p>通过 <code>--code</code> 做批跑回归、前后置和结构化执行编排。</p>
+    <p>先看结构层：字段、层级、文件格式和最小写法。需要覆盖优先级和执行语义时，再继续跳到星图深入说明。</p>
     <span class="mind-card-arrow">查看详情 →</span>
   </a>
 </div>
@@ -129,6 +135,10 @@ mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
     <h3>最稳路径</h3>
     <p>先出结构化步骤，再顺序执行，更适合巡检、固定流程和回归任务。</p>
   </a>
+</div>
+
+<div class="mind-command-note">
+  <strong>补充：</strong><code>agent</code> 是独立驻留订阅入口，不在上面三种本地主动执行模式里；需要远端任务下发和恢复重连链路时，直接看 <a href="./generated/agent-mode/">驻留与订阅模式</a>。
 </div>
 
 ## 下一步

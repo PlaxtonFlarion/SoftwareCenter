@@ -8,6 +8,7 @@
 - 你已经知道要写 `--code`，但不确定星图应该写多细：看这里
 - 你想看“接口 + 安全 + 设备 + 页面等待”怎么组合成一条完整执行链：看这里
 - 你要查字段边界、前后置和规则覆盖关系：先去 `cli-code.md`
+- 你要查执行顺序、覆盖优先级和批跑控制语义：先去 `cli-code-advanced.md`
 - 你要查协议字段和提取断言能力：先去 `playbook.api.md`
 
 ## 怎么读这页
@@ -37,6 +38,7 @@
 一句话理解：
 
 - `cli-code.md` 讲结构
+- `cli-code-advanced.md` 讲执行语义
 - 这页讲样例到底该怎么落笔
 
 ## 写星图的基本规则
@@ -387,6 +389,7 @@ global_rule: |
 ## 相关文档
 
 - [星图协议](cli-code.md)
+- [星图深入说明](cli-code-advanced.md)
 - [接口实战](playbook.api.md)
 - [安全工具](playbook.security.md)
 - [设备域实战](playbook.device.md)

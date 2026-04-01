@@ -16,6 +16,7 @@
     <span class="mind-kicker">不要混淆</span>
     <ul class="mind-mini-list">
       <li><code>chat / fast / plan</code> 是执行模式</li>
+      <li><code>agent</code> 是驻留订阅入口，不属于 REPL 第四种状态</li>
       <li><code>device / bench / common / media</code> 是工具域</li>
       <li><code>global_rule / rule</code> 是星图规则层，不等于 <code>free_rule</code></li>
     </ul>
@@ -45,6 +46,10 @@
     <h3>最后再找工具域正文</h3>
     <p>模式定完之后，再去看对应的设备、协议、性能或媒体专题，不要反过来硬套。</p>
   </div>
+</div>
+
+<div class="mind-command-note">
+  <strong>补充判断：</strong><code>chat / fast / plan</code> 解决的是本地主动执行；<code>agent</code> 解决的是本地驻留并等待远端下发任务。需要这条链路时，直接看 <a href="./generated/agent-mode/">驻留与订阅模式</a>。
 </div>
 
 ## 三种模式怎么判断

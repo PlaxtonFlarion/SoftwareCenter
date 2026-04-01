@@ -239,3 +239,4 @@ SSE batch 特别注意：
 - [接口实战](playbook.api.md)
 - [文档索引](docs-index.md)
 - [星图协议](cli-code.md)
+- [星图深入说明](cli-code-advanced.md)

@@ -4,7 +4,7 @@
 主 README 负责上手入口；这里负责解释维护时需要同时关注的代码、文档和同步链路。
 
 ## 维护范围
-- 模式边界：`chat / fast / plan`
+- 模式边界：`chat / fast / plan / agent`
 - 工具域边界：`device / bench / common / media`
 - 接口执行面：`bench.nexus`
 - 星图执行链：`--code`
@@ -30,12 +30,14 @@ device / bench / common / media
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
 - `plan`：先生成计划，再按步骤顺序执行，并承载 `free_rule` 这类执行期规则判断能力
+- `agent`：驻留订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 
 维护要求：
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
 - 不要把 `free_rule` 和 `--code` 的 `global_rule / rule` 混写成同一个概念
+- 不要把 `agent` 写成 REPL 内的第四个状态；它是独立 CLI 入口
 
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
@@ -53,10 +55,12 @@ device / bench / common / media
 维护时要一起检查：
 - README 的 `--code` 摘要
 - `docs/cli-code.md`
+- `docs/cli-code-advanced.md`
 - REPL / README 中对 `cfg.repeat`、`loop` 的引用
 
 建议：
-- 如果只是新增一个 `cfg` 字段，优先补进 `docs/cli-code.md`
+- 如果只是补最小结构、字段入口或文件格式，优先补进 `docs/cli-code.md`
+- 如果是在解释覆盖优先级、执行顺序、控制语义或常见误写，优先补进 `docs/cli-code-advanced.md`
 - 只有当用户入口或默认用法变化时，才改 README
 
 ## 文档分层规则
@@ -66,6 +70,8 @@ device / bench / common / media
 - `docs/playbook.media.md`：媒体命令与链路
 - `docs/playbook.performance.md`：性能星图与典型跑法
 - `docs/interactive-mode.md`：REPL 说明
+- `docs/agent-mode.md`：驻留订阅模式说明
+- `docs/cli-code-advanced.md`：星图执行语义与深入说明
 - `docs/architecture.md`：背景、云端架构、推理集群
 - `website/mind/pages/`：官网展示壳与站点入口页
 - `website/mind/docs_manifest.json`：官网生成层的正文清单与专题摘要

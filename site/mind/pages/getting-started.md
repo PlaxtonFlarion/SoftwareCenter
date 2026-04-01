@@ -17,7 +17,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">模式</span>
     <h3>按任务选择模式</h3>
-    <p>探索走 <code>chat</code>，短链路走 <code>fast</code>，固定流程和回归走 <code>plan</code>。</p>
+    <p>本地主动执行看 <code>chat / fast / plan</code>；如果要常驻监听远端任务，下沉到 <code>agent</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">命令</span>
@@ -27,7 +27,7 @@
 </div>
 
 <div class="mind-command-note">
-  <strong>一条最短路径：</strong><code>mind --hello</code> → 选 <code>chat / fast / plan</code> → 发一条最小命令。先确认链路可用，再去读更长的专题正文。
+  <strong>一条最短路径：</strong><code>mind --hello</code> → 选 <code>chat / fast / plan</code> → 发一条最小命令。需要远端调度和长链路监听时，再改走 <code>mind --agent</code>。
 </div>
 
 ## 先确认后台管理中心
@@ -121,6 +121,10 @@ $env:Path += ";C:\Program Files\Mind"
   </div>
 </div>
 
+<div class="mind-command-note">
+  <strong>补充：</strong><code>agent</code> 不是第四个 REPL 状态，而是独立驻留订阅入口。它适合本地常驻、等待服务端下发任务；协议细节直接看 <a href="./generated/agent-mode/">驻留与订阅模式</a>。
+</div>
+
 ## 最小命令
 
 ### 先用 `chat` 确认整体边界
@@ -141,6 +145,12 @@ mind --fast "对 path/to/video.mp4 进行关键帧抽取，并返回可用证据
 mind --plan "打开系统设置，稳定等待 2 秒后返回桌面"
 ```
 
+### 需要常驻监听时用 `agent`
+
+```bash
+mind --agent
+```
+
 ## 交互式运行
 
 如果你想连续试多个目标，直接进 REPL 更顺手：
@@ -158,7 +168,7 @@ mind
 ```
 
 <div class="mind-command-note">
-  <strong>理解边界：</strong>REPL 只是交互入口，真正决定执行行为的是 `chat / fast / plan` 三种模式。
+  <strong>理解边界：</strong>REPL 只是交互入口，真正决定执行行为的是 <code>chat / fast / plan</code> 三种模式。<code>agent</code> 不在 REPL 里切换，它是独立驻留入口。
 </div>
 
 ## 常见问题

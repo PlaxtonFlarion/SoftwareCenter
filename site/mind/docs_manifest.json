@@ -20,6 +20,13 @@
       "summary": "适合看 --code 的字段、层级、前后置和规则结构。"
     },
     {
+      "source": "docs/cli-code-advanced.md",
+      "target": "cli-code-advanced.md",
+      "label": "星图深入说明",
+      "category": "编排与协议",
+      "summary": "适合看覆盖优先级、执行顺序、批跑控制语义和常见误写。"
+    },
+    {
       "source": "docs/code-blueprints.md",
       "target": "code-blueprints.md",
       "label": "星图样例",
@@ -67,6 +74,13 @@
       "label": "交互模式",
       "category": "入门与入口",
       "summary": "适合看 REPL 指令、状态切换和输入约束。"
+    },
+    {
+      "source": "docs/agent-mode.md",
+      "target": "agent-mode.md",
+      "label": "驻留与订阅模式",
+      "category": "入门与入口",
+      "summary": "适合看 --agent 的驻留会话、长链路监听、任务下发和恢复链路。"
     },
     {
       "source": "docs/playbook.media.md",
