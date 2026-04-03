@@ -5,7 +5,7 @@
 重点不是重新发明一套星图语法，而是解决下面这个结构性问题：
 
 - CLI 当前把 `--code` 绑定为本机文件路径
-- `agent` 的 `profile=code` 目前也天然依赖“消息里如何表达星图源”
+- `agent` 的输入入口列表目前也天然依赖“消息里如何表达星图源”
 - 外部服务如果想通过 `/mind` 或 WS 下发星图任务，需要和客户端约定统一的消息级星图源语义
 
 一句话目标：
@@ -17,7 +17,7 @@
 - 你只想知道 `--code` 现在怎么写：先看 [星图协议](cli-code.md)
 - 你只想知道执行顺序、覆盖优先级和 `cfg` 行为：先看 [星图深入说明](cli-code-advanced.md)
 - 你要改 `--code` 的输入模型、让外部调用不再依赖 agent 本机文件：看这里
-- 你要把 `/mind` 与 `agent` 的 `mind.forward` 串起来，并支持 `profile=code`：看这里
+- 你要把 `/mind` 与 `agent` 的 `mind.forward` 串起来，并支持输入入口列表：看这里
 
 ## 当前问题
 
@@ -39,7 +39,7 @@
 - 它不应知道 agent 部署在哪台机器、哪个目录、文件是否已同步
 - 让调用方直接传 `/Users/.../api_batch.md` 或 `C:\\...\\api_batch.md` 是错误耦合
 
-### 2. `profile=code` 的协议语义不清
+### 2. 输入入口列表的协议语义不清
 
 - 当前更像“请在本地打开一个 pack 文件执行”
 - 这不是任务内容本身
@@ -63,14 +63,14 @@
 - `--code` 不再以“文件路径”作为唯一输入语义
 - 所有入口统一落到同一种 `CodeSource` 模型
 - `Pack.pack_parse()` 继续只消费文本，不感知来源差异
-- `agent` 的 `profile=code` 可以执行内联文本、URL 或服务端制品
+- `agent` 的输入入口列表可以执行内联文本、URL 或服务端制品
 
 ### 兼容目标
 
 - 现有 `mind --chat --code a.md b.md` 保持可用
 - 现有星图文本语法不变
 - 现有批跑执行顺序、重试、前后置、规则逻辑不变
-- 现有 `agent` 的 `mind.forward` 主协议不推翻，只扩展 `payload`
+- 现有 `agent` 的任务下发主协议不推翻，只扩展输入语义
 
 ### 非目标
 
@@ -250,7 +250,7 @@ mind --chat --code https://example.com/a.md
 
 ### `/mind`
 
-对外不要传本机路径，应该传任务源：
+对外不要传本机路径，应该传输入入口列表：
 
 ```json
 {
@@ -259,10 +259,9 @@ mind --chat --code https://example.com/a.md
   },
   "task": {
     "kind": "code",
-    "source": {
-      "kind": "inline",
-      "content": "# name: smoke\n检查登录接口..."
-    }
+    "profile": [
+      "inline:# name: smoke\n检查登录接口..."
+    ]
   },
   "execution": {
     "mode": "plan"
@@ -276,36 +275,31 @@ mind --chat --code https://example.com/a.md
 {
   "task": {
     "kind": "code",
-    "source": {
-      "kind": "url",
-      "url": "https://example.com/packs/login-smoke.md"
-    }
+    "profile": [
+      "https://example.com/packs/login-smoke.md"
+    ]
   }
 }
 ```
 
 ### `agent ws`
 
-现有 `mind.forward` 不应推翻，只扩展 `payload`：
+现有 `mind.forward` 不应推翻，只扩展输入语义：
 
-- 严格字段：`profile=code + message=<code source>`
-
-建议约束：
-
-- 如果 `profile != "code"`，仍然走 `message`
-- 如果 `profile == "code"`，优先解析 `source`
-- `message` 直接承载星图源输入
+- 文本输入与输入入口列表可以并存
+- 文本输入优先，输入入口列表次之
+- 输入入口列表直接承载 `mind_pack(...)` 的来源数组
 
 ## `mind.forward` 扩展建议
 
 当前订阅端主要依赖：
 
-- 顶层 `type`
-- 顶层 `message_id / cid / sid`
-- `payload.call_id`
-- `payload.mode`
-- `payload.profile`
-- `payload.message`
+- 消息类型
+- 任务与会话关联标识
+- 任务调用标识
+- 执行模式
+- 输入入口列表
+- 文本输入
 
 建议扩展为：
 
@@ -320,20 +314,19 @@ mind --chat --code https://example.com/a.md
   "payload": {
     "call_id": "call_xxx",
     "mode": "plan",
-    "profile": "code",
-    "source": {
-      "kind": "inline",
-      "name": "login-smoke.md",
-      "content": "# name: smoke\n检查登录接口..."
-    }
+    "profile": [
+      "inline:# name: smoke\n检查登录接口..."
+    ],
+    "message": null
   }
 }
 ```
 
 兼容顺序建议：
 
-1. `profile=code` 且有 `message`
-2. 其它字段一律按协议错误处理
+1. 文本输入非空时，按普通单次请求执行
+2. 文本输入为空且输入入口列表非空时，按批跑入口执行
+3. 两者都为空时，按协议错误处理
 
 ## 批跑执行器改造
 
@@ -554,14 +547,14 @@ display_origin=url:https://packs.example.com/a.md
 
 - CLI 支持 `--code -`
 - 支持 `--code inline:...`
-- `agent ws` 支持 `profile=code + message`
+- `agent ws` 支持输入入口列表
 
 ### 阶段 3
 
 增加 `url`、缓存、鉴权和可选 `artifact`。
 
-- `/mind` 支持 `task.source`
-- `agent ws` 支持 `source.url`
+- `/mind` 支持输入入口列表
+- `agent ws` 支持 URL 形式的输入入口
 - 增加缓存、超时、来源标识和审计字段
 
 ## 失败处理策略
@@ -614,9 +607,9 @@ display_origin=url:https://packs.example.com/a.md
 
 建议覆盖：
 
-- `mind.forward profile=code + message`
-- `message/profile` 冲突时报错
-- `message/profile` 冲突时报错
+- `mind.forward` 仅带文本输入
+- `mind.forward` 仅带输入入口列表
+- 文本输入与输入入口列表同时存在时按文本输入优先
 
 ### 批跑回归测试
 
@@ -631,10 +624,10 @@ display_origin=url:https://packs.example.com/a.md
 
 建议覆盖：
 
-- `agent` 收到 `mind.forward message`
+- `agent` 收到任务下发消息
 - `mind.received` 正常回发
 - 断线后 `resume`
-- `replay.batch` 中重复 `message_id` 不重复执行
+- `replay.batch` 中重复任务消息不会重复执行
 
 ## 实现切分建议
 
@@ -662,7 +655,7 @@ CLI 增加 `stdin/inline`。
 
 ### 任务 4
 
-`agent ws` 严格使用 `profile=code + message`
+`agent ws` 使用“文本输入优先，输入入口列表次之”
 - 优先级清晰
 
 ### 任务 5
@@ -698,7 +691,7 @@ tests/test_batch_code_sources.py
 建议最终稳定口径：
 
 - `path` 是实现细节，不是外部协议主语义
-- `source` 才是 `code` 的正式输入模型
+- 输入入口列表才是 `code` 的正式输入模型
 - `inline` 是外部调用默认推荐路径
 - `url` 和 `artifact` 是平台化扩展路径
 - `file` 只作为 CLI 兼容入口保留

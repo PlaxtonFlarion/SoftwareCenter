@@ -98,23 +98,24 @@ mind.received
 ## 任务下发
 `agent` 模式本身不直接定义新执行器；它做的是把服务端任务映射回本地已有运行面。
 
-`mind.forward.payload.mode` 目前只允许：
+下发任务里的执行模式目前只允许：
 - `chat`
 - `fast`
 - `plan`
 
-`mind.forward.payload.profile` 目前只允许：
-- 空字符串：按普通单次请求执行
-- `code`：走 `mind_pack(...)`，把 `message` 当作星图蓝本入口
+如果任务走“输入入口列表”模式：
+- 类型是 `list[str]`
+- 常见项包括本地文件路径、`inline:...`、`https://...` 或 `-`
+- 服务端只做链接合法性校验和透传，不做意图抽取
 
 映射关系：
-- 普通任务：`mind.calling(message=..., mode=...)`
-- 星图任务：`mind.mind_pack([message], mode, ...)`
+- 文本输入非空：`mind.calling(message=..., mode=...)`
+- 文本输入为空且输入入口列表非空：`mind.mind_pack(profile, mode, ...)`
 
 关键约束：
 - `mode` 不是任意字符串，只能落回本地现有三种执行面
-- `message` 始终必填；`profile=code` 时直接作为星图源输入
-- 非 `code` 任务必须提供 `message`
+- 同时存在文本输入和输入入口列表时，本地按文本输入优先执行
+- 文本输入与意图摘要在输入入口列表模式下都可能为空
 - 本地会先发 `mind.received`，再把实际执行放到后台任务里，避免阻塞 WS 心跳
 
 ## 恢复与重连
@@ -141,12 +142,12 @@ mind.received
 ## 去重与确认
 `agent` 模式同时维护两类确认信息：
 
-- `last_acked_seq`：记录已经观测到的服务端消息序号，用于断线恢复
-- `forwarded_message_ids`：记录已经转发执行过的 `mind.forward.message_id`，避免重放时重复执行
+- 已确认的服务端消息序号：用于断线恢复
+- 已执行过的任务消息标识：避免重放时重复执行
 
 因此要注意：
 - `mind.received` 解决的是“服务端知道你收到了”
-- `forwarded_message_ids` 解决的是“本地不要把同一条任务执行两次”
+- 本地去重缓存解决的是“本地不要把同一条任务执行两次”
 - 它们不是一回事，不能混为“任务成功回执”
 
 ## 常见排障
@@ -169,13 +170,13 @@ mind.received
 ### 可以连上但不执行任务
 优先确认：
 - 是否收到了 `mind.forward`
-- `payload.mode` 是否是 `chat / fast / plan`
-- `payload.message` 是否存在且非空
-- 消息是否因为缺少 `message_id / call_id / cid / sid` 被本地丢弃
+- 执行模式是否是 `chat / fast / plan`
+- 文本输入是否非空；如果为空，再看输入入口列表是否是非空列表
+- 消息是否因为缺少必要的任务标识或会话标识被本地丢弃
 
 ### 怀疑任务被重复执行
 优先检查：
-- 服务端是否重复投递了相同 `message_id`
+- 服务端是否重复投递了相同任务消息标识
 - 本地日志里是否出现 `mind.forward replay skipped`
 - 断线恢复后是否发生了 `replay.batch`
 
