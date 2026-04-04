@@ -1,532 +1,251 @@
 # 星图源抽象设计
 
-这份文档面向维护者和实现者，目标是把当前 `--code` 从“本机文件路径入口”升级成“统一源抽象入口”，同时兼容 CLI、本地 REPL、`/mind` 任务提交接口和 `agent` 长链路下发。
+这份文档面向维护者和实现者，目标是把当前 `--code` 从“本机路径入口”升级成“统一源入口”，同时兼容命令行、本地交互、服务调用和订阅链路。
 
-重点不是重新发明一套星图语法，而是解决下面这个结构性问题：
-
-- CLI 当前把 `--code` 绑定为本机文件路径
-- `agent` 的输入入口列表目前也天然依赖“消息里如何表达星图源”
-- 外部服务如果想通过 `/mind` 或 WS 下发星图任务，需要和客户端约定统一的消息级星图源语义
+重点不是改星图语法，而是把“怎么定位一份星图内容”从单一路径模型升级成统一来源模型。
 
 一句话目标：
 
-- 把 `code` 从“路径模式”改成“源码/蓝本源模式”
+- 把 `code` 从“路径模式”改成“来源模式”
 
 ## 先判断这页的范围
 
 - 你只想知道 `--code` 现在怎么写：先看 [星图协议](cli-code.md)
-- 你只想知道执行顺序、覆盖优先级和 `cfg` 行为：先看 [星图深入说明](cli-code-advanced.md)
-- 你要改 `--code` 的输入模型、让外部调用不再依赖 agent 本机文件：看这里
-- 你要把 `/mind` 与 `agent` 的 `mind.forward` 串起来，并支持输入入口列表：看这里
+- 你只想知道执行顺序、覆盖优先级和批跑控制语义：先看 [星图深入说明](cli-code-advanced.md)
+- 你要把星图输入从本机路径升级成统一来源：看这里
+- 你要让命令行、交互、服务调用和订阅链路共享同一套输入语义：看这里
 
 ## 当前问题
 
-当前实现里，`--code` 的本体是“路径列表”。
+当前实现里，`--code` 的主语义仍然偏向“本机文件列表”。这会带来四类结构性问题。
 
-入口约束：
-
-- CLI 参数定义在 [mind_core/parser.py](../mind_core/parser.py)
-- 批跑入口当前接收 `list[str]`
-- 路径解析在 [mind_app/modes/batch.py](../mind_app/modes/batch.py)
-- 真实执行前会先检查 `Path.exists()`
-- 随后直接 `read_text()`
-
-这带来四类问题：
-
-### 1. 外部调用无法稳定引用 agent 本机路径
+### 1. 外部调用无法稳定引用端侧本机路径
 
 - 外部系统通常只知道“要执行哪份星图”
-- 它不应知道 agent 部署在哪台机器、哪个目录、文件是否已同步
-- 让调用方直接传 `/Users/.../api_batch.md` 或 `C:\\...\\api_batch.md` 是错误耦合
+- 它不应知道目标机器的目录结构、部署位置或文件同步方式
+- 让调用方依赖本机路径，会把执行语义和部署细节绑死
 
-### 2. 输入入口列表的协议语义不清
+### 2. 输入来源的协议语义不清
 
-- 当前更像“请在本地打开一个 pack 文件执行”
+- 当前更像“请在本地打开某份文件执行”
 - 这不是任务内容本身
 - 这只是内容定位方式的一种
 
-### 3. CLI、HTTP、WS 三条入口没有统一输入模型
+### 3. 多入口之间没有统一输入模型
 
-- CLI 用本机文件路径
-- `/mind` 更适合传任务内容
-- `agent ws` 需要的是稳定、可恢复、可追踪的执行源
+- 命令行更偏本地文件
+- 服务调用更适合直接传内容或可追踪来源
+- 长链路订阅需要稳定、可恢复、可审计的来源标识
 
-### 4. 安全与审计边界不够清楚
+### 4. 安全与审计边界不清
 
-- 本机路径天然带来目录穿透、越权读取和部署差异
-- URL、附件、内联文本又需要鉴权、缓存、超时和来源标识
+- 本机路径天然带来目录越界和部署差异问题
+- 远端来源又会引入鉴权、超时、缓存和来源可信度问题
+- 如果没有统一来源抽象，后续每加一种入口都要重复补边界
 
 ## 设计目标
 
 ### 核心目标
 
-- `--code` 不再以“文件路径”作为唯一输入语义
-- 所有入口统一落到同一种 `CodeSource` 模型
-- `Pack.pack_parse()` 继续只消费文本，不感知来源差异
-- `agent` 的输入入口列表可以执行内联文本、URL 或服务端制品
+- `--code` 不再以“本机路径”作为唯一输入语义
+- 所有入口统一收敛到同一种来源抽象
+- 星图解析继续只消费文本，不感知来源差异
+- 长链路任务下发可以承载内联内容、远端来源或平台制品
 
 ### 兼容目标
 
-- 现有 `mind --chat --code a.md b.md` 保持可用
-- 现有星图文本语法不变
-- 现有批跑执行顺序、重试、前后置、规则逻辑不变
-- 现有 `agent` 的任务下发主协议不推翻，只扩展输入语义
+- 现有命令行本地文件用法继续可用
+- 现有星图正文语法不变
+- 现有批跑顺序、重试、前后置和规则行为不变
+- 现有任务下发主协议不推翻，只扩展输入来源语义
 
 ### 非目标
 
 - 不重写星图 DSL
 - 不把 `code` 和 `plan` 合并
-- 不在第一阶段引入远端制品上传中心的完整实现
+- 不在第一阶段强制引入完整的远端制品中心
 - 不要求所有来源都必须持久缓存
 
 ## 总体方案
 
-把 `--code` 的输入统一抽象为 `CodeSource`，所有入口先解析成 `CodeSource` 列表，再执行。
+把 `--code` 的输入统一抽象成“来源列表”。所有入口先把调用方提供的内容解析成统一来源，再解析正文，再进入批跑执行面。
 
-统一流程：
+统一流程可以概括为：
 
-```text
-CLI / REPL / HTTP / WS
-  ↓
-resolve_code_sources(...)
-  ↓
-list[CodeSourceResolved]
-  ↓
-Pack.pack_parse(text)
-  ↓
-batch runtime
-```
+- 入口层提供来源声明
+- 解析层把来源解成可执行文本
+- 星图解析层只消费文本
+- 批跑执行层继续按原有语义运行
 
 这里的关键变化是：
 
 - 以前的批跑入口是“收路径，再读文件”
 - 以后是“收来源，再解成文本”
 
-## 源模型
-
-建议引入三层模型。
-
-### 1. `CodeSourceRef`
-
-表示调用方声明的“源引用”，还没有真正取回内容。
-
-建议字段：
-
-```python
-class CodeSourceRef(BaseModel):
-    kind: Literal["file", "stdin", "inline", "url", "artifact"]
-    name: str | None = None
-    path: str | None = None
-    content: str | None = None
-    url: str | None = None
-    artifact_id: str | None = None
-    headers: dict[str, str] | None = None
-    auth: dict[str, Any] | None = None
-    timeout_sec: float | None = None
-    cache_ttl_sec: int | None = None
-    metadata: dict[str, Any] | None = None
-```
-
-### 2. `CodeSourceResolved`
-
-表示已经可执行的源内容。
-
-建议字段：
-
-```python
-class CodeSourceResolved(BaseModel):
-    kind: Literal["file", "stdin", "inline", "url", "artifact"]
-    name: str
-    content: str
-    source_id: str
-    identity: str
-    cache_hit: bool = False
-    fetched_at_ms: int | None = None
-    content_sha256: str
-    content_bytes: int
-    display_origin: str
-    trace: dict[str, Any] = Field(default_factory=dict)
-```
-
-### 3. `CodeSourcePolicy`
-
-表示一次调用的解析策略，而不是单个源自身的属性。
-
-建议字段：
-
-```python
-class CodeSourcePolicy(BaseModel):
-    allow_file: bool = True
-    allow_stdin: bool = True
-    allow_inline: bool = True
-    allow_url: bool = False
-    allow_artifact: bool = False
-    url_timeout_sec: float = 15.0
-    max_content_bytes: int = 2_000_000
-    max_source_count: int = 20
-    enable_cache: bool = True
-    default_cache_ttl_sec: int = 300
-    allowed_url_schemes: list[str] = ["https"]
-    allowed_url_hosts: list[str] = []
-    redact_query_in_logs: bool = True
-```
-
 ## 支持的来源类型
 
-### `file`
+建议支持以下几类来源：
 
-面向本地 CLI 兼容。
+### 本地文件
 
-- 输入：`path`
-- 解析：读取本地文件
-- 用途：继续支持 `mind --code a.md`
-- 风险：仅适合本机入口，不适合外部协议主路径
+- 面向命令行兼容
+- 适合本机快速执行
+- 不适合作为外部协议主路径
 
-### `stdin`
+### 标准输入
 
-面向 shell 管道和动态拼装。
+- 面向管道和动态拼装
+- 适合临时生成的星图内容
+- 仍然属于本机入口，不适合作为远端任务协议主语义
 
-- 输入：`-` 或明确 `kind=stdin`
-- 解析：从标准输入读取
-- 用途：`cat case.md | mind --plan --code -`
+### 内联文本
 
-### `inline`
+- 面向服务调用、SDK 和最小可用任务提交
+- 最适合不依赖本机文件的场景
+- 也是外部调用最容易收敛的默认来源
 
-面向 HTTP / WS / SDK 的最小可用路径。
+### 远端文本来源
 
-- 输入：`content`
-- 解析：直接执行文本
-- 用途：最适合 `/mind`
-- 优点：不依赖本机路径
+- 面向集中托管、跨环境复用和回归调度
+- 需要鉴权、超时、白名单和缓存策略
 
-### `url`
+### 平台制品
 
-面向集中托管星图。
+- 面向平台内部对象存储、附件中心或版本化蓝本
+- 适合统一权限、统一追踪和统一版本管理
+- 可以晚于内联文本和远端文本来源落地
 
-- 输入：`url`
-- 解析：拉取远端文本
-- 用途：跨环境复用、CI 调度、集中回归
-- 风险：需要鉴权、缓存、超时、白名单
+## 统一输入边界
 
-### `artifact`
+不管入口来自哪里，最终都应该表达同一件事：
 
-面向平台内部对象存储或附件中心。
+- 这次执行要加载哪些来源
+- 每个来源属于哪一类
+- 是否需要额外的获取约束
+- 结果里应该如何标识来源
 
-- 输入：`artifact_id`
-- 解析：通过平台侧制品服务获取内容
-- 用途：服务端统一控权限与版本
-- 说明：可以晚于 `inline/url` 实现
+入口层不应该再把“本机路径”当成唯一正式语义。  
+本机路径可以保留，但只能作为兼容来源，而不是统一协议主语义。
 
-## 新的调用面
+## 入口侧要求
 
-### CLI
+### 命令行
 
-保留现有：
+- 继续兼容本地文件用法
+- 可逐步增加标准输入、内联文本和远端来源
+- 长期应以“显式来源”优先于“隐式字符串猜测”
 
-```bash
-mind --chat --code a.md b.md
-```
+### 本地交互
 
-建议新增：
+- 交互模式可以继续复用统一来源模型
+- 不应该为交互模式单独发明另一套来源语义
 
-```bash
-mind --chat --code -
-mind --chat --code inline:...
-mind --chat --code https://example.com/a.md
-```
+### 服务调用
 
-第一阶段也可以不新增额外参数，而是先让 `--code` 支持：
+- 不应依赖端侧本机路径
+- 更适合传内联内容、远端来源或平台制品
 
-- 普通路径
-- `-`
-- `inline:...`
-- `https://...`
+### 订阅链路
 
-但长期更推荐显式参数，因为：
+- 文本任务和来源列表应能并存
+- 若两者同时存在，应定义稳定优先级
+- 任务恢复、重放和审计都应基于统一来源模型
 
-- 解析规则更稳定
-- shell 转义更可控
-- 错误提示更清晰
+## 解析策略
 
-### `/mind`
+来源解析层负责把不同来源收敛成统一文本输入。  
+它应该承担这些职责：
 
-对外不要传本机路径，应该传输入入口列表：
+- 判断来源类型是否合法
+- 获取或读取正文内容
+- 做必要的大小限制和超时控制
+- 生成稳定的来源标识
+- 产生可回放、可审计的来源元信息
 
-```json
-{
-  "target": {
-    "agent_id": "mind-prod-01"
-  },
-  "task": {
-    "kind": "code",
-    "profile": [
-      "inline:# name: smoke\n检查登录接口..."
-    ]
-  },
-  "execution": {
-    "mode": "plan"
-  }
-}
-```
+解析层不应该承担这些职责：
 
-或：
-
-```json
-{
-  "task": {
-    "kind": "code",
-    "profile": [
-      "https://example.com/packs/login-smoke.md"
-    ]
-  }
-}
-```
-
-### `agent ws`
-
-现有 `mind.forward` 不应推翻，只扩展输入语义：
-
-- 文本输入与输入入口列表可以并存
-- 文本输入优先，输入入口列表次之
-- 输入入口列表直接承载 `mind_pack(...)` 的来源数组
-
-## `mind.forward` 扩展建议
-
-当前订阅端主要依赖：
-
-- 消息类型
-- 任务与会话关联标识
-- 任务调用标识
-- 执行模式
-- 输入入口列表
-- 文本输入
-
-建议扩展为：
-
-```json
-{
-  "type": "mind.forward",
-  "session_id": "sess_xxx",
-  "message_id": "msg_xxx",
-  "cid": "cid_xxx",
-  "sid": "sid_xxx",
-  "seq": 12,
-  "payload": {
-    "call_id": "call_xxx",
-    "mode": "plan",
-    "profile": [
-      "inline:# name: smoke\n检查登录接口..."
-    ],
-    "message": null
-  }
-}
-```
-
-兼容顺序建议：
-
-1. 文本输入非空时，按普通单次请求执行
-2. 文本输入为空且输入入口列表非空时，按批跑入口执行
-3. 两者都为空时，按协议错误处理
-
-## 批跑执行器改造
-
-### 当前状态
-
-当前批跑执行器的关键签名更接近：
-
-- `mind.mind_pack(code: list[str], mode: ...)`
-- `_resolve_code_paths(code: list[str]) -> list[Path]`
-- `_run_pack_file(file_path: Path, ...)`
-
-### 目标状态
-
-建议改成：
-
-- `mind.mind_pack(sources: list[CodeSourceRef] | list[str], mode: ...)`
-- `resolve_code_sources(...) -> list[CodeSourceResolved]`
-- `_run_pack_source(source: CodeSourceResolved, ...)`
-
-执行器层的关键变化：
-
-- 运行日志不再只打印 `file=...`
-- 应打印 `origin=... kind=... source_id=...`
-- 事件上报中保留来源标识，方便回放和审计
+- 不解释星图 DSL 语义
+- 不决定批跑顺序
+- 不介入规则判断
+- 不决定具体执行模式
 
 ## 缓存策略
 
-完整版设计里必须把缓存明确下来，否则 URL 和 artifact 会把执行链路拉得很抖。
+只要支持远端来源或平台制品，就必须明确缓存边界。
 
-### 缓存目标
+建议目标：
 
-- 降低重复拉取 URL 的开销
-- 让一次批跑中的多轮重复执行可以复用相同内容
-- 允许恢复链路中再次执行同一 `source` 时快速命中
+- 降低重复获取远端来源的开销
+- 让单轮批跑中的重复加载可以复用
+- 让恢复链路中再次执行同一来源时能够稳定命中
 
-### 缓存键
+建议原则：
 
-建议缓存键使用规范化来源标识，而不是原始输入字符串。
+- 缓存键基于规范化来源标识，而不是原始输入文本
+- 本机兼容来源可以轻量缓存
+- 远端来源和平台制品应支持可控 TTL
+- 第一阶段只做进程内缓存即可
+- 磁盘缓存属于可选增强，不应成为第一阶段前置依赖
 
-示例：
+## 安全与鉴权
 
-- `file`: `file:/abs/path/to/a.md`
-- `url`: `url:https://example.com/packs/a.md`
-- `artifact`: `artifact:pack_123`
-- `inline`: `inline:sha256:<content_sha256>`
-- `stdin`: `stdin:sha256:<content_sha256>`
+只要放开远端来源，就必须明确安全约束。
 
-### 缓存值
+建议原则：
 
-- `content`
-- `content_sha256`
-- `fetched_at_ms`
-- `expires_at_ms`
-- `etag` 可选
-- `last_modified` 可选
-- `source_headers` 可选
+- 默认只允许安全协议
+- 默认限制可访问来源范围
+- 默认隐藏敏感鉴权材料
+- 默认限制响应体大小和跳转次数
+- 不要把来源获取实现成无限制转发器
 
-### 缓存范围
+本机兼容来源也要保留边界：
 
-建议分两级：
+- 不应允许越界读取
+- 不应默认信任任意路径输入
+- 不应让部署差异直接污染协议语义
 
-- 进程内内存缓存
-- 可选磁盘缓存
+## 超时与失败语义
 
-第一阶段只做进程内缓存即可。
+不同来源应该有不同超时边界，但错误语义必须统一。
 
-磁盘缓存可后续落到：
+建议统一关注这些错误类别：
 
-- `src_total_place/cache/code_sources/`
+- 来源超时
+- 鉴权失败
+- 来源不存在
+- 内容过大
+- 来源类型不支持
 
-### TTL 建议
+错误结果里至少应保留：
 
-- `inline` 和 `stdin` 不需要缓存复拉，但可以保留 hash
-- `file` 默认不缓存跨进程内容，只缓存本次运行已读文本
-- `url` 默认 `300s`
-- `artifact` 默认 `300s`
+- 来源类型
+- 来源标识
+- 人类可读的失败说明
 
-### 失效策略
+## 可观测与审计
 
-- 超过 TTL 即失效
-- URL 如果拿到 `etag/last-modified`，可以尝试条件请求
-- `file` 在同一次运行内可以按 `mtime + size` 做轻量校验
+统一来源模型里，来源标识是必需能力。
 
-## 超时策略
-
-不同来源必须有不同超时边界。
-
-### 解析超时
-
-- `file`: 2 秒
-- `stdin`: 跟随整体命令执行，不单独设网络超时
-- `inline`: 不需要额外超时
-- `url`: 默认 15 秒
-- `artifact`: 默认 15 秒
-
-### 批次超时
-
-如果一轮任务里加载多个 `source`，建议：
-
-- 单源超时独立计算
-- 总超时由调用方或上层 `execution.timeout_sec` 控制
-
-### 错误语义
-
-建议把超时错误显式区分为：
-
-- `source_timeout`
-- `source_auth_failed`
-- `source_not_found`
-- `source_too_large`
-- `source_unsupported`
-
-## URL 鉴权设计
-
-URL 一旦放开，必须明确鉴权模型。
-
-### 支持方式
-
-- 静态 header
-- Bearer token
-- Basic auth
-- 签名 URL
-
-### 请求模型建议
-
-```json
-{
-  "kind": "url",
-  "url": "https://example.com/packs/a.md",
-  "auth": {
-    "type": "bearer",
-    "token": "xxx"
-  },
-  "headers": {
-    "X-Pack-Version": "2026-04-01"
-  }
-}
-```
-
-### 安全约束
-
-- 默认只允许 `https`
-- 默认不打印敏感 query 和鉴权头
-- 默认限制 host 白名单
-- 默认限制最大响应体大小
-- 默认限制重定向次数
-
-### 不建议的做法
-
-- 不要允许任意 `http://`
-- 不要把完整 header 或 token 直接写入日志
-- 不要把 URL 拉取实现成无限制转发器
-
-## 来源标识设计
-
-来源标识是完整版里必须补的能力，否则排查和审计会失真。
-
-### 目标
+至少要满足三件事：
 
 - 同一份星图从哪里来，要能看出来
 - 同一内容被重复执行，要能去重和对账
-- 断线恢复、重放和日志回放时，要能定位原始来源
+- 断线恢复、重放和日志回看时，要能定位原始来源
 
-### 建议字段
+日志和事件里应该体现：
 
-- `source_id`
-- `identity`
-- `display_origin`
-- `content_sha256`
-- `resolved_kind`
+- 来源类型
+- 来源标识
+- 是否命中缓存
+- 内容摘要或可比对指纹
+- 内容体量
 
-示例：
+但不要直接暴露：
 
-```text
-source_id=file:/tmp/a.md
-identity=sha256:abc123...
-display_origin=file:/tmp/a.md
-```
-
-```text
-source_id=url:https://packs.example.com/a.md
-identity=sha256:def456...
-display_origin=url:https://packs.example.com/a.md
-```
-
-### 日志建议
-
-批跑开始事件里附带：
-
-- `source_id`
-- `kind`
-- `cache_hit`
-- `content_sha256`
-- `content_bytes`
-
-不要打印：
-
-- 完整 token
-- 完整敏感 query
-- 过长内联文本正文
+- 敏感鉴权材料
+- 敏感查询参数
+- 过长的原始正文
 
 ## 兼容与迁移
 
@@ -534,164 +253,88 @@ display_origin=url:https://packs.example.com/a.md
 
 ### 阶段 1
 
-把批跑执行器从“吃路径”改成“吃来源文本”。
+先把批跑执行器从“吃路径”改成“吃统一来源”。
 
-- 引入 `CodeSourceRef`
-- 让 CLI 继续只传路径
-- 内部先转成 `kind=file`
-- `_run_pack_file` 改成 `_run_pack_source`
+- 命令行仍然只用本地兼容来源
+- 内部先统一收敛
+- 不改变外部日常用法
 
 ### 阶段 2
 
-增加 `stdin` 和 `inline`。
+再增加本机非文件来源。
 
-- CLI 支持 `--code -`
-- 支持 `--code inline:...`
-- `agent ws` 支持输入入口列表
+- 标准输入
+- 内联文本
+- 订阅链路中的来源列表
+
+这一阶段先把本地和长链路入口打通，不急着引入网络来源。
 
 ### 阶段 3
 
-增加 `url`、缓存、鉴权和可选 `artifact`。
+最后增加远端来源、平台制品、缓存、鉴权和来源审计。
 
-- `/mind` 支持输入入口列表
-- `agent ws` 支持 URL 形式的输入入口
-- 增加缓存、超时、来源标识和审计字段
+- 服务调用可以直接提交来源列表
+- 长链路任务下发可以传可追踪来源
+- 批跑执行和恢复链路共享同一套来源标识
 
-## 失败处理策略
+## 测试建议
 
-### 单源失败
+完整版里必须补回归测试，否则很容易把现有本地文件用法弄坏。
 
-建议默认：
+至少应覆盖：
 
-- 该 `source` 对应批次失败
-- 若 `stop_on_fail=true` 则整个 pack 执行立即停止
-
-### 多源批跑
-
-如果一次提交带多个来源：
-
-- 每个来源各自产生一组 `batch.start/batch.done`
-- 来源间顺序应与输入顺序一致
-
-### 错误可观测性
-
-最终错误中至少包含：
-
-- `kind`
-- `origin`
-- `source_id`
-- `error_code`
-- `human_message`
-
-## 测试设计
-
-完整版里必须加回归测试，否则很容易把老的 `--code path` 弄坏。
-
-### 单元测试
-
-建议覆盖：
-
-- `file` 正常读取
-- `file` 不存在
-- `stdin` 正常读取
-- `inline` 正常读取
-- `url` 正常拉取
-- `url` 超时
-- `url` 401/403
-- `url` 404
-- `url` 超大响应体
-- `inline` 与 `stdin` 的 hash 生成
+- 本地兼容来源正常读取
+- 本地兼容来源不存在
+- 标准输入正常读取
+- 内联文本正常读取
+- 远端来源正常拉取
+- 远端来源超时、鉴权失败、未找到、内容过大
 - 缓存命中与失效
-
-### 协议测试
-
-建议覆盖：
-
-- `mind.forward` 仅带文本输入
-- `mind.forward` 仅带输入入口列表
-- 文本输入与输入入口列表同时存在时按文本输入优先
-
-### 批跑回归测试
-
-建议覆盖：
-
-- `mind --chat --code a.md`
-- `mind --plan --code a.md b.md`
-- `cat a.md | mind --plan --code -`
-- `mind --chat --code inline:...`
-
-### 恢复链路测试
-
-建议覆盖：
-
-- `agent` 收到任务下发消息
-- `mind.received` 正常回发
-- 断线后 `resume`
-- `replay.batch` 中重复任务消息不会重复执行
+- 任务下发只带文本、只带来源、两者并存时的优先级
+- 现有批跑入口在兼容场景下保持稳定
+- 恢复链路中的重复任务不会被重复执行
 
 ## 实现切分建议
 
-### 任务 1
+建议把这轮改造切成几块独立工作：
 
-新增源模型与解析器。
+### 1. 来源模型与解析层
 
-- 新建 `mind_app/modes/code_sources.py` 或同等模块
-- 提供 `resolve_code_sources()`
-- 先支持 `file`
+- 先定义统一来源抽象
+- 先支持本地兼容来源
 
-### 任务 2
+### 2. 批跑执行器适配
 
-批跑执行器改造。
+- 批跑入口改为消费统一来源
+- 执行期不再直接感知“路径就是全部输入语义”
 
-- `mind_pack()` 改为吃来源
-- `_run_pack_source()` 替换 `_run_pack_file()`
+### 3. 本机非文件来源
 
-### 任务 3
+- 增加标准输入和内联文本
+- 保证本地闭环稳定
 
-CLI 增加 `stdin/inline`。
+### 4. 长链路来源语义
 
-- 先做不涉及网络的来源
-- 保证本地功能闭环
+- 统一文本任务与来源列表的优先级
+- 保证断线恢复和回放语义不漂移
 
-### 任务 4
-
-`agent ws` 使用“文本输入优先，输入入口列表次之”
-- 优先级清晰
-
-### 任务 5
-
-URL、缓存、鉴权、超时和来源标识。
+### 5. 远端来源能力
 
 - 独立实现
 - 独立测试
-- 不和基础执行器重构混在一次提交里
-
-## 建议的目录变更
-
-如果按当前仓库结构实现，建议新增：
-
-```text
-mind_app/modes/code_sources.py
-mind_app/modes/code_cache.py
-tests/test_code_sources.py
-tests/test_agent_code_source_protocol.py
-tests/test_batch_code_sources.py
-```
-
-如果暂时没有统一测试目录，也至少补同模块级测试或最小自验证脚本。
+- 不与基础执行器重构混在同一次提交里
 
 ## 最终结论
 
 这轮改造不该被理解为“让外部也能传本机路径”，而应该被理解为：
 
 - 统一 `code` 的输入语义
-- 让 `CLI / HTTP / WS` 都基于同一个源抽象
-- 把本机文件路径降级为一种兼容来源
+- 让命令行、交互、服务调用和长链路都基于同一个来源抽象
+- 把本机路径降级为一种兼容来源
 
 建议最终稳定口径：
 
-- `path` 是实现细节，不是外部协议主语义
-- 输入入口列表才是 `code` 的正式输入模型
-- `inline` 是外部调用默认推荐路径
-- `url` 和 `artifact` 是平台化扩展路径
-- `file` 只作为 CLI 兼容入口保留
+- 本机路径是兼容方式，不是正式协议主语义
+- 来源列表才是 `code` 的长期正式输入模型
+- 内联内容是外部调用的默认推荐路径
+- 远端来源和平台制品是平台化扩展路径
