@@ -6,7 +6,7 @@
 ## 维护范围
 - 模式边界：`chat / fast / plan / agent`
 - 工具域边界：`device / bench / common / media`
-- 接口执行面：`bench.nexus`
+- 接口执行面：协议执行能力
 - 星图执行链：`--code`
 - 文档拆分与同步：`README.md`、`docs/*.md`、`.github/workflows/sync-to-software-center.yml`
 
@@ -29,14 +29,14 @@ device / bench / common / media
 ## 模式边界
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
-- `plan`：先生成计划，再按步骤顺序执行，并承载 `free_rule` 这类执行期规则判断能力
+- `plan`：先生成计划，再按步骤顺序执行，并承载执行期规则判断能力
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 
 维护要求：
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
-- 不要把 `free_rule` 和 `--code` 的 `global_rule / rule` 混写成同一个概念
+- 不要把执行期规则判断和 `--code` 里的规则层写成同一个概念
 - 不要把 `agent` 写成 REPL 内的第四个状态；它是独立 CLI 入口
 
 ## 工具域边界
@@ -46,7 +46,7 @@ device / bench / common / media
 - `media`：截图、录屏、音视频处理与帧级流水线
 
 关键约束：
-- 接口能力不是独立 `api` 域，而是落在 `bench.nexus`
+- 接口能力不是独立 `api` 域，而是归在协议执行这一侧
 - 如果工具注册名、域名或能力归属变更，README 和 `docs/architecture.md`、`docs/playbook.api.md` 都要一起改
 
 ## 星图执行链
@@ -125,7 +125,7 @@ device / bench / common / media
 - `D: / C: / A: / P: / R: / N:` 这类内部标签块
 - “万能入口”“智能处理”“自动完成页面操作” 这类泛化表述
 - 只写底层 adb 命令，不写实际能力边界
-- 把内部增强层、helper、临时实现细节写成用户契约
+- 把内部增强层、模板表达式或临时实现细节写成用户契约
 
 ## 同步链路
 同步工作流在：

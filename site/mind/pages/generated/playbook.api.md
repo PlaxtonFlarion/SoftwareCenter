@@ -47,10 +47,10 @@
 - 单请求的 `render / validate` 可额外接收 `env`，用于预览或校验共享默认值，不会改变正式执行工具的输入边界
 - 批量星图统一使用：`env`、`items`、`template_vars`、`concurrency`、`fail_fast`
 - 不再使用旧的单体 `payload = {...}` 形式，也不再使用 `options.fail_fast` / `vars`
-- MCP 工具边界：
-  - 单请求：`nexus_http_request` / `nexus_sse_request` / `nexus_ws_request` / `nexus_graphql_request` / `nexus_tcp_request` / `nexus_udp_request` / `nexus_smtp_request` / `nexus_imap_request` / `nexus_ftp_request`
-  - 批量请求：`nexus_http_batch` / `nexus_sse_batch` / `nexus_ws_batch` / `nexus_graphql_batch` / `nexus_tcp_batch` / `nexus_udp_batch` / `nexus_smtp_batch` / `nexus_imap_batch` / `nexus_ftp_batch`
-  - 预执行：`nexus_render_request` / `nexus_validate_request` / `nexus_render_batch` / `nexus_validate_batch`
+- 执行边界：
+  - 单请求：执行一个协议请求
+  - 批量请求：执行一组同协议请求
+  - 预执行：只做模板展开、共享默认值物化和基础结构校验
 
 最小示意：
 
@@ -75,13 +75,13 @@ items = [
 ]
 ```
 
-### 内部职责边界
-- `ExtractService`：只负责路径提取、过滤与后处理
-- `AssertionService`：只负责断言比较运算
-- `CheckService`：负责 `extract + asserts` 的检查编排与结果收尾
-- `PackBuilder`：只负责构造统一返回包，不再承载检查逻辑
+### 结果处理边界
+- 提取层：只负责路径提取、过滤与后处理
+- 断言层：只负责断言比较运算
+- 检查编排层：负责 `extract + asserts` 的检查编排与结果收尾
+- 返回收束层：只负责构造统一返回包，不再承载检查逻辑
 
-### Nexus 字段边界
+### 协议字段边界
 - 单请求里，`request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
 - 批量请求里，每个 item 都使用统一结构：协议原生字段写进 `items[].request`
 - `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；执行前会先物化最终请求
@@ -89,11 +89,11 @@ items = [
 - `extract` 和 `asserts` 都作用于最终结果包中的 `data`
 - 如果你只想确认模板展开结果，用 `render`
 - 如果你想先检查必填字段和请求结构，用 `validate`
-- 如果你要真实发请求，才用 `*_request` 或 `*_batch`
+- 如果你要真实发请求，才用执行入口
 
 ### SSE 批量硬性约束
-- SSE 单条请求用 `nexus_sse_request`
-- SSE 多条独立用例用 `nexus_sse_batch`
+- SSE 单条场景走单请求执行
+- SSE 多条独立用例走批量执行
 - `1` 条 case = `items` 中的 `1` 个独立 item，其协议字段写在 `item.request`
 - 多条 `user_input` 必须展开成多个独立 `items`
 - 不允许把多条 `user_input` 合并进同一个 `request`
@@ -126,7 +126,7 @@ items = [
 正确示意：
 
 ```text
-tool: nexus_sse_batch
+执行方式：SSE 批量执行
 args:
   concurrency: 5
   fail_fast: true
@@ -223,7 +223,7 @@ args:
 
 展开规则：
 - 若一组有 `5` 条 `user_input`，则展开为 `5` 个 `items`
-- 使用一次 `nexus_sse_batch` 提交
+- 使用一次批量执行提交
 - `concurrency` 设为 `5`
 - `fail_fast` 按预期行为显式写出，不要省略
 - 每个 item 单独写自己的 `user_input` 和 `current_time`
@@ -255,12 +255,12 @@ args:
 - `ftp`
   常见路径：`response.welcome`、`response.list`、`response.download_binary`、`response.upload_text`、`response.upload_binary`、`response.media`
 
-## 模板 Helper
-- 当前模板层已支持轻量 helper，可直接在 `request`、`env`、`items[].request`、`template_vars` 中使用 `{{ ... }}`
+## 模板能力
+- 当前模板层已支持轻量模板表达式，可直接在 `request`、`env`、`items[].request`、`template_vars` 中使用 `{{ ... }}`
 - 适合迁入模板层的是轻量、纯函数、无副作用的数据准备逻辑
 - `JWT / RSA / AES / HMAC / 签名串` 这类确定性安全逻辑仍建议留在专用安全工具中
-- 如果你要系统看 helper 分类、组合写法和模板层边界，直接看 [模板能力](playbook.template.md)
-- 如果你要看 `security_digest / security_jwt / security_crypto / security_aes` 的能力边界，直接看 [安全工具](playbook.security.md)
+- 如果你要系统看模板表达式分类、组合写法和模板层边界，直接看 [模板能力](playbook.template.md)
+- 如果你要看安全计算能力的边界，直接看 [安全工具](playbook.security.md)
 
 ### 标识与时间
 

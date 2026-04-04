@@ -512,7 +512,7 @@ README 这里只保留入口层信息。
 
 <a id="playbook-api"></a>
 ## ⭐️ 接口实战
-完整协议约定、helper 迁移和样例说明已拆到独立正文：[接口实战](playbook.api.md)。
+完整协议约定、模板迁移和样例说明已拆到独立正文：[接口实战](playbook.api.md)。
 
 - 接口能力统一归在协议与校验能力里
 - 协议覆盖 `HTTP / SSE / WebSocket / GraphQL / TCP / UDP / SMTP / IMAP / FTP`

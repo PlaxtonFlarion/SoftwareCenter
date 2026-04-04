@@ -45,21 +45,21 @@
       "target": "playbook.api.md",
       "label": "接口实战",
       "category": "编排与协议",
-      "summary": "适合看 bench.nexus 的协议边界、提取、断言和批量请求。"
+      "summary": "适合看协议边界、提取、断言和批量请求。"
     },
     {
       "source": "docs/playbook.template.md",
       "target": "playbook.template.md",
       "label": "模板能力",
       "category": "编排与协议",
-      "summary": "适合看 bench.nexus 模板 helper、签名前置材料和模板层边界。"
+      "summary": "适合看模板表达式、签名前置材料和模板层边界。"
     },
     {
       "source": "docs/playbook.security.md",
       "target": "playbook.security.md",
       "label": "安全工具",
       "category": "性能与安全",
-      "summary": "适合看 security_* 的摘要、JWT、RSA、AES 和安全层边界。"
+      "summary": "适合看摘要、JWT、RSA、AES 和安全层边界。"
     },
     {
       "source": "docs/playbook.load.md",
@@ -80,7 +80,7 @@
       "target": "playbook.monkey.md",
       "label": "Monkey 扰动",
       "category": "执行与取证",
-      "summary": "适合看 device.monkey.injection 的全部参数、执行流程和返回结构。"
+      "summary": "适合看随机扰动的全部参数、执行流程和返回结构。"
     },
     {
       "source": "docs/interactive-mode.md",
@@ -108,7 +108,7 @@
       "target": "playbook.performance.md",
       "label": "性能实战",
       "category": "性能与安全",
-      "summary": "适合看 Framix、Memrix、Monkey 和性能星图样例。"
+      "summary": "适合看视觉真值、资源趋势、稳定性扰动和性能星图样例。"
     },
     {
       "source": "docs/architecture.md",

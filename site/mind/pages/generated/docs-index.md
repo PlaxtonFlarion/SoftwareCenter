@@ -22,9 +22,9 @@
 - [星图源抽象设计](cli-code-source-design.md)  
   适合看 --code 如何从本机文件路径升级为统一 source 抽象。
 - [接口实战](playbook.api.md)  
-  适合看 bench.nexus 的协议边界、提取、断言和批量请求。
+  适合看协议边界、提取、断言和批量请求。
 - [模板能力](playbook.template.md)  
-  适合看 bench.nexus 模板 helper、签名前置材料和模板层边界。
+  适合看模板表达式、签名前置材料和模板层边界。
 
 ### 执行与取证
 适合处理设备动作、多媒体证据链和端侧执行收束。
@@ -32,7 +32,7 @@
 - [设备域实战](playbook.device.md)  
   适合看设备能力分层、多设备广播模型和稳定执行建议。
 - [Monkey 扰动](playbook.monkey.md)  
-  适合看 device.monkey.injection 的全部参数、执行流程和返回结构。
+  适合看随机扰动的全部参数、执行流程和返回结构。
 - [多媒体链路](playbook.media.md)  
   适合看抽帧、裁剪、转码、拼接和音频处理。
 
@@ -40,11 +40,11 @@
 适合处理性能回归、稳定性诊断、签名和加解密链路。
 
 - [安全工具](playbook.security.md)  
-  适合看 security_* 的摘要、JWT、RSA、AES 和安全层边界。
+  适合看摘要、JWT、RSA、AES 和安全层边界。
 - [压测实战](playbook.load.md)  
   适合看本地压测、云端分布式压测和结果收束边界。
 - [性能实战](playbook.performance.md)  
-  适合看 Framix、Memrix、Monkey 和性能星图样例。
+  适合看视觉真值、资源趋势、稳定性扰动和性能星图样例。
 
 ### 结构与维护
 适合继续读系统骨架、站点同步链路和维护约定。

@@ -134,9 +134,9 @@ global_rule: |
 
 执行链：
 - 先准备待签名字段 app_id、ts、nonce、order_id、amount
-- 使用 security_sign_text 生成 query-like 签名原文
+- 使用签名前文本能力生成 query-like 签名原文
 - 原文形态应为 app_id={{ app_id }}&ts={{ ts }}&nonce={{ nonce }}&order_id={{ order_id }}&amount={{ amount }}
-- 再使用 security_digest(kind="hmac_sha256") 基于上面的原文计算签名
+- 再使用摘要能力基于上面的原文计算 `hmac_sha256`
 - 输出格式使用 hex
 - 发送 POST {{ base_url }}/api/secure/pay
 - 请求头包含 Content-Type: application/json
