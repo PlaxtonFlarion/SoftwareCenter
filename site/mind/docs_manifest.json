@@ -62,6 +62,13 @@
       "summary": "适合看 security_* 的摘要、JWT、RSA、AES 和安全层边界。"
     },
     {
+      "source": "docs/playbook.load.md",
+      "target": "playbook.load.md",
+      "label": "压测实战",
+      "category": "性能与安全",
+      "summary": "适合看本地压测、云端分布式压测和结果收束边界。"
+    },
+    {
       "source": "docs/playbook.device.md",
       "target": "playbook.device.md",
       "label": "设备域实战",

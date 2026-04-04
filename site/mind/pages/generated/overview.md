@@ -19,7 +19,7 @@
 **专题跳转**
 
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](playbook.template.md)、[安全工具](playbook.security.md)
-- 设备、多媒体和稳定性：看 [设备与 UI 实战](playbook.device.md)、[Monkey 扰动](playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)
+- 设备、多媒体和稳定性：看 [设备与 UI 实战](playbook.device.md)、[Monkey 扰动](playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测实战](#playbook-load)
 - 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `--code`
 - 订阅链路：看 [订阅模式](agent-mode.md)
 - 背景设计与实现：看 [背景与架构](#architecture) 和 [构建发布](#build-release)
@@ -485,6 +485,17 @@ README 这里只保留入口层信息。
 
 > 结论：这不是两个工具接口，这是一个“性能事实系统”：  
 > 用视觉锚定真值，用指标解释原因，用回归保证不再复发。
+
+---
+
+<a id="playbook-load"></a>
+## ⭐️ 压测实战
+完整压测边界、典型跑法和结果收束说明已拆到独立正文：[压测实战](playbook.load.md)。
+
+- 本地压测适合快速验证、近端回放和单机调试
+- 云端压测适合分布式 worker、异步任务管理和统一收束
+- 文档聚焦任务边界、通过条件和结果形态，不展开内部实现名词
+- 需要协议字段、提取和断言细节时，继续看 [接口实战](playbook.api.md)
 
 ---
 

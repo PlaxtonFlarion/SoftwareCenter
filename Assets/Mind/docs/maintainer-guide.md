@@ -67,6 +67,7 @@ device / bench / common / media
 - `README.md`：入口页，只保留最小上手、边界、速查和跳转
 - `docs/README.md`：长文档索引，由 `website/mind/docs_manifest.json` 生成
 - `docs/playbook.api.md`：接口约定与协议说明
+- `docs/playbook.load.md`：压测链路与托管边界
 - `docs/playbook.media.md`：媒体命令与链路
 - `docs/playbook.performance.md`：性能星图与典型跑法
 - `docs/interactive-mode.md`：REPL 说明
