@@ -87,6 +87,11 @@
     <p>Framix、Memrix、Monkey 与性能回归链路。</p>
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
+  <a class="mind-card mind-card-link" href="../generated/playbook.load/">
+    <h3>压测</h3>
+    <p>本地压测、云端分布式压测和结果收束边界。</p>
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
 </div>
 
 ## 按常见目的进入
