@@ -39,8 +39,8 @@
 - 单请求的协议原生参数留在 `request`
 - 批量请求的协议原生参数统一写进 `items[].request`
 - 批量共享默认值留在 `env`
-- 提取写 `extract`
-- 验收写 `asserts`
+- 提取写 `extract`（对象：别名 → 路径字符串）
+- 验收写 `asserts`（数组：每项 `path` / `op` / `value`；详见下文「提取与验收最小样例」）
 
 ### 最新星图接口约定
 - 单请求星图统一使用：`request`、`template_vars`
@@ -341,10 +341,13 @@ request = {
 
 `extract` 和 `asserts` 的职责很简单：
 
-- `extract`：从最终 `pack.data` 提取你关心的字段
-- `asserts`：用自然语言写通过条件，例如“response.status 等于 200”
+- `extract`：从最终 **`pack.data`** 根上按路径取值，写入具名别名（键为输出名，值为路径字符串）
+- `asserts`：**Helix 运行时只认结构化列表**；每条为 `path` + `op` + 可选 `value`（与 `extract` 使用同一套路径语法）
+
+人读星图时可以用自然语言概括意图（例如「状态码应为 200」），但 **调用 Nexus 工具（或等价 JSON 载荷）时必须写成下表结构**；不要让模型只输出散文句而当作可执行断言。
 
 它们在星图里是独立块：
+
 - `request` 负责协议原生参数
 - `extract` 负责结果提取
 - `asserts` 负责通过条件
@@ -359,19 +362,29 @@ request = {
 }
 ```
 
-提取与断言示意：
+下面是一条**合法 JSON** 示意（根为对象，便于校验器 / `JSON.parse` 整段解析）。单请求 Nexus 工具通常把 `request`、`extract`、`asserts` 作为并列顶层参数传入，文档里合并写在一起仅为避免「`"extract":` 单独成段」这种**非法 JSON** 片段。
 
-```text
-extract:
-- status 取 response.status
-- ok 取 response.body_json.ok
+```json
+{
+  "request": {
+    "method": "GET",
+    "url": "/health"
+  },
+  "extract": {
+    "status": "response.status",
+    "ok": "response.body_json.ok"
+  },
+  "asserts": [
+    { "path": "response.status", "op": "eq", "value": 200 },
+    { "path": "response.body_json.ok", "op": "eq", "value": true }
+  ]
+}
 ```
 
-```text
-asserts:
-- response.status 等于 200
-- response.body_json.ok 等于 true
-```
+- **`extract`**：对象，键为别名，值为路径字符串。  
+- **`asserts`**：数组；每项 `path` / `op` / `value`（`op` 省略时默认为 `eq`）。
+
+当前支持的 `op`（全小写，与 `AssertionService` 一致）：`eq`、`ne`、`gt`、`ge`、`lt`、`le`、`contains`、`in`（`value` 须为 JSON 数组）、`exists`（不要求 `value`）、`empty`、`not_empty`、`regex`（`value` 为正则字符串）。路径从 `pack.data` 起算，例如 `ok`、`request`、`response.status`、`response.events.first.data`；可在 `path` 字符串中用 `|json`、`|pick:子路径` 等与提取相同的后缀（见实现侧 `ExtractService`）。
 
 这已经够表达断言和提取的最小结构了，后面不再重复展开长样例。
 
@@ -380,6 +393,7 @@ asserts:
 - 只提取真正需要回看的字段
 - 断言优先写最终是否通过的业务条件
 - 提取是“为了回看”，断言是“为了判定”
+- 给大模型或代码生成器用时：以 **JSON 结构 + 封闭 `op` 枚举** 为准，避免仅依赖自然语言条列
 
 如果你要系统看签名、JWT、RSA、AES 的工具能力，继续看 [安全工具](playbook.security.md)。
 

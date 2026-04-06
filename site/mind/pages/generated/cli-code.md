@@ -210,6 +210,20 @@ item_prefix: |
 - `token = response.body_json.data.token`
 `````` 
 
+以上为**星图叙事**条列。写入 Nexus 工具参数时须用结构化 JSON，与 [接口实战](playbook.api.md)「提取与验收最小样例」一致，例如（整段为合法 JSON，可按工具入参拆成顶层 `extract` / `asserts`）：
+
+```json
+{
+  "extract": {
+    "token": "response.body_json.data.token"
+  },
+  "asserts": [
+    { "path": "response.status", "op": "eq", "value": 200 },
+    { "path": "response.body_json.ok", "op": "eq", "value": true }
+  ]
+}
+```
+
 这里故意只保留一个最小规格样例。
 这一页的重点是星图层级、前后置和规则怎么组织；真正完整的星图粒度，直接看 [星图实战样例](code-blueprints.md)。
 

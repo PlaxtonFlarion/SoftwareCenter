@@ -285,20 +285,22 @@ data={"ts": 1710000000, "nonce": "abc123", "uid": "u_1001"}
 
 安全工具生成的是中间结果，真正验收仍建议落到 `extract / asserts`。
 
-例如：
+例如（与 [接口实战](playbook.api.md) 一致；根对象保证整段为**合法 JSON**）：
 
-```text
-extract:
-- status 取 response.status
-- code 取 response.body_json.code
+```json
+{
+  "extract": {
+    "status": "response.status",
+    "code": "response.body_json.code"
+  },
+  "asserts": [
+    { "path": "response.status", "op": "eq", "value": 200 },
+    { "path": "response.body_json.code", "op": "eq", "value": 0 }
+  ]
+}
 ```
 
-```text
-asserts:
-- response.status 等于 200
-- response.body_json.code 等于 0
-- 签名验签结果为通过
-```
+验签是否通过应对 **`response.body_json` 里接口实际返回的字段** 再追加断言（例如某布尔字段 `verify_ok`），避免写无法映射到路径的自然语言句。
 
 这样结构更清晰：
 

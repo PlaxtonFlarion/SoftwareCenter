@@ -14,6 +14,7 @@
 ## 怎么读这页
 
 - 先看“写星图的基本规则”，建立样例写法的判断标准
+- 再看「断言与提取：叙事写法 vs 工具 JSON」，确认条列样例如何落到 Nexus 参数
 - 再按场景读样例，不必把所有样例从头到尾照搬
 - 如果看到某一步的工具边界不确定，再回到对应专题文档补字段说明
 
@@ -48,6 +49,42 @@
 - 该写断言时，直接写通过条件。
 - 该写提取时，直接写提取路径和变量名。
 - 不要把“接口成功了”“页面应该没问题”这种空话当样例。
+
+## 断言与提取：叙事写法 vs 工具 JSON
+
+本页各样例里的条列（例如「断言 `response.status == 200`」「提取 `token = response.body_json.data.token`」）是**星图意图叙述**，便于人读、便于和大模型对齐“要验什么”。
+
+一旦落到 **Helix Nexus 工具**（或任何等价 JSON 载荷），必须与 [接口实战](playbook.api.md) 一致：
+
+- **`extract`**：对象，键为别名、值为路径字符串（从 `pack.data` 根起算，与运行时一致）。
+- **`asserts`**：数组，每项含 **`path`**、**`op`**（可省略，默认 `eq`）、按需 **`value`**；允许的 `op` 以接口实战页为准。
+
+下面给出**样例 1 中登录请求一步**的等价 JSON，便于对照；其余样例可按同一规则自行映射。（根对象保证整段可 `JSON.parse`。）
+
+```json
+{
+  "extract": {
+    "token": "response.body_json.data.token"
+  },
+  "asserts": [
+    { "path": "response.status", "op": "eq", "value": 200 },
+    { "path": "response.body_json.ok", "op": "eq", "value": true },
+    { "path": "response.body_json.data.token", "op": "not_empty" }
+  ]
+}
+```
+
+首页准备请求一步（承接上一步模板变量中的 `token`）可写：
+
+```json
+{
+  "asserts": [
+    { "path": "response.status", "op": "eq", "value": 200 },
+    { "path": "response.body_json.data.ready", "op": "eq", "value": true },
+    { "path": "response.body_json.data.title", "op": "eq", "value": "首页" }
+  ]
+}
+```
 
 ## 星图样例 1：登录接口成功后，再确认首页已经真的起来
 
