@@ -167,13 +167,13 @@ mind
 ## 下一步看什么
 
 <div class="mind-route-grid">
-  <a class="mind-route-card" href="./capabilities/">
+  <a class="mind-route-card" href="../capabilities/">
     <span class="mind-route-meta">Next</span>
     <h3>能力概览</h3>
     <p>继续确认不同执行模式和主要能力各自承担什么，不承担什么。</p>
     <span class="mind-card-arrow">查看边界 →</span>
   </a>
-  <a class="mind-route-card" href="./reference/">
+  <a class="mind-route-card" href="../reference/">
     <span class="mind-route-meta">Next</span>
     <h3>参考文档</h3>
     <p>准备继续读设备、协议、多媒体、性能或星图专题时，从这里进入。</p>

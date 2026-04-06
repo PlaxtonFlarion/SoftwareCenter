@@ -54,22 +54,22 @@
   <div class="mind-step-card">
     <span class="mind-step-index">CLI</span>
     <h3>命令行模式</h3>
-    <p>适合一次性任务、脚本执行和 CI。已经知道目标，只差执行时优先用。继续看 <a href="./getting-started/">快速开始</a>。</p>
+    <p>适合一次性任务、脚本执行和 CI。已经知道目标，只差执行时优先用。继续看 <a href="../getting-started/">快速开始</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">REPL</span>
     <h3>交互式模式</h3>
-    <p>适合持续对话、边问边跑，也适合反复试探能力边界。继续看 <a href="./generated/interactive-mode/">交互模式</a>。</p>
+    <p>适合持续对话、边问边跑，也适合反复试探能力边界。继续看 <a href="../generated/interactive-mode/">交互模式</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">CODE</span>
     <h3>蓝图协议</h3>
-    <p>适合批跑、前后置和固定流程回归。继续看 <a href="./generated/cli-code/">星图协议</a> 和 <a href="./generated/cli-code-advanced/">星图深入说明</a>。</p>
+    <p>适合批跑、前后置和固定流程回归。继续看 <a href="../generated/cli-code/">星图协议</a> 和 <a href="../generated/cli-code-advanced/">星图深入说明</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">AGENT</span>
     <h3>订阅</h3>
-    <p>适合远端任务下发、长链路监听和恢复重连场景。继续看 <a href="./generated/agent-mode/">订阅模式</a>。</p>
+    <p>适合远端任务下发、长链路监听和恢复重连场景。继续看 <a href="../generated/agent-mode/">订阅模式</a>。</p>
   </div>
 </div>
 
@@ -96,13 +96,13 @@
 ## 下一步看什么
 
 <div class="mind-route-grid">
-  <a class="mind-route-card" href="./getting-started/">
+  <a class="mind-route-card" href="../getting-started/">
     <span class="mind-route-meta">继续</span>
     <h3>快速开始</h3>
     <p>如果你还没跑通最小命令，先去这里，不要直接钻专题正文。</p>
     <span class="mind-card-arrow">去入口页 →</span>
   </a>
-  <a class="mind-route-card" href="./reference/">
+  <a class="mind-route-card" href="../reference/">
     <span class="mind-route-meta">继续</span>
     <h3>参考文档</h3>
     <p>如果你已经知道下一步是设备、协议、蓝图、多媒体、性能还是订阅，从这里继续。</p>
