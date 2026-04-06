@@ -64,9 +64,9 @@
     {
       "source": "docs/playbook.load.md",
       "target": "playbook.load.md",
-      "label": "压测实战",
+      "label": "压测与脚本执行",
       "category": "性能与安全",
-      "summary": "适合看本地压测、云端分布式压测和结果收束边界。"
+      "summary": "适合看本地标准脚本、本地自由脚本、云端分布式压测和结果收束边界。"
     },
     {
       "source": "docs/playbook.device.md",

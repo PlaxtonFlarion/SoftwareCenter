@@ -88,8 +88,8 @@
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
   <a class="mind-card mind-card-link" href="../generated/playbook.load/">
-    <h3>压测</h3>
-    <p>本地压测、云端分布式压测和结果收束边界。</p>
+    <h3>压测与脚本执行</h3>
+    <p>本地标准脚本、本地自由脚本、云端分布式压测和结果收束边界。</p>
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
 </div>
