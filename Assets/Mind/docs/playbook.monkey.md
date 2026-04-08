@@ -58,6 +58,7 @@
 - `motion`
 - `nav`
 - `events`
+- `saved`
 - `matrix`
 
 其中，状态查询、等待、停止和清理属于会话管理动作，本身不再要求这些扰动参数。
@@ -168,6 +169,19 @@
 - 快速冒烟：先用小一些的值
 - 稳定性压测：再逐步拉高
 
+### `saved`
+
+- 可选
+
+作用：
+
+- 指定 monkey 结束后导出本轮 logcat 的落盘根目录或目标路径
+
+建议：
+
+- 如果上游已经有报告目录，优先把该目录透传给 monkey
+- 当前实现会在这个根目录下继续创建 `perf/monkey_logcat/<tag>/` 子目录，避免并发覆盖
+
 ### `matrix`
 
 - 可选
@@ -231,6 +245,7 @@ adb -s <serial> shell monkey -p <package> \
 7. 结束后回收运行进程与日志跟随
 
 如果按会话方式使用，启动动作会先返回；后续再通过状态查询、等待或停止去管理这次运行。
+如果启动时传了 `saved`，当前实现会在结束后把本轮 logcat 导出到该根目录下的独立子目录，便于回放 crash / ANR 证据。
 
 ## 内置关键词监测
 
@@ -291,6 +306,9 @@ adb -s <serial> shell monkey -p <package> \
   - `tail`
   - `stats`
   - `evidence`
+  - `logcat_saved`
+  - `logcat_summary`
+  - `logcat_count`
   - `error`（有异常时）
 
 这意味着你可以直接拿这些字段做：

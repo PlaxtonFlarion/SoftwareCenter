@@ -127,7 +127,7 @@ loop_suffix: |
 对目标应用 `com.example.app` 执行一次随机扰动。
 事件数使用 `5000`，节流使用 `200ms`，并保留核心导航键。
 测试前先清理日志。
-扰动结束后导出关键异常日志到 `./artifacts/perf/monkey_logcat.txt`。
+如果上游为 monkey 注入了日志根目录，扰动结束后会自动落盘本轮 logcat 到该根目录下的 `perf/monkey_logcat/<tag>/`。
 用来判断是否出现崩溃、ANR 或明显异常。
 ---
 `````` 
