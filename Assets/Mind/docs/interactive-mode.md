@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan`：看这里
-- 你要查 `/help /model /apikey /quit` 这些 REPL 指令：看这里
+- 你要查 `/help /model /apikey /attach /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -37,6 +37,10 @@
 - `/quit, /q, quit, exit`：安全退出
 - `/model <name>`：切换推理引擎
 - `/apikey <key>`：更新访问凭证
+- `/attach <path|dir|glob>`：添加本轮待发送附件
+- `/attachments`：查看当前待发送附件
+- `/detach <index|path>`：移除一个待发送附件
+- `/attach-clear`：清空当前待发送附件
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
 - `/plan`：切到 `PLAN`
@@ -83,6 +87,19 @@ apikey invalid: /apikey <...>
 ```
 
 切换成功后，本轮循环后续调用都会使用新的 `apikey`。
+
+## 附件指令
+- `/attach <path|dir|glob>`：把本地文件加入当前待发送附件列表
+- `/attachments`：查看当前已挂载但尚未发送的附件
+- `/detach <index|path>`：按序号或路径移除单个附件
+- `/attach-clear`：清空当前待发送附件
+
+约定：
+- 当前允许挂载任意普通文件；图片会保留 `image` 分类，其它文件按 `file` 处理
+- 目录会批量挂载当前层文件；递归请使用通配符，例如 `./docs/**/*.md`
+- `CHAT / FAST` 会在发送前自动上传附件
+- `PLAN` 当前不支持附件；如有待发送附件，需要先切回 `CHAT / FAST` 或清空
+- 一轮消息发送后，待发送附件会自动清空，避免串到下一轮
 
 ## `/license` 与 `/subscription`
 - `/license` 或 `/lic`：展示授权许可信息页

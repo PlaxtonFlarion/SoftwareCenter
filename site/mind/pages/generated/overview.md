@@ -232,7 +232,7 @@ mind --agent
 Mind 的参数分两类：
 
 - **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --agent`，以及 `--hello | --upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强归档、观测和批跑属性。典型是 `--gravity`、`--reflection`、`--code`。
+- **兼容参数**：一条命令里可以叠加多个，用于增强归档、观测和批跑属性。典型是 `--gravity`、`--reflection`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
@@ -240,7 +240,8 @@ Mind 的参数分两类：
 
 - 先选一个主入口：`--hello`、`--upgrade`、`--chat`、`--fast`、`--plan`、`--agent`
 - 再叠加运行属性：比如 `--gravity`、`--reflection`
-- 需要批跑或回归时，再挂上 `--code <path...>`
+- 需要批跑或回归时，再在显式主模式后挂上 `--code <path...>`
+- `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast` 或 `--plan`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
 
 ### 常用速查
@@ -343,13 +344,17 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 ### 星图协议（参数兼容）
 `--code <path...>`
 
-用于装载一个或多个批量执行星图，并按选定协议执行。
+用于装载一个或多个批量执行星图，并按显式选定的主模式执行。
 - 支持 `.md / .txt`
 - 也支持 `--code -` 从标准输入读取
 - 也支持 `--code inline:...` 直接执行内联星图
 - 也支持 `--code https://...` 从 URL 拉取星图
-- 可与 `--chat / --fast / --plan` 组合：决定这批星图按哪种主模式执行
+- 必须与 `--chat / --fast / --plan` 之一组合：决定这批星图按哪种主模式执行
 - 一次可装载多份星图：`--code a.md b.md c.md`
+
+约束：
+- `mind --code ...` 会直接报错
+- 正确写法必须显式带模式，例如 `mind --chat --code ...`
 
 文件格式：
 `--code` 采用“自然语言块”作为用例单元：每个用例是一段文本，按 `---` 分隔。
@@ -412,6 +417,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 高级批跑说明已拆到独立正文：[星图深入说明](cli-code-advanced.md)。
 
 这里先记住 5 个点就够了：
+- `--code` 必须显式搭配 `--chat / --fast / --plan`
 - `cfg` 支持批次级、轮次级和任务级前后置
 - 任务级前后置现在分成两层：`item_prefix / item_suffix` 负责每个任务块外层包裹，`global_prefix / global_suffix` 负责单条任务正文前后置
 - `global_rule` 是整份星图的默认规则文本，`rule` 是单任务覆盖规则文本
@@ -433,6 +439,21 @@ README 这里只保留入口层信息。
 - REPL 内部只有 `CHAT / FAST / PLAN` 三种互斥状态
 - 已实现的是模式切换、模型切换、凭证切换和普通目标执行
 - 批量重复执行优先用 `--code` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
+
+### 共振协议（参数兼容）
+`--attach <path>`
+
+用于为单次命令行请求挂载本地附件。
+- 可重复传入：`--attach a.png --attach "./docs/**/*.md"`
+- 支持单文件、目录和通配符
+- 当前仅用于单次 `--chat` / `--fast`
+- 当前不支持与 `--plan` 或 `--code` 组合
+
+示例：
+```
+mind --chat "总结这些附件" --attach ./report.pdf
+mind --fast "分析这些文件" --attach ./caps --attach "./docs/**/*.md"
+```
 
 ### 常用指令
 - `/help`

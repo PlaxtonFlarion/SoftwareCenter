@@ -50,7 +50,12 @@ device / bench / common / media
 - 如果工具注册名、域名或能力归属变更，README 和 `docs/architecture.md`、`docs/playbook.api.md` 都要一起改
 
 ## 星图执行链
-`--code` 承担批跑、循环、规则和前后置编排。
+`--code` 承担批跑、循环、规则和前后置编排，但它不是独立主模式。
+
+维护约束：
+- `--code` 必须显式搭配 `--chat`、`--fast` 或 `--plan`
+- 不要在 README 或 `docs/` 里写出 `mind --code ...` 这种会误导用户的独立入口
+- 如果 `--code` 的入口约束变化，README、`docs/cli-code.md` 和 CLI help 必须一起改
 
 维护时要一起检查：
 - README 的 `--code` 摘要
