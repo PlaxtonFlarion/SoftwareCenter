@@ -33,7 +33,6 @@
 ## 指令索引
 - `/help, /h`：指令索引
 - `/license, /lic`：授权许可信息
-- `/subscription, /sub`：订阅与授权状态
 - `/quit, /q, quit, exit`：安全退出
 - `/model <name>`：切换推理引擎
 - `/apikey <key>`：更新访问凭证
@@ -101,11 +100,8 @@ apikey invalid: /apikey <...>
 - `PLAN` 当前不支持附件；如有待发送附件，需要先切回 `CHAT / FAST` 或清空
 - 一轮消息发送后，待发送附件会自动清空，避免串到下一轮
 
-## `/license` 与 `/subscription`
+## `/license`
 - `/license` 或 `/lic`：展示授权许可信息页
-- `/subscription` 或 `/sub`：读取本地 License 文件并执行校验流程
-
-适合快速确认当前机器的授权是否有效。
 
 ## 退出
 任意时刻输入以下任一指令即可退出：
