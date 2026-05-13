@@ -6,7 +6,7 @@
 适合补齐交互入口、REPL 切换、订阅和输入约束。
 
 - [交互模式](interactive-mode.md)  
-  适合看 REPL 指令、状态切换和输入约束。
+  适合看 REPL 指令、CHAT / FAST / PLAN / XTRA 状态切换和输入约束。
 - [订阅模式](agent-mode.md)  
   适合看 --agent 的会话、长链路监听、任务下发和恢复链路。
 

@@ -87,7 +87,7 @@
       "target": "interactive-mode.md",
       "label": "交互模式",
       "category": "入门与入口",
-      "summary": "适合看 REPL 指令、状态切换和输入约束。"
+      "summary": "适合看 REPL 指令、CHAT / FAST / PLAN / XTRA 状态切换和输入约束。"
     },
     {
       "source": "docs/agent-mode.md",

@@ -167,7 +167,7 @@ mind --chat --code a.md b.md c.md
 - `--code` 负责把这些星图交给显式选定的主模式执行
 
 补充约束：
-- `--code` 不能脱离 `--chat / --fast / --plan` 单独出现
+- `--code` 不能脱离 `--chat / --fast / --plan / --xtra` 单独出现
 
 因此：
 - 主模式决定执行协议

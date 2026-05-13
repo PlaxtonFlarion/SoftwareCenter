@@ -1,7 +1,7 @@
 # 快速开始
 
 如果你只想尽快把 Mind 跑起来，不需要先把所有专题正文看完。  
-按这条路径走就够了：先确认环境，再发一条最小命令，最后再决定是否进入交互式、蓝图协议或订阅。
+按这条路径走就够了：先确认环境，再发一条最小命令，最后再决定是否进入交互式、星图协议或订阅。
 
 <div class="mind-step-grid">
   <div class="mind-step-card">
@@ -12,12 +12,12 @@
   <div class="mind-step-card">
     <span class="mind-step-index">环境</span>
     <h3>准备终端与环境变量</h3>
-    <p>把可执行目录加入 PATH，避免每次都手动定位安装目录。</p>
+    <p>把 Mind/MindEngine 目录加入 PATH，避免每次都手动定位安装目录。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">路径</span>
     <h3>先跑通，再决定怎么继续</h3>
-    <p>先确认一条最小命令能跑通；后面是进入交互循环、批跑蓝图，还是订阅远端任务，再按需要继续分流。</p>
+    <p>先确认一条最小命令能跑通；后面是进入交互循环、批跑星图，还是订阅远端任务，再按需要继续分流。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">命令</span>
@@ -27,7 +27,7 @@
 </div>
 
 <div class="mind-command-note">
-  <strong>一条最短路径：</strong><code>mind --hello</code> → 发一条最小命令 → 再按需要进入交互式、蓝图协议或订阅。
+  <strong>一条最短路径：</strong><code>mind --hello</code> → 发一条最小命令 → 再按需要进入交互式、星图协议或订阅。
 </div>
 
 ## 先确认后台管理中心
@@ -70,7 +70,7 @@ mind --hello
     <ul class="mind-mini-list">
       <li>Windows：推荐 `Windows Terminal`</li>
       <li>macOS：推荐 `iTerm2` 或系统 `Terminal`</li>
-      <li>建议先把 `mind` 所在目录加入 `PATH`</li>
+      <li>建议先把默认 `Mind/MindEngine` 目录加入 `PATH`</li>
     </ul>
   </div>
   <div class="mind-panel">
@@ -86,7 +86,7 @@ mind --hello
 macOS：
 
 ```bash
-echo 'export PATH="/Applications/Mind.app/Contents/MacOS:$PATH"' >> ~/.zshrc
+echo 'export PATH="/Applications/Mind/MindEngine:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -95,11 +95,11 @@ Windows：
 ```powershell
 [Environment]::SetEnvironmentVariable(
   "Path",
-  [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\Mind",
+  [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\Mind\MindEngine",
   "User"
 )
 
-$env:Path += ";C:\Program Files\Mind"
+$env:Path += ";C:\Program Files\Mind\MindEngine"
 ```
 
 ## 最小命令
@@ -122,6 +122,14 @@ mind
 mind --chat --code api_batch.md
 ```
 
+### 需要外接工具协作时用 `--xtra`
+
+```bash
+mind --xtra "Open DBHub and query the users table"
+```
+
+外接 MCP 服务需提前可访问。
+
 ### 需要等待远端任务时用 `--agent`
 
 ```bash
@@ -142,6 +150,7 @@ mind
 概述当前系统的核心能力与边界
 对 path/to/video.mp4 做关键帧抽取，并输出证据
 打开系统设置，稳定等待 2 秒后返回桌面
+切到 /xtra 后查询外接数据库里的 users 表
 ```
 
 ## 常见问题

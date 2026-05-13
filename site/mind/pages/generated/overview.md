@@ -19,6 +19,7 @@
 **专题跳转**
 
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](playbook.template.md)、[安全工具](playbook.security.md)
+- 外接工具协作：看 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
 - 设备、多媒体和稳定性：看 [设备与 UI 实战](playbook.device.md)、[Monkey 扰动](playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
 - 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `--code`
 - 订阅链路：看 [订阅模式](agent-mode.md)
@@ -47,7 +48,7 @@
 
 - 打开后台管理中心，确认模型槽位和服务状态可见
 - 先发一条最小命令，确认当前环境可用
-- 再决定是否继续进入交互式、批跑蓝图或订阅链路
+- 再决定是否继续进入交互式、批跑星图或订阅链路
 
 ### 打开管理中心
 
@@ -92,7 +93,7 @@ mind --hello
 
 - Windows：推荐使用 `Windows Terminal`
 - macOS：推荐使用 `iTerm2` 或系统 `Terminal`
-- Windows 与 macOS 都建议先把 `mind` 所在目录加入 `PATH`
+- Windows 与 macOS 都建议先把默认 `Mind/MindEngine` 目录加入 `PATH`
 - 不推荐默认配置系统代理或挂 VPN；只有明确需要兼容网关时，再单独配置 `base_url`
 
 常见环境变量示例：
@@ -100,8 +101,8 @@ mind --hello
 macOS：
 
 ```bash
-# Mind 示例
-echo 'export PATH="/Applications/Mind.app/Contents/MacOS:$PATH"' >> ~/.zshrc
+# Mind 示例（默认 Mind/MindEngine 目录）
+echo 'export PATH="/Applications/Mind/MindEngine:$PATH"' >> ~/.zshrc
 
 source ~/.zshrc
 ```
@@ -109,14 +110,14 @@ source ~/.zshrc
 Windows：
 
 ```powershell
-# Mind 示例（默认安装目录）
+# Mind 示例（默认 Mind\MindEngine 目录）
 [Environment]::SetEnvironmentVariable(
   "Path",
-  [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\Mind",
+  [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\Mind\MindEngine",
   "User"
 )
 
-$env:Path += ";C:\Program Files\Mind"
+$env:Path += ";C:\Program Files\Mind\MindEngine"
 ```
 
 ### 最小上手
@@ -130,6 +131,9 @@ mind
 
 # 需要批跑和回归时用 --code
 mind --chat --code api_batch.md
+
+# 需要外接工具协作时用 --xtra
+mind --xtra "Open DBHub and query the users table"
 
 # 需要等待远端任务时用 --agent
 mind --agent
@@ -199,7 +203,7 @@ mind --agent
 
 <a id="modes"></a>
 ## ⭐️ 运行模式
-**Mind** 提供三种本地主动执行模式：`--chat`、`--fast`、`--plan`。  
+**Mind** 提供四种本地主动执行模式：`--chat`、`--fast`、`--plan`、`--xtra`。  
 除此之外，还有一条独立的订阅入口：`--agent`。  
 它们的差异不在“模型强弱”，而在“任务形态”和“执行边界”。
 
@@ -210,19 +214,22 @@ mind --agent
 | `chat` | 边探索边推进 | 探索、问答、临时任务、混合型接口/设备操作 | 追求最稳定步骤形态 |
 | `fast` | 短链路快速完成 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 执行、重型性能链路、需要全域工具时 |
 | `plan` | 先定步骤再稳定执行 | 巡检、固定流程、批处理、需要步骤可读和更强可复盘性时 | 开放式多轮探索、边聊边改策略 |
+| `xtra` | 外接工具协作 | 数据库、浏览器、外部 MCP 服务、Helix 通用工具协作 | 设备/UI 执行、需要内置专项工具的本地链路 |
 
 补充说明：
 
-- `chat / fast / plan`：本地主动发起一次任务
+- `chat / fast / plan / xtra`：本地主动发起一次任务
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](agent-mode.md)
 - `plan` 除了顺序执行步骤，还承载执行过程中的规则判断
+- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，只暴露外接 MCP 工具与 Helix 通用工具
 - `--code` 里的 `global_rule / rule` 属于星图规则层，不等同于 `plan` 的执行期规则判断
 
 常见误判：
 
 - `fast` 不是“轻量版 chat”，而是专门为短链路收窄过的执行面
 - `plan` 不是“所有能力都更强”，它强调的是步骤稳定和顺序执行
+- `xtra` 不是“更多工具版 fast”，它强调外部服务协作和外接 MCP 工具边界
 - 接口能力统一归在协议与校验能力里，不需要把它理解成单独的 `api` 分类
 
 ---
@@ -231,17 +238,17 @@ mind --agent
 ## ⭐️ 命令行参数
 Mind 的参数分两类：
 
-- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --agent`，以及 `--hello | --upgrade`。
+- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --xtra | --agent`，以及 `--hello | --upgrade`。
 - **兼容参数**：一条命令里可以叠加多个，用于增强归档、观测和批跑属性。典型是 `--gravity`、`--reflection`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
 ### 先记住怎么组合
 
-- 先选一个主入口：`--hello`、`--upgrade`、`--chat`、`--fast`、`--plan`、`--agent`
+- 先选一个主入口：`--hello`、`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
 - 再叠加运行属性：比如 `--gravity`、`--reflection`
 - 需要批跑或回归时，再在显式主模式后挂上 `--code <path...>`
-- `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast` 或 `--plan`
+- `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
 
 ### 常用速查
@@ -252,8 +259,9 @@ Mind 的参数分两类：
 | 自然语言探索 | `mind --chat "..."` | 先问能力边界、混合型临时任务 |
 | 快速短链路任务 | `mind --fast "..."` | 接口、媒体、文件类短任务 |
 | 结构化执行 | `mind --plan "..."` | 需要步骤稳定、证据整齐 |
+| 外接工具协作 | `mind --xtra "..."` | 数据库、浏览器、外部 MCP 服务协作 |
 | 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
-| 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan` |
+| 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan / xtra` |
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
 | 批量执行星图 | `mind --chat --code <path...>` | 批跑、回归、规则化星图执行 |
 
@@ -280,7 +288,7 @@ mind --hello
 用于更新本地 **MCP 服务/运行组件** 到最新版本形态（拉取 → 校验 → 覆盖 → 切换）。
 
 - 适用于：需要同步更新底层 MCP 能力集时
-- 不参与 chat/fast/plan 执行链路：它是一个“单一动作入口”（执行完即退出）
+- 不参与 chat/fast/plan/xtra 执行链路：它是一个“单一动作入口”（执行完即退出）
 - 命令：`mind --upgrade`
 
 示例：
@@ -289,13 +297,57 @@ mind --hello
 mind --upgrade
 ```
 
+### 渡舟协议（参数互斥）
+`--xtra`
+
+用于外接 MCP 协作链路，仅暴露外接 MCP 工具与 Helix 通用工具。
+
+- 适用于：数据库、浏览器、外部服务和第三方 MCP 工具协作
+- 不等同于 `--fast`：请求会以 `mode=xtra` 进入独立后端链路
+- 适合把 DBHub、浏览器自动化、外部知识库等能力接进本轮任务
+- 命令：`mind --xtra "..."`
+
+外接服务由本地配置接入。外接服务需提前可访问；`timeout_sec` 用于连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "url": "http://localhost:8931/mcp",
+      "timeout_sec": 30,
+      "sse_read_timeout_sec": 300
+    },
+    "events": {
+      "transport": "sse",
+      "url": "http://localhost:8932/sse",
+      "timeout_sec": 30,
+      "sse_read_timeout_sec": 300
+    }
+  }
+}
+```
+
+示例：
+```
+# 使用外接 MCP 工具查询数据库
+mind --xtra "Open DBHub and query the users table"
+
+# 使用外部浏览器或网页类 MCP 工具协作
+mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
+```
+
+如果你要系统看外接工具本身的完整用法，直接看：
+
+- [Playwright 外接工具实战](docs/playbook.playwright.md)
+- [DBHub 外接工具实战](docs/playbook.dbhub.md)
+
 ### 折跃协议（参数互斥）
 `--agent`
 
 用于启动订阅模式，本地会注册会话并建立长链路，持续等待服务端下发任务。
 
 - 适用于：远端调度、本地常驻监听、需要断线恢复与重连的任务接收场景
-- 不属于 REPL 的 `CHAT / FAST / PLAN` 状态：它是独立 CLI 入口
+- 不属于 REPL 的 `CHAT / FAST / PLAN / XTRA` 状态：它是独立 CLI 入口
 - 服务端链路核心是 `/agents/open`、`/agents/ws`、`/agents/resume`
 - 协议时序、消息类型和排障细节，直接看 [订阅模式](agent-mode.md)
 
@@ -349,7 +401,7 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 - 也支持 `--code -` 从标准输入读取
 - 也支持 `--code inline:...` 直接执行内联星图
 - 也支持 `--code https://...` 从 URL 拉取星图
-- 必须与 `--chat / --fast / --plan` 之一组合：决定这批星图按哪种主模式执行
+- 必须与 `--chat / --fast / --plan / --xtra` 之一组合：决定这批星图按哪种主模式执行
 - 一次可装载多份星图：`--code a.md b.md c.md`
 
 约束：
@@ -362,7 +414,7 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 - **元信息（可选）**：每个用例块顶部可写多行 `# key: value`
   - 常用：`# name: xxx`（用于 `cfg.pattern` 正则筛选）
   - 其它字段也允许：`# tag: xxx`、`# owner: xxx` 等（会被解析进 meta）
-- **正文**：元信息之后的所有内容，作为该用例的自然语言目标（交给 chat/fast/plan 执行）
+- **正文**：元信息之后的所有内容，作为该用例的自然语言目标（交给 chat/fast/plan/xtra 执行）
 - **空行**：块首尾空行会被自动忽略；正文为空的块会被跳过
 
 入口层只需要记住：
@@ -380,6 +432,9 @@ mind --fast --code media.md concurrent.md
 
 # 指定用 plan 协议执行编排型星图
 mind --plan --code workflow.md
+
+# 指定用 xtra 协议执行外接 MCP 星图
+mind --xtra --code external_mcp.md
 
 # 一次装载多份星图
 mind --chat --code http.md sse.md ws.md graphql.md
@@ -417,7 +472,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 高级批跑说明已拆到独立正文：[星图深入说明](cli-code-advanced.md)。
 
 这里先记住 5 个点就够了：
-- `--code` 必须显式搭配 `--chat / --fast / --plan`
+- `--code` 必须显式搭配 `--chat / --fast / --plan / --xtra`
 - `cfg` 支持批次级、轮次级和任务级前后置
 - 任务级前后置现在分成两层：`item_prefix / item_suffix` 负责每个任务块外层包裹，`global_prefix / global_suffix` 负责单条任务正文前后置
 - `global_rule` 是整份星图的默认规则文本，`rule` 是单任务覆盖规则文本
@@ -436,7 +491,7 @@ README 这里只保留入口层信息。
 
 ### 核心要点
 - 启动 `mind` 即进入循环交互模式
-- REPL 内部只有 `CHAT / FAST / PLAN` 三种互斥状态
+- REPL 内部有 `CHAT / FAST / PLAN / XTRA` 四种互斥状态
 - 已实现的是模式切换、模型切换、凭证切换和普通目标执行
 - 批量重复执行优先用 `--code` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
 
@@ -446,13 +501,14 @@ README 这里只保留入口层信息。
 用于为单次命令行请求挂载本地附件。
 - 可重复传入：`--attach a.png --attach "./docs/**/*.md"`
 - 支持单文件、目录和通配符
-- 当前仅用于单次 `--chat` / `--fast`
+- 当前仅用于单次 `--chat` / `--fast` / `--xtra`
 - 当前不支持与 `--plan` 或 `--code` 组合
 
 示例：
 ```
 mind --chat "总结这些附件" --attach ./report.pdf
 mind --fast "分析这些文件" --attach ./caps --attach "./docs/**/*.md"
+mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 ```
 
 ### 常用指令
@@ -460,6 +516,7 @@ mind --fast "分析这些文件" --attach ./caps --attach "./docs/**/*.md"
 - `/chat`
 - `/fast`
 - `/plan`
+- `/xtra`
 - `/model <name>`
 - `/apikey <key>`
 - `/quit`
@@ -607,7 +664,7 @@ mind --fast "分析这些文件" --attach ./caps --attach "./docs/**/*.md"
 
 ### 提交流程
 1. Fork & 新建分支：`feat/<name>` 或 `fix/<name>`
-2. 本地自测：覆盖 `chat/fast/plan` 与 REPL 关键路径
+2. 本地自测：覆盖 `chat/fast/plan/xtra` 与 REPL 关键路径
 3. 更新文档：新增/变更能力需同步 README；工具说明与维护约定看 [维护者指南](maintainer-guide.md)
 4. 提交 PR：描述动机、设计、影响范围与回滚策略
 

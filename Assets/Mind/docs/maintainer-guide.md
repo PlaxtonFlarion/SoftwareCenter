@@ -4,7 +4,7 @@
 主 README 负责上手入口；这里负责解释维护时需要同时关注的代码、文档和同步链路。
 
 ## 维护范围
-- 模式边界：`chat / fast / plan / agent`
+- 模式边界：`chat / fast / plan / xtra / agent`
 - 工具域边界：`device / bench / common / media`
 - 接口执行面：协议执行能力
 - 星图执行链：`--code`
@@ -30,6 +30,7 @@ device / bench / common / media
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
 - `plan`：先生成计划，再按步骤顺序执行，并承载执行期规则判断能力
+- `xtra`：外接 MCP 工具与 Helix 通用工具协作通道，走独立 `mode=xtra` 后端链路
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 
 维护要求：
@@ -37,7 +38,9 @@ device / bench / common / media
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
 - 不要把执行期规则判断和 `--code` 里的规则层写成同一个概念
-- 不要把 `agent` 写成 REPL 内的第四个状态；它是独立 CLI 入口
+- 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
+- 不要把 `xtra` 写成 `fast` 别名；它有独立工具过滤和 `mode=xtra` transport
+- `xtra` 外接 MCP 口径保持为外部服务协作，不要写成由 Mind 托管外部进程
 
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
@@ -53,7 +56,7 @@ device / bench / common / media
 `--code` 承担批跑、循环、规则和前后置编排，但它不是独立主模式。
 
 维护约束：
-- `--code` 必须显式搭配 `--chat`、`--fast` 或 `--plan`
+- `--code` 必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - 不要在 README 或 `docs/` 里写出 `mind --code ...` 这种会误导用户的独立入口
 - 如果 `--code` 的入口约束变化，README、`docs/cli-code.md` 和 CLI help 必须一起改
 
@@ -91,8 +94,8 @@ device / bench / common / media
 ## 文档维护约定
 - 标题统一使用中文标题，不再在标题尾部追加英文副标题
 - README 和 `docs/` 内部链接统一使用仓库内相对路径
-- 命令行模式名称使用小写：`chat / fast / plan`
-- REPL 内部状态名称使用大写：`CHAT / FAST / PLAN`
+- 命令行模式名称使用小写：`chat / fast / plan / xtra`
+- REPL 内部状态名称使用大写：`CHAT / FAST / PLAN / XTRA`
 - 术语一旦在 README 中定稿，`docs/` 中应保持同一写法，不要派生近义口径
 - 只要改了 `README.md`、`docs/*.md` 或 `LICENSE.md`，都应判断是否需要同步到 SoftwareCenter
 

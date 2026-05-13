@@ -2,7 +2,7 @@
 
 这页只回答这些问题：
 
-- 你当前更适合走命令行、交互式、蓝图协议，还是订阅
+- 你当前更适合走命令行、交互式、外接工具、星图协议，还是订阅
 - 这几种使用方式分别适合什么任务
 - 确认入口之后，下一步应该继续看哪一页
 
@@ -17,7 +17,8 @@
     <ul class="mind-mini-list">
       <li>命令行适合一次性任务和脚本执行</li>
       <li>交互式适合持续对话、边问边跑</li>
-      <li>蓝图协议适合批跑、前后置和回归</li>
+      <li>外接模式适合数据库、浏览器和外部 MCP 服务协作</li>
+      <li>星图协议适合批跑、前后置和回归</li>
       <li>订阅适合本地等待远端下发任务</li>
     </ul>
   </div>
@@ -37,8 +38,13 @@
     <p>还在确认能力边界、做法和路径时，交互式更合适。</p>
   </div>
   <div class="mind-step-card">
+    <span class="mind-step-index">外接</span>
+    <h3>需要外部服务时走 Xtra</h3>
+    <p>任务依赖数据库、浏览器或外部 MCP 工具时，直接走 <code>--xtra</code>。</p>
+  </div>
+  <div class="mind-step-card">
     <span class="mind-step-index">批量</span>
-    <h3>需要批跑和规则时改走蓝图协议</h3>
+    <h3>需要批跑和规则时改走星图协议</h3>
     <p>需要批跑、前后置和回归时，不要再堆命令行，直接走 <code>--code</code>。</p>
   </div>
   <div class="mind-step-card">
@@ -62,8 +68,13 @@
     <p>适合持续对话、边问边跑，也适合反复试探能力边界。继续看 <a href="../generated/interactive-mode/">交互模式</a>。</p>
   </div>
   <div class="mind-step-card">
+    <span class="mind-step-index">XTRA</span>
+    <h3>外接模式</h3>
+    <p>适合数据库、浏览器、外部 MCP 服务和 Helix 通用工具协作。命令行用 <code>mind --xtra "..."</code>，REPL 内用 <code>/xtra</code>。</p>
+  </div>
+  <div class="mind-step-card">
     <span class="mind-step-index">CODE</span>
-    <h3>蓝图协议</h3>
+    <h3>星图协议</h3>
     <p>适合批跑、前后置和固定流程回归。继续看 <a href="../generated/cli-code/">星图协议</a> 和 <a href="../generated/cli-code-advanced/">星图深入说明</a>。</p>
   </div>
   <div class="mind-step-card">
@@ -83,11 +94,16 @@
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">误判二</span>
-    <h3>批跑还靠一条条命令拼</h3>
-    <p>⚠️ 不对。需要批跑、前后置和回归时，应尽快切到蓝图协议，不要继续堆散命令。</p>
+    <h3>Xtra 只是 Fast 换名</h3>
+    <p>⚠️ 不对。Xtra 走独立 <code>mode=xtra</code> 后端链路，只暴露外接 MCP 工具和通用工具。</p>
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">误判三</span>
+    <h3>批跑还靠一条条命令拼</h3>
+    <p>⚠️ 不对。需要批跑、前后置和回归时，应尽快切到星图协议，不要继续堆散命令。</p>
+  </div>
+  <div class="mind-panel">
+    <span class="mind-kicker">误判四</span>
     <h3>订阅只是另一种交互式</h3>
     <p>⚠️ 不对。订阅是独立入口，目标是等待远端下发任务，不是本地主动持续提问。</p>
   </div>
@@ -105,7 +121,7 @@
   <a class="mind-route-card" href="../reference/">
     <span class="mind-route-meta">继续</span>
     <h3>参考文档</h3>
-    <p>如果你已经知道下一步是设备、协议、蓝图、多媒体、性能还是订阅，从这里继续。</p>
+    <p>如果你已经知道下一步是设备、协议、外接、星图、多媒体、性能还是订阅，从这里继续。</p>
     <span class="mind-card-arrow">去专题入口 →</span>
   </a>
 </div>

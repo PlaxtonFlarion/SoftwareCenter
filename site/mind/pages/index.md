@@ -38,7 +38,7 @@
   <a class="mind-route-card" href="./capabilities/">
     <span class="mind-route-meta">Step 2</span>
     <h3>能力概览</h3>
-    <p>适合确认当前该走命令行、交互式、蓝图协议还是订阅。</p>
+    <p>适合确认当前该走命令行、交互式、外接模式、星图协议还是订阅。</p>
     <span class="mind-card-arrow">看边界 →</span>
   </a>
   <a class="mind-route-card" href="./reference/">
@@ -78,6 +78,14 @@ mind
 ```bash
 mind --chat --code api_batch.md
 ```
+
+### 需要外接工具协作时用 `--xtra`
+
+```bash
+mind --xtra "Open DBHub and query the users table"
+```
+
+外接 MCP 服务需提前可访问。
 
 ### 需要订阅监听时切到 `--agent`
 

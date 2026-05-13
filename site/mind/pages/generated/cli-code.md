@@ -6,7 +6,7 @@
 先记住一条硬约束：
 
 - `--code` 不能单独使用
-- 必须显式搭配 `--chat`、`--fast` 或 `--plan`
+- 必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - `mind --code ...` 会直接报错
 
 当前本地入口除了文件路径，也支持：
@@ -21,6 +21,7 @@
 mind --chat --code cases.md
 mind --fast --code media.md
 mind --plan --code workflow.md
+mind --xtra --code external_mcp.md
 ```
 
 ## 先判断要不要写星图
