@@ -64,7 +64,7 @@
   </div>
   <div class="mind-card">
     <h3>xtra</h3>
-    <p>适合数据库、浏览器、外部 MCP 服务和 Helix 通用工具协作。先看快速开始和能力概览，再按外接工具的实际服务文档补细节。</p>
+    <p>适合数据库、浏览器、外部 MCP 服务和通用工具协作。先看快速开始和能力概览，再按外接工具的实际服务文档补细节。</p>
   </div>
 </div>
 
@@ -83,7 +83,7 @@
   </a>
   <a class="mind-card mind-card-link" href="../generated/playbook.media/">
     <h3>多媒体</h3>
-    <p>抽帧、裁剪、转码、音轨处理和证据链任务。</p>
+    <p>抽帧、裁剪、转码、音轨处理和多媒体证据链任务。</p>
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
   <a class="mind-card mind-card-link" href="../generated/playbook.performance/">

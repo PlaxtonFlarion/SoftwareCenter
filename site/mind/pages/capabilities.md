@@ -70,7 +70,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">XTRA</span>
     <h3>外接模式</h3>
-    <p>适合数据库、浏览器、外部 MCP 服务和通用工具协作。命令行用 <code>mind --xtra "..."</code>，REPL 内用 <code>/xtra</code>。继续看 <a href="../generated/playbook-playwright/">Playwright 外接工具实战</a> 和 <a href="../generated/playbook-dbhub/">DBHub 外接工具实战</a>。</p>
+    <p>适合数据库、浏览器、外部 MCP 服务和通用工具协作。继续看 <a href="../generated/playbook-playwright/">Playwright</a> 和 <a href="../generated/playbook-dbhub/">DBHub</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">CODE</span>
