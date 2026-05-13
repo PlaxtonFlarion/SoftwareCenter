@@ -270,6 +270,11 @@ Mind 的参数分两类：
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
 | 批量执行星图 | `mind --chat --code <path...>` | 批跑、回归、规则化星图执行 |
 
+外接工具协作入口继续看：
+
+- 命令行 `mind --xtra "..."`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
+- REPL `/xtra`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
+
 ### 中枢协议（参数互斥）
 `--hello`
 
