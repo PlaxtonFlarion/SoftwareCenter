@@ -133,7 +133,7 @@ mind
 mind --chat --code api_batch.md
 
 # 需要外接工具协作时用 --xtra
-mind --xtra "Open DBHub and query the users table"
+mind --xtra "打开 DBHub，查询 users 表并返回结果摘要"
 
 # 需要等待远端任务时用 --agent
 mind --agent
@@ -215,6 +215,11 @@ mind --agent
 | `fast` | 短链路快速完成 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 执行、重型性能链路、需要全域工具时 |
 | `plan` | 先定步骤再稳定执行 | 巡检、固定流程、批处理、需要步骤可读和更强可复盘性时 | 开放式多轮探索、边聊边改策略 |
 | `xtra` | 外接工具协作 | 数据库、浏览器、外部 MCP 服务、Helix 通用工具协作 | 设备/UI 执行、需要内置专项工具的本地链路 |
+
+如果你要继续看外接模式的专项用法，直接跳：
+
+- [Playwright 外接工具实战](docs/playbook.playwright.md)
+- [DBHub 外接工具实战](docs/playbook.dbhub.md)
 
 补充说明：
 
@@ -307,21 +312,64 @@ mind --upgrade
 - 适合把 DBHub、浏览器自动化、外部知识库等能力接进本轮任务
 - 命令：`mind --xtra "..."`
 
-外接服务由本地配置接入。外接服务需提前可访问；`timeout_sec` 用于连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
+外接模式专题入口：
+
+- [Playwright 外接工具实战](docs/playbook.playwright.md)
+- [DBHub 外接工具实战](docs/playbook.dbhub.md)
+
+#### 外接 MCP 配置单格式
+
+配置单采用统一结构：
 
 ```json
 {
   "mcpServers": {
     "playwright": {
-      "url": "http://localhost:8931/mcp",
-      "timeout_sec": 30,
-      "sse_read_timeout_sec": 300
+      "url": "http://localhost:8931/mcp"
     },
+    "dbhub-sqlserver": {
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+说明：
+
+- 顶层必须是对象
+- `mcpServers` 必须是对象
+- `mcpServers` 下每个 key 都表示一个外接服务名，例如 `playwright`、`dbhub-sqlserver`
+- 每个服务项也必须是对象
+
+支持字段：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `url` | `string` | 必填。外接 MCP 服务地址。 |
+| `enabled` | `boolean` | 可选。是否启用，默认 `true`。 |
+| `transport` | `string` | 可选。支持 `streamable_http` 或 `sse`。 |
+| `headers` | `object` | 可选。请求头映射，键和值都会按字符串处理。 |
+| `timeout_sec` | `number` | 可选。请求超时秒数，默认 `30`。 |
+| `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数，默认 `300`。 |
+| `terminate_on_close` | `boolean` | 可选。仅 `streamable_http` 使用，默认 `true`。 |
+| `notes` | `string` | 可选。备注文本，不参与连接逻辑。 |
+
+补充约定：
+
+- 如果 `transport` 省略，且 `url` 以 `/sse` 结尾，会推断为 `sse`
+- 其它情况下默认按 `streamable_http` 处理
+- `enabled: false` 会跳过该服务
+
+外接服务由本地配置接入。外接服务需提前可访问；`timeout_sec` 用于连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
+
+如果你要接 `sse` 服务，最小结构类似：
+
+```json
+{
+  "mcpServers": {
     "events": {
       "transport": "sse",
-      "url": "http://localhost:8932/sse",
-      "timeout_sec": 30,
-      "sse_read_timeout_sec": 300
+      "url": "http://localhost:8932/sse"
     }
   }
 }
@@ -330,7 +378,7 @@ mind --upgrade
 示例：
 ```
 # 使用外接 MCP 工具查询数据库
-mind --xtra "Open DBHub and query the users table"
+mind --xtra "打开 DBHub，查询 users 表并返回结果摘要"
 
 # 使用外部浏览器或网页类 MCP 工具协作
 mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
@@ -340,6 +388,14 @@ mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 
 - [Playwright 外接工具实战](docs/playbook.playwright.md)
 - [DBHub 外接工具实战](docs/playbook.dbhub.md)
+
+如果你要先把外接服务单独启动起来，再让 `--xtra` 通过 HTTP 接入它，可以参考：
+
+- Playwright 推荐顺序：
+  1. `npx playwright install chromium`
+  2. `npx @playwright/mcp@latest --port 8931`
+- DBHub 全局安装：`npm install -g @bytebase/dbhub@latest`
+- DBHub 启动示例：`dbhub --transport http --port 8080 --dsn "sqlserver://user:password@host:1433/dbname"`
 
 ### 折跃协议（参数互斥）
 `--agent`

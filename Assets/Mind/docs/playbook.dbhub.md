@@ -14,26 +14,58 @@
 - 你要的是浏览器自动化：去看 [Playwright 外接工具实战](playbook.playwright.md)
 - 你要的是 HTTP/SSE/WS/GraphQL 协议调试：去看 [接口实战](playbook.api.md)
 
-## 连接配置
+## 配置单格式
 
-最常见的 HTTP 方式：
+外接服务配置统一采用下面这种 HTTP 接入结构：
 
 ```json
 {
   "mcpServers": {
     "dbhub-sqlserver": {
-      "url": "http://localhost:8080/mcp",
-      "timeout_sec": 30,
-      "sse_read_timeout_sec": 300
+      "url": "http://localhost:8080/mcp"
     }
   }
 }
 ```
 
+支持字段：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `url` | `string` | 必填。数据库外接服务地址。 |
+| `enabled` | `boolean` | 可选。是否启用，默认 `true`。 |
+| `transport` | `string` | 可选。支持 `streamable_http` 或 `sse`。 |
+| `headers` | `object` | 可选。附加请求头。 |
+| `timeout_sec` | `number` | 可选。请求超时秒数。 |
+| `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
+| `terminate_on_close` | `boolean` | 可选。`streamable_http` 下是否在关闭时通知远端终止。 |
+| `notes` | `string` | 可选。备注，不参与运行逻辑。 |
+
+补充：
+
+- 这套配置单是通用外接 MCP 结构，不只限于 DBHub
+- `enabled: false` 时，该服务不会参与本轮外接模式
+- 如果 `transport` 省略，通常按 `streamable_http` 处理；`url` 以 `/sse` 结尾时会自动推断为 `sse`
+
+## 连接配置
+
 最小示例：
 
 ```bash
 mind --xtra "查询 users 表最近 20 条记录"
+```
+
+如果你要先把数据库外接服务独立启动起来，再让 `--xtra` 通过 HTTP 去连它，可以参考：
+
+```bash
+npm install -g @bytebase/dbhub@latest
+dbhub --transport http --port 8080 --dsn "sqlserver://user:password@host:1433/dbname"
+```
+
+如果你只是临时验证，也可以直接一次性启动：
+
+```bash
+npx @bytebase/dbhub@latest --transport http --port 8080 --dsn "sqlserver://user:password@host:1433/dbname"
 ```
 
 ## 使用心智模型
@@ -232,4 +264,3 @@ source = "production"
 - DBHub 官方工具总览：`dbhub.ai/tools/overview`
 - DBHub `execute_sql` 文档：`dbhub.ai/tools/execute-sql`
 - DBHub `search_objects` 文档：`dbhub.ai/tools/search-objects`
-

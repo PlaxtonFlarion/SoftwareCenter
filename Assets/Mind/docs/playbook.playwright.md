@@ -15,26 +15,81 @@
 - 你想看设备/UI 自动化而不是浏览器自动化：去看 [设备与 UI 实战](playbook.device.md)
 - 你只想看 `--xtra` 的入口、配置文件位置和模式边界：先回 README
 
-## 连接配置
+## 配置单格式
 
-最常见的本地 HTTP 方式：
+外接服务配置统一采用下面这种 HTTP 接入结构：
 
 ```json
 {
   "mcpServers": {
     "playwright": {
-      "url": "http://localhost:8931/mcp",
-      "timeout_sec": 30,
-      "sse_read_timeout_sec": 300
+      "url": "http://localhost:8931/mcp"
     }
   }
 }
 ```
 
+支持字段：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `url` | `string` | 必填。浏览器外接服务地址。 |
+| `enabled` | `boolean` | 可选。是否启用，默认 `true`。 |
+| `transport` | `string` | 可选。支持 `streamable_http` 或 `sse`。 |
+| `headers` | `object` | 可选。附加请求头。 |
+| `timeout_sec` | `number` | 可选。请求超时秒数。 |
+| `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
+| `terminate_on_close` | `boolean` | 可选。`streamable_http` 下是否在关闭时通知远端终止。 |
+| `notes` | `string` | 可选。备注，不参与运行逻辑。 |
+
+补充：
+
+- 这套配置单是通用外接 MCP 结构，不只限于 Playwright
+- `enabled: false` 时，该服务不会参与本轮外接模式
+- 如果 `transport` 省略，通常按 `streamable_http` 处理；`url` 以 `/sse` 结尾时会自动推断为 `sse`
+
+## 连接配置
+
 最小示例：
 
 ```bash
 mind --xtra "打开 example.com，搜索 pricing，然后截图"
+```
+
+## 最小接入顺序
+
+推荐按下面 4 步走：
+
+### 1. 先准备浏览器二进制
+
+```bash
+npx playwright install chromium
+```
+
+这一步不是绝对强制，但建议先做。这样第一次跑外接服务时不会临时下载浏览器，体验和排障都会更稳。
+
+### 2. 启动 Playwright MCP HTTP 服务
+
+```bash
+npx @playwright/mcp@latest --port 8931
+```
+
+### 3. 配置外接服务
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "url": "http://localhost:8931/mcp"
+    }
+  }
+}
+```
+
+### 4. 通过 `--xtra` 使用
+
+```bash
+mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 ```
 
 ## 使用心智模型

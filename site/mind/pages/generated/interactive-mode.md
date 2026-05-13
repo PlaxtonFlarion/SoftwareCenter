@@ -53,6 +53,11 @@
 | `PLAN` | 先生成计划，再按步骤顺序执行，并承载执行期规则判断 | 需要结构化步骤和更稳路径的任务 |
 | `XTRA` | 外接 MCP 工具与 Helix 通用工具协作通道                 | 数据库、浏览器、外部服务协作 |
 
+如果你切到 `XTRA` 之后要继续看专项用法，直接跳：
+
+- [Playwright 外接工具实战](playbook.playwright.md)
+- [DBHub 外接工具实战](playbook.dbhub.md)
+
 补充：
 - 执行期规则判断只属于 `PLAN` 执行面
 - `--code` 中的 `global_rule / rule` 是星图规则层，不等同于执行期规则判断
