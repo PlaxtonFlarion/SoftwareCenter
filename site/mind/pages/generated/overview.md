@@ -19,7 +19,7 @@
 **专题跳转**
 
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](playbook.template.md)、[安全工具](playbook.security.md)
-- 外接工具协作：看 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
+- 外接工具协作：看 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
 - 设备、多媒体和稳定性：看 [设备与 UI 实战](playbook.device.md)、[Monkey 扰动](playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
 - 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `--code`
 - 订阅链路：看 [订阅模式](agent-mode.md)
@@ -218,8 +218,8 @@ mind --agent
 
 如果你要继续看外接模式的专项用法，直接跳：
 
-- [Playwright 外接工具实战](docs/playbook.playwright.md)
-- [DBHub 外接工具实战](docs/playbook.dbhub.md)
+- [Playwright 外接工具实战](playbook.playwright.md)
+- [DBHub 外接工具实战](playbook.dbhub.md)
 
 补充说明：
 
@@ -272,8 +272,8 @@ Mind 的参数分两类：
 
 外接工具协作入口继续看：
 
-- 命令行 `mind --xtra "..."`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
-- REPL `/xtra`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
+- 命令行 `mind --xtra "..."`：配合 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
+- REPL `/xtra`：配合 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
 
 ### 中枢协议（参数互斥）
 `--hello`
@@ -319,8 +319,8 @@ mind --upgrade
 
 外接模式专题入口：
 
-- [Playwright 外接工具实战](docs/playbook.playwright.md)
-- [DBHub 外接工具实战](docs/playbook.dbhub.md)
+- [Playwright 外接工具实战](playbook.playwright.md)
+- [DBHub 外接工具实战](playbook.dbhub.md)
 
 #### 外接 MCP 配置单格式
 
@@ -391,8 +391,8 @@ mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 
 如果你要系统看外接工具本身的完整用法，直接看：
 
-- [Playwright 外接工具实战](docs/playbook.playwright.md)
-- [DBHub 外接工具实战](docs/playbook.dbhub.md)
+- [Playwright 外接工具实战](playbook.playwright.md)
+- [DBHub 外接工具实战](playbook.dbhub.md)
 
 如果你要先把外接服务单独启动起来，再让 `--xtra` 通过 HTTP 接入它，可以参考：
 
