@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/help /model /apikey /attach /quit` 这些 REPL 指令：看这里
+- 你要查 `/help /model /apikey /attach /reboot /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -40,6 +40,7 @@
 - `/attachments`：查看当前待发送附件
 - `/detach <index|path>`：移除一个待发送附件
 - `/attach-clear`：清空当前待发送附件
+- `/reboot`：重启本地后台服务
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
 - `/plan`：切到 `PLAN`
@@ -116,6 +117,11 @@ apikey invalid: /apikey <...>
 
 ## `/license`
 - `/license` 或 `/lic`：展示授权许可信息页
+
+## `/reboot`
+- `/reboot`：重启本地后台服务，并在恢复可用后继续停留在 REPL
+- 该指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
+- 适合本地后台服务长时间运行后不可用、连接异常或需要主动恢复执行面时使用
 
 ## 退出
 任意时刻输入以下任一指令即可退出：

@@ -45,6 +45,10 @@
   适合看 --xtra 下浏览器协作、页面取证、交互动作和网络诊断。
 - [DBHub 外接工具实战](playbook.dbhub.md)  
   适合看 --xtra 下数据库搜索、只读查询、固定查询和 SQL Server 场景建议。
+- [Codex 链路](playbook.codex.md)  
+  适合看外部 Codex CLI 编码执行面、适用边界和与原生 coding 的差异。
+- [原生 coding 链路](playbook.nativecoding.md)  
+  适合看 workspace 搜索、读窗口、patch、shell_exec、git diff 的可见编码闭环。
 - [Monkey 扰动](playbook.monkey.md)  
   适合看随机扰动的全部参数、执行流程和返回结构。
 - [多媒体链路](playbook.media.md)  
