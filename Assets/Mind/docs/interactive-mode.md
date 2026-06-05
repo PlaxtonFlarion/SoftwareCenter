@@ -50,6 +50,8 @@
 
 - `/xtra` 配合 [Playwright 外接工具实战](playbook.playwright.md)
 - `/xtra` 配合 [DBHub 外接工具实战](playbook.dbhub.md)
+- `/xtra` 配合 [原生 coding 链路](playbook.nativecoding.md)
+- `/xtra` 配合 [Codex 链路](playbook.codex.md)
 
 ## 四种状态
 | 状态     | 说明                                       | 适合场景            |
@@ -57,17 +59,20 @@
 | `CHAT` | 对话驱动的流式工具闭环                              | 探索、问答、临场协作      |
 | `FAST` | 裁剪工具集后的快速执行通道                            | 接口、文本、媒体短链路     |
 | `PLAN` | 先生成计划，再按步骤顺序执行，并承载执行期规则判断 | 需要结构化步骤和更稳路径的任务 |
-| `XTRA` | 外接 MCP 工具与 Helix 通用工具协作通道                 | 数据库、浏览器、外部服务协作 |
+| `XTRA` | 外接 MCP 工具、Helix 通用工具与编码工具协作通道 | 数据库、浏览器、外部服务、原生 coding、Codex 协作 |
 
 如果你切到 `XTRA` 之后要继续看专项用法，直接跳：
 
 - [Playwright 外接工具实战](playbook.playwright.md)
 - [DBHub 外接工具实战](playbook.dbhub.md)
+- [原生 coding 链路](playbook.nativecoding.md)
+- [Codex 链路](playbook.codex.md)
 
 补充：
 - 执行期规则判断只属于 `PLAN` 执行面
 - `--code` 中的 `global_rule / rule` 是星图规则层，不等同于执行期规则判断
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
+- `XTRA` 同时可调用原生 coding 工具和 Codex 链路，适合把外部服务排查与代码修改放在同一轮协作里
 
 切换成功后，终端会输出：
 - `Exchange -> Chat`

@@ -5,7 +5,7 @@
 
 ## 维护范围
 - 模式边界：`chat / fast / plan / xtra / agent`
-- 工具域边界：`device / bench / common / media`
+- 工具域边界：`device / bench / common / media / coding`
 - 接口执行面：协议执行能力
 - 星图执行链：`--code`
 - 文档拆分与同步：`README.md`、`docs/*.md`、`.github/workflows/sync-to-software-center.yml`
@@ -17,8 +17,7 @@
 Mind (CLI / control plane)
   ↓
 Helix (MCP / execution plane)
-  ↓
-device / bench / common / media
+device / bench / common / media / coding
 ```
 
 维护时需要保证三层同时一致：
@@ -30,7 +29,7 @@ device / bench / common / media
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
 - `plan`：先生成计划，再按步骤顺序执行，并承载执行期规则判断能力
-- `xtra`：外接 MCP 工具与 Helix 通用工具协作通道，走独立 `mode=xtra` 后端链路
+- `xtra`：外接 MCP 工具、Helix 通用工具与编码工具协作通道，走独立 `mode=xtra` 后端链路
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 
 维护要求：
@@ -40,13 +39,14 @@ device / bench / common / media
 - 不要把执行期规则判断和 `--code` 里的规则层写成同一个概念
 - 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
 - 不要把 `xtra` 写成 `fast` 别名；它有独立工具过滤和 `mode=xtra` transport
-- `xtra` 外接 MCP 口径保持为外部服务协作，不要写成由 Mind 托管外部进程
+- `xtra` 外接 MCP 口径保持为外部服务协作，同时允许原生 coding 和 Codex 编码链路；不要写成由 Mind 托管外部进程
 
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
 - `bench`：性能、稳定性与接口执行面
 - `common`：环境与基础能力
 - `media`：截图、录屏、音视频处理与帧级流水线
+- `coding`：原生 coding 工具、shell/git 受控执行和 Codex 外部编码链路
 
 关键约束：
 - 接口能力不是独立 `api` 域，而是归在协议执行这一侧

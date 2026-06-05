@@ -128,7 +128,7 @@ mind --chat --code api_batch.md
 mind --xtra "Open DBHub and query the users table"
 ```
 
-外接 MCP 服务需提前可访问。
+外接 MCP 服务需提前可访问；如果同一轮还要搜索、修改或验证代码，也可以继续使用原生 coding 和 Codex 链路。
 
 ### 需要等待远端任务时用 `--agent`
 

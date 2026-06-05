@@ -18,6 +18,7 @@
 ## 使用心智模型
 
 Codex 链路是“把一整个编码目标交给外部执行面”的路径。
+它可在 `chat`、`fast` 和 `xtra` 流式模式下使用；当同一轮任务还需要数据库、浏览器或外部 MCP 工具协作时，优先切到 `xtra`。
 
 ```text
 Mind
@@ -88,4 +89,3 @@ Mind
 - 任务越完整、越像“交给一个编码代理处理”，越适合 Codex 链路
 - 任务越需要你观察每一步、控制每次 patch 或审批命令，越适合原生 coding
 - 如果你在调试 Mind 自己的工具展示、patch engine、shell runtime 或远端 synthetic tool call，不要走 Codex 链路
-

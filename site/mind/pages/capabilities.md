@@ -17,7 +17,7 @@
     <ul class="mind-mini-list">
       <li>命令行适合一次性任务和脚本执行</li>
       <li>交互式适合持续对话、边问边跑</li>
-      <li>外接模式适合数据库、浏览器和外部 MCP 服务协作</li>
+      <li>外接模式适合数据库、浏览器、外部 MCP 服务和编码工具协作</li>
       <li>星图协议适合批跑、前后置和回归</li>
       <li>订阅适合本地等待远端下发任务</li>
     </ul>
@@ -40,7 +40,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">外接</span>
     <h3>需要外部服务时走 Xtra</h3>
-    <p>任务依赖数据库、浏览器或外部 MCP 工具时，直接走 <code>--xtra</code>。</p>
+    <p>任务依赖数据库、浏览器、外部 MCP 工具，或需要和编码工具放在同一轮协作时，直接走 <code>--xtra</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">批量</span>
@@ -70,7 +70,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">XTRA</span>
     <h3>外接模式</h3>
-    <p>适合数据库、浏览器、外部 MCP 服务和通用工具协作。继续看 <a href="../generated/playbook.playwright/">Playwright</a> 和 <a href="../generated/playbook.dbhub/">DBHub</a>。</p>
+    <p>适合数据库、浏览器、外部 MCP 服务、通用工具和编码工具协作。继续看 <a href="../generated/playbook.playwright/">Playwright</a>、<a href="../generated/playbook.dbhub/">DBHub</a>、<a href="../generated/playbook.nativecoding/">原生 coding</a> 和 <a href="../generated/playbook.codex/">Codex</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">CODE</span>
@@ -95,7 +95,7 @@
   <div class="mind-panel">
     <span class="mind-kicker">误判二</span>
     <h3>Xtra 只是 Fast 换名</h3>
-    <p>⚠️ 不对。Xtra 走独立 <code>mode=xtra</code> 后端链路，只暴露外接 MCP 工具和通用工具。</p>
+    <p>⚠️ 不对。Xtra 走独立 <code>mode=xtra</code> 后端链路，暴露外接 MCP 工具、通用工具和编码工具。</p>
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">误判三</span>

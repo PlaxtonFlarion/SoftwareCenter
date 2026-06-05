@@ -64,7 +64,7 @@
   </div>
   <div class="mind-card">
     <h3>xtra</h3>
-    <p>适合数据库、浏览器、外部 MCP 服务和通用工具协作。先看快速开始和能力概览，再按外接工具的实际服务文档补细节。</p>
+    <p>适合数据库、浏览器、外部 MCP 服务、通用工具和编码工具协作。先看快速开始和能力概览，再按外接工具或编码链路的实际文档补细节。</p>
   </div>
 </div>
 
@@ -94,6 +94,16 @@
   <a class="mind-card mind-card-link" href="../generated/playbook.load/">
     <h3>压测与脚本执行</h3>
     <p>本地标准脚本、本地自由脚本、云端分布式压测和结果收束边界。</p>
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/playbook.nativecoding/">
+    <h3>原生 coding</h3>
+    <p>搜索、读取窗口、patch、shell/git 验证和可见 trace。</p>
+    <span class="mind-card-arrow">查看正文 →</span>
+  </a>
+  <a class="mind-card mind-card-link" href="../generated/playbook.codex/">
+    <h3>Codex 链路</h3>
+    <p>把完整编码任务交给外部 Codex CLI 执行并收束输出。</p>
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
 </div>

@@ -18,6 +18,7 @@
 ## 使用心智模型
 
 原生 coding 链路是“模型调用 Mind 暴露的受控工具，一步步完成编码任务”。
+它可在 `chat`、`fast` 和 `xtra` 流式模式下使用；当编码任务需要同时接入外部 MCP 服务时，优先切到 `xtra`。
 
 ```text
 模型
@@ -159,4 +160,3 @@
 - 想复刻 Codex 的搜索体验，但保留 Mind 自己的 trace 和审批，走原生 coding
 - 想把任务整体交给一个外部编码代理，走 Codex
 - 在调试 patch engine、shell runtime、tool trace、synthetic tool call 时，必须走原生 coding
-
