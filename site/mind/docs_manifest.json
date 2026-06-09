@@ -90,13 +90,6 @@
       "summary": "适合看 --xtra 下数据库搜索、只读查询、固定查询和 SQL Server 场景建议。"
     },
     {
-      "source": "docs/playbook.codex.md",
-      "target": "playbook.codex.md",
-      "label": "Codex 链路",
-      "category": "执行与取证",
-      "summary": "适合看外部 Codex CLI 编码执行面、适用边界和与原生 coding 的差异。"
-    },
-    {
       "source": "docs/playbook.nativecoding.md",
       "target": "playbook.nativecoding.md",
       "label": "原生 coding 链路",

@@ -101,11 +101,6 @@
     <p>搜索、读取窗口、patch、shell/git 验证和可见 trace。</p>
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
-  <a class="mind-card mind-card-link" href="../generated/playbook.codex/">
-    <h3>Codex 链路</h3>
-    <p>把完整编码任务交给外部 Codex CLI 执行并收束输出。</p>
-    <span class="mind-card-arrow">查看正文 →</span>
-  </a>
 </div>
 
 ## 按常见目的进入

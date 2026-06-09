@@ -10,9 +10,7 @@
 
 ## 先判断是不是这页的范围
 
-- 你要让模型像 Codex 一样多轮搜索、读相关窗口、并行读候选文件：看这里
 - 你要用 `workspace_search / workspace_read_file / workspace_apply_patch / shell_exec / git_diff` 做可见的编码闭环：看这里
-- 你要把完整任务交给外部 Codex CLI 自行执行：看 [Codex 链路](playbook.codex.md)
 - 你要写批跑任务或多条自然语言用例：先看 [星图协议](cli-code.md)
 
 ## 使用心智模型
@@ -145,18 +143,7 @@
 - runtime 缺失时不要反复执行同一命令
 - 需要云端 sandbox 时只在支持的语言和策略下切换
 
-## 和 Codex 链路的区别
-
-| 维度 | 原生 coding 链路 | Codex 链路 |
-|------|------------------|------------|
-| 执行方式 | 模型逐步调用 Mind 工具 | 外部 Codex CLI 自行执行 |
-| 展示 | 每一步都有工具 trace | 以 Codex 输出为主 |
-| 审批 | 文件和命令工具可逐步审批 | 由 Codex CLI 的执行策略负责 |
-| 适合任务 | 需要可见、可控、可审计的编码闭环 | 边界清楚的完整编码任务 |
-| 排障 | reason / diagnostics / next steps 更细 | 主要看 CLI 输出 |
-
 ## 使用建议
 
-- 想复刻 Codex 的搜索体验，但保留 Mind 自己的 trace 和审批，走原生 coding
-- 想把任务整体交给一个外部编码代理，走 Codex
+- 需要可见、可控、可审计的编码闭环时，走原生 coding
 - 在调试 patch engine、shell runtime、tool trace、synthetic tool call 时，必须走原生 coding

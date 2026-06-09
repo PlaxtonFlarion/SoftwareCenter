@@ -70,7 +70,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">XTRA</span>
     <h3>外接模式</h3>
-    <p>适合数据库、浏览器、外部 MCP 服务、通用工具和编码工具协作。继续看 <a href="../generated/playbook.playwright/">Playwright</a>、<a href="../generated/playbook.dbhub/">DBHub</a>、<a href="../generated/playbook.nativecoding/">原生 coding</a> 和 <a href="../generated/playbook.codex/">Codex</a>。</p>
+    <p>适合数据库、浏览器、外部 MCP 服务、通用工具和编码工具协作。继续看 <a href="../generated/playbook.playwright/">Playwright</a>、<a href="../generated/playbook.dbhub/">DBHub</a>和 <a href="../generated/playbook.nativecoding/">原生 coding</a>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">CODE</span>

@@ -39,14 +39,14 @@ device / bench / common / media / coding
 - 不要把执行期规则判断和 `--code` 里的规则层写成同一个概念
 - 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
 - 不要把 `xtra` 写成 `fast` 别名；它有独立工具过滤和 `mode=xtra` transport
-- `xtra` 外接 MCP 口径保持为外部服务协作，同时允许原生 coding 和 Codex 编码链路；不要写成由 Mind 托管外部进程
+- `xtra` 外接 MCP 口径保持为外部服务协作，同时允许原生 coding 工具链参与；不要写成由 Mind 托管外部进程
 
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
 - `bench`：性能、稳定性与接口执行面
 - `common`：环境与基础能力
 - `media`：截图、录屏、音视频处理与帧级流水线
-- `coding`：原生 coding 工具、shell/git 受控执行和 Codex 外部编码链路
+- `coding`：原生 coding 工具、shell/git 受控执行
 
 关键约束：
 - 接口能力不是独立 `api` 域，而是归在协议执行这一侧
