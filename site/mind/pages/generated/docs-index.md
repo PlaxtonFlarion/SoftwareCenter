@@ -36,7 +36,7 @@
 - [DBHub 外接工具实战](playbook.dbhub.md)  
   适合看 --xtra 下数据库搜索、只读查询、固定查询和 SQL Server 场景建议。
 - [原生 coding 链路](playbook.nativecoding.md)  
-  适合看 workspace 搜索、读窗口、patch、shell_exec、git diff 的可见编码闭环。
+  适合看搜索、读窗口、编辑、命令验证和差异收束的可见编码闭环。
 - [Monkey 扰动](playbook.monkey.md)  
   适合看随机扰动的全部参数、执行流程和返回结构。
 - [多媒体链路](playbook.media.md)  

@@ -94,7 +94,7 @@
       "target": "playbook.nativecoding.md",
       "label": "原生 coding 链路",
       "category": "执行与取证",
-      "summary": "适合看 workspace 搜索、读窗口、patch、shell_exec、git diff 的可见编码闭环。"
+      "summary": "适合看搜索、读窗口、编辑、命令验证和差异收束的可见编码闭环。"
     },
     {
       "source": "docs/playbook.monkey.md",

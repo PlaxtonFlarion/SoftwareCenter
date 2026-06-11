@@ -10,7 +10,7 @@
 
 ## 先判断是不是这页的范围
 
-- 你要用 `workspace_search / workspace_read_file / workspace_apply_patch / shell_exec / git_diff` 做可见的编码闭环：看这里
+- 你要用内置编码工具做可见的搜索、阅读、修改、验证和收束闭环：看这里
 - 你要写批跑任务或多条自然语言用例：先看 [星图协议](cli-code.md)
 
 ## 使用心智模型
@@ -20,10 +20,11 @@
 
 ```text
 模型
-  -> workspace_search / workspace_read_file / native_parallel_read
-  -> workspace_apply_patch / workspace_write_file
-  -> shell_exec
-  -> git_status / git_diff / change_summary
+  -> 定位文件、符号、调用点或错误文本
+  -> 读取相关文件窗口
+  -> 应用文本修改或文件操作
+  -> 执行验证命令
+  -> 汇总版本状态、差异和验证结果
   -> 最终回复
 ```
 
@@ -33,21 +34,22 @@
 
 ### 1. 定位
 
-- `workspace_root`：确认当前原生 coding 工作区根目录
-- `workspace_list_file`：按目录列出文件
-- `workspace_search`：统一搜索入口，覆盖文件名、文本、正则和符号模式
-- `native_parallel_read`：并行读取多个候选文件或行窗口
+- 按目录列出文件
+- 搜索文件名、文本、正则和符号
+- 并行读取多个候选文件或行窗口
+
+当前执行环境的工作区根目录由 `exec_env.workspace.root` 提供。
 
 推荐搜索策略：
 
 - 先用文件名或关键词缩小范围
 - 再按错误文本、函数名、调用点多轮搜索
 - 搜到候选后只读相关行窗口
-- 多个候选文件用 `native_parallel_read` 并行读取
+- 多个候选文件使用并行读取能力一次获取上下文
 
 ### 2. 阅读
 
-- `workspace_read_file`：读取文件或指定行窗口
+- 读取文件或指定行窗口
 
 建议：
 
@@ -57,21 +59,21 @@
 
 ### 3. 修改
 
-- `workspace_apply_patch`：精确 old/new 文本替换
-- `workspace_apply_unified_patch`：标准 unified diff patch
-- `workspace_write_file`：新建或整体覆盖文本文件
-- `workspace_copy_file` / `workspace_move_file` / `workspace_delete_file`：文件级操作
+- 精确文本替换
+- 标准 unified diff patch
+- 新建或整体覆盖文本文件
+- 复制、移动、重命名或删除文件
 
 建议：
 
-- 小范围局部改动优先 `workspace_apply_patch`
-- 多处或跨文件 diff 优先 `workspace_apply_unified_patch`
-- 小文件整体重写可用 `workspace_write_file`
-- 不要用 `shell_exec` 的 echo、tee、sed、重定向来改文件
+- 小范围局部改动优先使用精确文本替换能力
+- 多处或跨文件改动优先使用 unified diff patch 能力
+- 小文件整体重写可使用文本写入能力
+- 不要用 shell 命令的 echo、tee、sed、重定向来改文件
 
 ### 4. 执行
 
-- `shell_exec`：执行本地命令
+- 执行本地命令
 
 当前执行层会做命令审计和 runtime resolution：
 
@@ -88,25 +90,25 @@
 
 ### 5. 收束
 
-- `git_status`：查看工作区状态
-- `git_diff`：查看 tracked diff
-- `change_summary`：汇总当前状态、diff、未跟踪文件、冲突、截断风险和工作区阻断项
+- 查看工作区版本状态
+- 查看 tracked diff
+- 汇总当前状态、diff、未跟踪文件、冲突、截断风险和工作区阻断项
 
 建议：
 
 - 修改后先跑最小验证
-- 再看 `git_status` 和 `git_diff`
+- 再查看版本状态和 diff
 - 最终回复应说明改了什么、执行过什么验证、当前工作区还有什么风险或未覆盖项
 
 ## 推荐闭环
 
 一条稳定的原生 coding 回合通常是：
 
-1. `workspace_search` 找文件或符号
-2. `workspace_read_file` 读取相关窗口
-3. `workspace_apply_patch` 或 `workspace_apply_unified_patch` 修改
-4. `shell_exec` 运行测试或最小验证
-5. `git_diff` / `change_summary` 汇总
+1. 搜索能力找文件或符号
+2. 读取相关窗口
+3. 使用文本替换或 unified diff 能力修改
+4. 运行测试或最小验证命令
+5. 汇总 diff、版本状态和验证结果
 6. 回复用户结果和验证情况
 
 ## 常见失败与处理
@@ -123,7 +125,7 @@
 
 处理方式：
 
-- 先重新 `workspace_read_file` 读取当前窗口
+- 先重新读取当前窗口
 - 小范围改动重新生成精确 old/new patch
 - 多文件改动使用严格 unified diff
 - 失败 reason 已返回时，按 `suggested_next_action` 调整
@@ -139,7 +141,7 @@
 
 处理方式：
 
-- 先看 `shell_exec` 返回的 `exit_code / stdout / stderr / runtime`
+- 先看命令执行结果返回的 `exit_code / stdout / stderr / runtime`
 - runtime 缺失时不要反复执行同一命令
 - 需要云端 sandbox 时只在支持的语言和策略下切换
 
