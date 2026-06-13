@@ -60,7 +60,7 @@
 | `PLAN` | 先生成计划，再按步骤顺序执行，并承载执行期规则判断 | 需要结构化步骤和更稳路径的任务 |
 | `XTRA` | 外接 MCP 工具、Helix 通用工具与编码工具协作通道 | 数据库、浏览器、外部服务、原生 coding |
 
-如果你切到 `XTRA` 之后要继续看专项用法，直接跳：
+如果你在 `XTRA` 状态下要继续看专项用法，直接跳：
 
 - [Playwright 外接工具实战](playbook.playwright.md)
 - [DBHub 外接工具实战](playbook.dbhub.md)

@@ -124,7 +124,7 @@ $env:Path += ";C:\Program Files\Mind\MindEngine"
 
 ```
 # 先跑一条最小命令
-mind --chat "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
+mind --xtra "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
 
 # 需要持续交互时进入 REPL
 mind
