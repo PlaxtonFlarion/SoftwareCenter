@@ -252,7 +252,7 @@ Mind 的参数分两类：
 
 - 先选一个主入口：`--hello`、`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
 - 再叠加运行属性：比如 `--gravity`、`--reflection`
-- 需要批跑或回归时，再在显式主模式后挂上 `--code <path...>`
+- 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
 - `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
 
@@ -268,7 +268,7 @@ Mind 的参数分两类：
 | 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan / xtra` |
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
-| 批量执行星图 | `mind --chat --code <path...>` | 批跑、回归、规则化星图执行 |
+| 批量执行星图 | `mind --chat --code <source...>` | 批跑、回归、规则化星图执行 |
 
 外接工具协作入口继续看：
 
@@ -455,10 +455,10 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
 
 ### 星图协议（参数兼容）
-`--code <path...>`
+`--code <source...>`
 
 用于装载一个或多个批量执行星图，并按显式选定的主模式执行。
-- 支持 `.md / .txt`
+- 支持本地 `.md / .txt` 文件
 - 也支持 `--code -` 从标准输入读取
 - 也支持 `--code inline:...` 直接执行内联星图
 - 也支持 `--code https://...` 从 URL 拉取星图
@@ -528,7 +528,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 ```
 
 ### 深入：三层前后置 + 星图规则层
-`--code <path...>`
+`--code <source...>`
 
 高级批跑说明已拆到独立正文：[星图深入说明](cli-code-advanced.md)。
 

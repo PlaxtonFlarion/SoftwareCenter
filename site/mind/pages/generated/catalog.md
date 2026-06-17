@@ -30,7 +30,7 @@
 - [星图样例](code-blueprints.md)  
   适合看跨域 --code 编排的高层自然语言样例，以及什么时候该写星图。
 - [星图源抽象设计](cli-code-source-design.md)  
-  适合看 --code 如何从本机文件路径升级为统一 source 抽象。
+  适合看 --code 当前如何解析本地文件、stdin、inline 和 URL source。
 - [接口实战](playbook.api.md)  
   适合看协议边界、提取、断言和批量请求。
 - [模板能力](playbook.template.md)  
@@ -46,7 +46,7 @@
 - [DBHub 外接工具实战](playbook.dbhub.md)  
   适合看 --xtra 下数据库搜索、只读查询、固定查询和 SQL Server 场景建议。
 - [原生 coding 链路](playbook.nativecoding.md)  
-  适合看搜索、读窗口、编辑、命令验证和差异收束的可见编码闭环。
+  适合看 shell 诊断、工作区写文件、unified diff patch 和验证收束。
 - [Monkey 扰动](playbook.monkey.md)  
   适合看随机扰动的全部参数、执行流程和返回结构。
 - [多媒体链路](playbook.media.md)  

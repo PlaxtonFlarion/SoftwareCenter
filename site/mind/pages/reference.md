@@ -98,7 +98,7 @@
   </a>
   <a class="mind-card mind-card-link" href="../generated/playbook.nativecoding/">
     <h3>原生 coding</h3>
-    <p>搜索、读取窗口、patch、shell/git 验证和可见 trace。</p>
+    <p>shell 诊断、工作区写文件、unified diff patch 和验证收束。</p>
     <span class="mind-card-arrow">查看正文 →</span>
   </a>
 </div>

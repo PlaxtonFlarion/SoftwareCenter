@@ -38,7 +38,7 @@
       "target": "cli-code-source-design.md",
       "label": "星图源抽象设计",
       "category": "编排与协议",
-      "summary": "适合看 --code 如何从本机文件路径升级为统一 source 抽象。"
+      "summary": "适合看 --code 当前如何解析本地文件、stdin、inline 和 URL source。"
     },
     {
       "source": "docs/playbook.api.md",
@@ -94,7 +94,7 @@
       "target": "playbook.nativecoding.md",
       "label": "原生 coding 链路",
       "category": "执行与取证",
-      "summary": "适合看搜索、读窗口、编辑、命令验证和差异收束的可见编码闭环。"
+      "summary": "适合看 shell 诊断、工作区写文件、unified diff patch 和验证收束。"
     },
     {
       "source": "docs/playbook.monkey.md",

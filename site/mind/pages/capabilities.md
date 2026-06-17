@@ -45,7 +45,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">批量</span>
     <h3>需要批跑和规则时改走星图协议</h3>
-    <p>需要批跑、前后置和回归时，不要再堆命令行，直接走 <code>--code</code>。</p>
+    <p>需要批跑、前后置和回归时，不要再堆命令行，在 <code>--chat</code>、<code>--fast</code>、<code>--plan</code> 或 <code>--xtra</code> 后挂 <code>--code</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">下发</span>
