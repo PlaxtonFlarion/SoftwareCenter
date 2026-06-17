@@ -11,8 +11,8 @@
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">环境</span>
-    <h3>准备终端与环境变量</h3>
-    <p>把 Mind/MindEngine 目录加入 PATH，避免每次都手动定位安装目录。</p>
+    <h3>安装 CLI 并准备终端</h3>
+    <p>优先用 npm 全局安装；如果使用安装包，再把 Mind/MindEngine 目录加入 PATH。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">路径</span>
@@ -27,8 +27,29 @@
 </div>
 
 <div class="mind-command-note">
-  <strong>一条最短路径：</strong><code>mind --hello</code> → 发一条最小命令 → 再按需要进入交互式、星图协议或订阅。
+  <strong>一条最短路径：</strong><code>npm install -g @craftline/mind</code> → <code>mind --hello</code> → 发一条最小命令。
 </div>
+
+## 安装 Mind CLI
+
+推荐使用 npm 全局安装，Windows 和 macOS 使用同一条命令：
+
+```bash
+npm install -g @craftline/mind
+```
+
+安装完成后验证命令入口：
+
+```bash
+mind --help
+```
+
+`@craftline/mind` 是主入口包，安装时会按当前系统拉取对应运行时包：
+
+- Windows：`@craftline/mind-win32`
+- macOS：`@craftline/mind-darwin`
+
+如果安装后提示找不到 `mind` 命令，先关闭并重新打开终端；仍不可用时，再检查 npm 全局 bin 目录是否已经加入 `PATH`。
 
 ## 先确认后台管理中心
 
@@ -64,13 +85,15 @@ mind --hello
 
 ## 准备终端与环境变量
 
+如果通过 `npm install -g @craftline/mind` 安装，通常不需要手动配置 `Mind/MindEngine` 路径。下面的 PATH 配置主要用于 Software Center 或安装包方式。
+
 <div class="mind-panel-grid mind-panel-grid-tight">
   <div class="mind-panel">
     <span class="mind-kicker">终端建议</span>
     <ul class="mind-mini-list">
       <li>Windows：推荐 `Windows Terminal`</li>
       <li>macOS：推荐 `iTerm2` 或系统 `Terminal`</li>
-      <li>建议先把默认 `Mind/MindEngine` 目录加入 `PATH`</li>
+      <li>npm 全局安装后，优先重新打开终端验证 `mind --help`</li>
     </ul>
   </div>
   <div class="mind-panel">
