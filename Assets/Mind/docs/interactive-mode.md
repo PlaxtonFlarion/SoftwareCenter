@@ -44,8 +44,8 @@
 - `/detach <index|path>`：移除一个待发送附件
 - `/attach-clear`：清空当前待发送附件
 - `/reboot`：重启本地后台服务
-- `/shutdown`：退出前台并停止 Helix 后台服务
-- `/pref`：打开 Web 偏好配置页
+- `/shutdown`：退出前台并停止本地运行时
+- `/pref`：打开偏好配置页
 - `/tools`：查看当前可用 MCP 工具，包含外部 MCP 工具
 - `/mcp`：查看外部 MCP runtime 状态
 - `/chat`：切到 `CHAT`
@@ -160,12 +160,12 @@ base-url invalid: /base-url <...>
 - 适合本地后台服务长时间运行后不可用、连接异常或需要主动恢复执行面时使用
 
 ## `/shutdown`
-- `/shutdown`：退出前台 Mind，并停止 Helix 后台服务
-- 该指令会在退出清理阶段释放 Helix 监听端口
-- 普通 `/quit`、`/q`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止 Helix
+- `/shutdown`：退出前台 Mind，并停止本地运行时
+- 该指令会在退出清理阶段释放本地运行时监听端口
+- 普通 `/quit`、`/q`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止本地运行时
 
 ## `/pref`
-- `/pref`：打开 Web 偏好配置页
+- `/pref`：打开偏好配置页
 - 该指令不会发送给模型
 - 页面保存后，REPL 后续轮次会按偏好刷新 TTL 读取最新配置
 
