@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/help /new /resume /model /apikey /attach /reboot /quit` 这些 REPL 指令：看这里
+- 你要查 `/help /new /resume /model /apikey /base-url /attach /reboot /shutdown /pref /tools /mcp /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -36,13 +36,18 @@
 - `/new`：开始新对话，重置 `cid / sid`，保留当前模式、模型和待发送附件
 - `/resume`：从最近 24 小时内的本地会话游标中恢复当前模式的对话
 - `/quit, /q, quit, exit`：安全退出
-- `/model <name>`：切换推理引擎
-- `/apikey <key>`：更新访问凭证
+- `/model <name>`：持久化主模型名称
+- `/apikey <key>`：持久化主模型访问凭证
+- `/base-url <url>`：持久化主模型 Base URL
 - `/attach <path|dir|glob>`：添加本轮待发送附件
 - `/attachments`：查看当前待发送附件
 - `/detach <index|path>`：移除一个待发送附件
 - `/attach-clear`：清空当前待发送附件
 - `/reboot`：重启本地后台服务
+- `/shutdown`：退出前台并停止 Helix 后台服务
+- `/pref`：打开 Web 偏好配置页
+- `/tools`：查看当前可用 MCP 工具，包含外部 MCP 工具
+- `/mcp`：查看外部 MCP runtime 状态
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
 - `/plan`：切到 `PLAN`
@@ -91,7 +96,7 @@
 model invalid: /model <...>
 ```
 
-切换成功后，本轮循环后续调用都会使用新的 `model`。
+保存成功后，本轮循环后续调用都会使用新的 `model`，并写入本地偏好存储。
 
 ## `/new` 指令
 - `/new`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`
@@ -118,7 +123,20 @@ model invalid: /model <...>
 apikey invalid: /apikey <...>
 ```
 
-切换成功后，本轮循环后续调用都会使用新的 `apikey`。
+保存成功后，本轮循环后续调用都会使用新的 `apikey`，并写入本地偏好存储。终端只回显密钥尾部。
+
+## `/base-url` 指令
+示例：
+```text
+/base-url https://api.example.com/v1
+```
+
+当输入无效或缺失时，会打印格式提示：
+```text
+base-url invalid: /base-url <...>
+```
+
+保存成功后，本轮循环后续调用都会使用新的 `base_url`，并写入本地偏好存储。
 
 ## 附件指令
 - `/attach <path|dir|glob>`：把本地文件加入当前待发送附件列表
@@ -140,6 +158,27 @@ apikey invalid: /apikey <...>
 - `/reboot`：重启本地后台服务，并在恢复可用后继续停留在 REPL
 - 该指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 - 适合本地后台服务长时间运行后不可用、连接异常或需要主动恢复执行面时使用
+
+## `/shutdown`
+- `/shutdown`：退出前台 Mind，并停止 Helix 后台服务
+- 该指令会在退出清理阶段释放 Helix 监听端口
+- 普通 `/quit`、`/q`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止 Helix
+
+## `/pref`
+- `/pref`：打开 Web 偏好配置页
+- 该指令不会发送给模型
+- 页面保存后，REPL 后续轮次会按偏好刷新 TTL 读取最新配置
+
+## `/tools`
+- `/tools`：列出当前 REPL 模式下可见的 MCP 工具
+- 输出会按外部 MCP 服务或本地 `domain/class` 分组
+- 外部 MCP 工具会优先显示，并标出服务别名和 transport
+- 该指令只做诊断，不会调用任何工具，也不会发送给模型
+
+## `/mcp`
+- `/mcp`：查看外部 MCP runtime 状态
+- 输出包含已解析的外部 MCP server 配置、当前 runtime 是否启动、已连接外部工具数量
+- 该指令只看外部 MCP 生命周期状态，不建立新的模型会话
 
 ## 退出
 任意时刻输入以下任一指令即可退出：
