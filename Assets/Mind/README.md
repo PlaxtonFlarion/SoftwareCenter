@@ -578,6 +578,7 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/fast`
 - `/plan`
 - `/xtra`
+- `/new`
 - `/model <name>`
 - `/apikey <key>`
 - `/quit`

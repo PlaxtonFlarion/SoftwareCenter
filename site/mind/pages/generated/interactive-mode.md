@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/help /model /apikey /attach /reboot /quit` 这些 REPL 指令：看这里
+- 你要查 `/help /new /model /apikey /attach /reboot /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -33,6 +33,7 @@
 ## 指令索引
 - `/help, /h`：指令索引
 - `/license, /lic`：授权许可信息
+- `/new`：开始新对话，重置 `cid / sid`，保留当前模式、模型和待发送附件
 - `/quit, /q, quit, exit`：安全退出
 - `/model <name>`：切换推理引擎
 - `/apikey <key>`：更新访问凭证
@@ -90,6 +91,12 @@ model invalid: /model <...>
 ```
 
 切换成功后，本轮循环后续调用都会使用新的 `model`。
+
+## `/new` 指令
+- `/new`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`
+- 该指令不会发送给模型，也不会重启本地后台服务
+- 当前 `CHAT / FAST / PLAN / XTRA` 状态、模型配置、API key 和待发送附件都会保留
+- 适合在同一个 REPL 里结束上一段上下文、开启独立问题时使用
 
 ## `/apikey` 指令
 当输入无效或缺失时，会打印格式提示，例如：
