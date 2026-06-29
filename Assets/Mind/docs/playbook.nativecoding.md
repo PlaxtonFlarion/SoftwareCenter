@@ -1,11 +1,11 @@
 # 原生 coding 链路
 
-这页讲的是：Mind 内置的原生 coding 工具链如何在工作区内执行命令、写文件、应用 patch，并汇总结果。
+这页讲的是：Mind 内置的原生 coding 工具链如何在工作区内执行命令、应用 patch 修改文件，并汇总结果。
 
 重点不是背工具清单，而是形成一条稳定的工程闭环：
 
 ```text
-shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
+shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
 ```
 
 ## 先判断是不是这页的范围
@@ -22,7 +22,7 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 模型
   -> 用 shell 命令定位文件、符号、调用点或错误文本
   -> 必要时读取相关文件内容
-  -> 写入文本文件或应用 unified diff patch
+  -> 使用 apply_patch 应用原生 patch
   -> 执行验证命令
   -> 汇总验证结果和剩余风险
   -> 最终回复
@@ -34,12 +34,15 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 
 ### 1. Shell 诊断
 
-当前直接暴露的命令执行能力是 `shell_command`：
+当前直接暴露的命令执行能力是 `shell_command`、`exec_command` 和 `write_stdin`：
 
-- 批量执行工作区内 shell 命令。
-- 每项包含 `command`，可带 `cwd` 和 `timeout_sec`。
+- 每次执行工作区内一条 shell 命令。
+- `shell_command` 参数包含 `command`，可带 `workdir` 和 `timeout_ms`。
+- `exec_command` 参数包含 `cmd`，可带 `workdir`、`yield_time_ms` 和 `max_output_tokens`；短命令直接返回，长命令返回可轮询的 `session_id`。
+- `write_stdin` 使用 `session_id` 继续读取运行中命令的输出，或把 `chars` 写入 stdin。
+- 始终优先传 `workdir`，不要用 `cd` 切目录，除非确有必要。
 - 适合搜索、列目录、读取文件片段、运行测试、构建和脚本。
-- 不应用它通过 `echo`、`tee`、`sed -i` 或重定向来创建/覆盖/局部修改文件。
+- 不应用它通过 `echo`、`tee`、`sed -i` 或重定向来创建、覆盖、删除或局部修改文件。
 
 当前执行环境的工作区根目录由 `exec_env.workspace.root` 提供。
 
@@ -48,38 +51,25 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 - 先用文件名或关键词缩小范围，例如 `rg --files`、`rg`
 - 再按错误文本、函数名、调用点多轮搜索
 - 搜到候选后只读相关窗口，避免把大文件整段塞进上下文
-- 多个只读诊断命令可以放进同一次 `shell_command.items`
+- 多个互不依赖的只读诊断命令应拆成多次 `shell_command` 调用，由运行时按能力并发调度
 
-### 2. 写文件
+### 2. Patch 修改
 
-当前直接暴露的文本写入能力是 `workspace_write_file`：
+当前唯一直接暴露的工作区文件修改能力是 `apply_patch`：
 
-- 在工作区内创建或整体覆盖文本文件。
-- 默认可创建父目录，可通过 `expected_sha256` 做基线保护。
-- 适合新建小文件、重写生成文件或写入明确完整内容。
-
-建议：
-
-- 创建或整体覆盖文本文件时优先使用它，不要用 shell 重定向替代。
-- 覆盖已有文件前，能拿到 SHA256 基线就带上，避免覆盖外部改动。
-
-### 3. Patch 修改
-
-当前直接暴露的局部修改能力是 `workspace_apply_unified_patch`：
-
-- 支持标准 unified diff。
-- 支持多文件、多 hunk、新建/删除文件、上下文校验和按文件 SHA256 基线保护。
-- patch 必须包含 `---` / `+++` 文件头。
+- 使用原生 `*** Begin Patch` / `*** End Patch` 格式。
+- 支持 `*** Add File`、`*** Delete File`、`*** Update File` 和 `*** Move to`。
+- Update 段用空格上下文行、`-` 删除行和 `+` 新增行表达改动。
 
 建议：
 
-- 多处或跨文件改动优先使用 unified diff patch。
+- 所有新建、覆盖、删除和局部修改都通过 `apply_patch` 表达。
 - 不要把 Markdown 代码围栏、UI 行号或解释文字混进 patch。
 - patch 失败后先重新读取当前文件内容，再按当前内容重建补丁。
 
-### 4. 执行
+### 3. 执行
 
-执行仍通过 `shell_command` 完成。
+执行通过 `shell_command`、`exec_command` 或 `write_stdin` 完成。
 
 当前执行层会做命令审计和 runtime resolution：
 
@@ -94,7 +84,7 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 - 如果是打包环境，避免假设 `python` 一定是真 Python；看返回里的 runtime 诊断
 - destructive 命令必须走审批，不要绕过文件工具
 
-### 5. 收束
+### 4. 收束
 
 - 用 shell 命令查看必要状态，例如测试输出、构建结果、`git status --short` 或 `git diff --stat`。
 - 汇总改动文件、验证命令、失败项和剩余风险。
@@ -111,7 +101,7 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 
 1. 搜索能力找文件或符号
 2. 读取相关内容
-3. 使用文本写入或 unified diff patch 修改
+3. 使用 `apply_patch` 修改
 4. 运行测试或最小验证命令
 5. 汇总验证结果、版本状态和风险
 6. 回复用户结果和验证情况
@@ -123,7 +113,7 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 常见原因：
 
 - old text 和当前文件不完全一致
-- unified diff 缺少文件头
+- 缺少 `*** Begin Patch` 或 `*** End Patch`
 - hunk 行数不匹配
 - 上下文不唯一或上下文已变化
 - patch 带了 UI 行号
@@ -131,8 +121,8 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 处理方式：
 
 - 先重新读取当前文件内容
-- 小范围改动重新生成最小 unified diff
-- 多文件改动使用严格 unified diff
+- 小范围改动重新生成最小原生 patch
+- 多文件改动使用严格原生 patch
 - 失败 reason 已返回时，按 `suggested_next_action` 调整
 
 ### 命令执行失败
@@ -140,7 +130,7 @@ shell 诊断 -> 写文件或应用 patch -> 执行验证 -> 汇总结果
 常见原因：
 
 - runtime 缺失
-- 当前 cwd 不对
+- 当前 `workdir` 不对
 - 打包环境命令名被 shim 包装
 - 测试命令需要依赖或网络
 

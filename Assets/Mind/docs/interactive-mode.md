@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/help /new /resume /model /apikey /base-url /attach /reboot /shutdown /pref /tools /mcp /quit` 这些 REPL 指令：看这里
+- 你要查 `/help /new /resume /model /apikey /base-url /attach /reboot /shutdown /pref /tools /mcp /quit` 这些 REPL 指令，或用 `!` 临时进入本地 shell：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -48,6 +48,8 @@
 - `/pref`：打开偏好配置页
 - `/tools`：查看当前可用 MCP 工具，包含外部 MCP 工具
 - `/mcp`：查看外部 MCP runtime 状态
+- `!`：进入本地 shell，输入 `exit` 回到 Mind REPL
+- `! <cmd>`：执行一条本地 shell 命令后回到 Mind REPL
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
 - `/plan`：切到 `PLAN`
@@ -179,6 +181,12 @@ base-url invalid: /base-url <...>
 - `/mcp`：查看外部 MCP runtime 状态
 - 输出包含已解析的外部 MCP server 配置、当前 runtime 是否启动、已连接外部工具数量
 - 该指令只看外部 MCP 生命周期状态，不建立新的模型会话
+
+## Shell escape
+- `!`：拉起当前平台默认 shell。Windows 优先 `pwsh` / `powershell`，类 Unix 优先 `$SHELL`，缺省回退到 `bash` / `sh`。
+- `! <cmd>`：用默认 shell 执行一条命令，命令结束后自动回到 REPL。
+- 子 shell 内输入 `exit` 返回 Mind REPL。
+- 该能力是本地 REPL 快捷入口，不会发送给模型，也不会作为 MCP 工具调用。
 
 ## 退出
 任意时刻输入以下任一指令即可退出：
