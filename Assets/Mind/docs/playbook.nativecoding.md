@@ -34,12 +34,10 @@ shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
 
 ### 1. Shell 诊断
 
-当前直接暴露的命令执行能力是 `shell_command`、`exec_command` 和 `write_stdin`：
+当前直接暴露的命令执行能力是 `shell_command`：
 
 - 每次执行工作区内一条 shell 命令。
 - `shell_command` 参数包含 `command`，可带 `workdir` 和 `timeout_ms`。
-- `exec_command` 参数包含 `cmd`，可带 `workdir`、`yield_time_ms` 和 `max_output_tokens`；短命令直接返回，长命令返回可轮询的 `session_id`。
-- `write_stdin` 使用 `session_id` 继续读取运行中命令的输出，或把 `chars` 写入 stdin。
 - 始终优先传 `workdir`，不要用 `cd` 切目录，除非确有必要。
 - 适合搜索、列目录、读取文件片段、运行测试、构建和脚本。
 - 不应用它通过 `echo`、`tee`、`sed -i` 或重定向来创建、覆盖、删除或局部修改文件。
@@ -69,7 +67,7 @@ shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
 
 ### 3. 执行
 
-执行通过 `shell_command`、`exec_command` 或 `write_stdin` 完成。
+执行通过 `shell_command` 完成。
 
 当前执行层会做命令审计和 runtime resolution：
 
