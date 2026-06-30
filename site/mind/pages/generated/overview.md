@@ -244,14 +244,14 @@ mind --agent
 Mind 的参数分两类：
 
 - **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --xtra | --agent`，以及 `--hello | --upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强归档、观测和批跑属性。典型是 `--gravity`、`--reflection`、`--code`、`--attach`。
+- **兼容参数**：一条命令里可以叠加多个，用于增强归档、观测、准入和批跑属性。典型是 `--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
 ### 先记住怎么组合
 
 - 先选一个主入口：`--hello`、`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
-- 再叠加运行属性：比如 `--gravity`、`--reflection`
+- 再叠加运行属性：比如 `--gravity`、`--reflection`、`--access full`
 - 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
 - `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
@@ -268,6 +268,7 @@ Mind 的参数分两类：
 | 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan / xtra` |
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
+| 调整工具准入 | `mind --chat "..." --access full` | 本次运行使用完整工具访问权限 |
 | 批量执行星图 | `mind --chat --code <source...>` | 批跑、回归、规则化星图执行 |
 
 外接工具协作入口继续看：
@@ -453,6 +454,21 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 ```
 
 建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
+
+### 准入协议（参数兼容）
+`--access {safe,full}`
+
+设置本次运行的工具访问模式：
+- `safe`：默认模式，敏感工具执行前需要审批
+- `full`：完整访问模式，服务端可按完整权限下发工具执行元数据
+- 适用于单次 `--chat / --fast / --plan / --xtra` 请求，也适用于与 `--code` 组合的批跑
+
+示例：
+```
+mind --chat "检查项目并修复问题" --access safe
+mind --xtra "连接外部工具并完成修改" --access full
+mind --plan --code workflow.md --access full
+```
 
 ### 星图协议（参数兼容）
 `--code <source...>`
