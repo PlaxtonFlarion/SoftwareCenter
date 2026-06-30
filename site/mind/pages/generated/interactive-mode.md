@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/help /new /resume /model /apikey /base-url /attach /reboot /shutdown /pref /tools /mcp /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /plan /xtra /new /resume /attach /permissions /tools /mcp /pref /model /base-url /apikey /help /license /reboot /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -31,27 +31,28 @@
 - 真正决定执行行为的是 `CHAT / FAST / PLAN / XTRA` 四种状态
 
 ## 指令索引
-- `/help, /h`：指令索引
-- `/license, /lic`：授权许可信息
-- `/new`：开始新对话，重置 `cid / sid`，保留当前模式、模型和待发送附件
-- `/resume`：从最近 24 小时内的本地会话游标中恢复当前模式的对话
-- `/quit, /q, quit, exit`：安全退出
-- `/model <name>`：持久化主模型名称
-- `/apikey <key>`：持久化主模型访问凭证
-- `/base-url <url>`：持久化主模型 Base URL
-- `/attach <path|dir|glob>`：添加本轮待发送附件
-- `/attachments`：查看当前待发送附件
-- `/detach <index|path>`：移除一个待发送附件
-- `/attach-clear`：清空当前待发送附件
-- `/reboot`：重启本地后台服务
-- `/shutdown`：退出前台并停止本地运行时
-- `/pref`：打开偏好配置页
-- `/tools`：查看当前可用 MCP 工具，包含外部 MCP 工具
-- `/mcp`：查看外部 MCP runtime 状态
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
 - `/plan`：切到 `PLAN`
 - `/xtra`：切到 `XTRA`
+- `/new`：开始新对话，重置 `cid / sid`，保留当前模式、模型和待发送附件
+- `/resume`：从最近 24 小时内的本地会话游标中恢复当前模式的对话
+- `/attach <path|dir|glob>`：添加本轮待发送附件
+- `/attachments`：查看当前待发送附件
+- `/detach <index|path>`：移除一个待发送附件
+- `/attach-clear`：清空当前待发送附件
+- `/permissions`：切换权限模式
+- `/tools`：查看当前可用 MCP 工具，包含外部 MCP 工具
+- `/mcp`：查看外部 MCP runtime 状态
+- `/pref`：打开偏好配置页
+- `/model <name>`：持久化主模型名称
+- `/base-url <url>`：持久化主模型 Base URL
+- `/apikey <key>`：持久化主模型访问凭证
+- `/help, /h`：指令索引
+- `/license, /lic`：授权许可信息
+- `/reboot`：重启本地后台服务
+- `/shutdown`：退出前台并停止本地运行时
+- `/quit, /q, quit, exit`：安全退出
 
 外接模式入口继续看：
 

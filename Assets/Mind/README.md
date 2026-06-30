@@ -573,15 +573,27 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 ```
 
 ### 常用指令
-- `/help`
 - `/chat`
 - `/fast`
 - `/plan`
 - `/xtra`
 - `/new`
 - `/resume`
+- `/attach <path|dir|glob>`
+- `/attachments`
+- `/detach <index|path>`
+- `/attach-clear`
+- `/permissions`
+- `/tools`
+- `/mcp`
+- `/pref`
 - `/model <name>`
+- `/base-url <url>`
 - `/apikey <key>`
+- `/help`
+- `/license`
+- `/reboot`
+- `/shutdown`
 - `/quit`
 
 ### 输入约束
