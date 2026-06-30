@@ -340,6 +340,24 @@ mind --upgrade
 }
 ```
 
+stdio 外接服务也使用同一层级：
+
+```json
+{
+  "mcpServers": {
+    "local-tool": {
+      "transport": "stdio",
+      "command": "node",
+      "args": ["server.js"],
+      "env": {
+        "TOKEN": "xxx"
+      },
+      "cwd": "D:/path/to/server"
+    }
+  }
+}
+```
+
 说明：
 
 - 顶层必须是对象
@@ -353,18 +371,27 @@ mind --upgrade
 |------|------|------|
 | `url` | `string` | 必填。外接 MCP 服务地址。 |
 | `enabled` | `boolean` | 可选。是否启用，默认 `true`。 |
-| `transport` | `string` | 可选。支持 `streamable_http` 或 `sse`。 |
-| `headers` | `object` | 可选。请求头映射，键和值都会按字符串处理。 |
-| `timeout_sec` | `number` | 可选。请求超时秒数，默认 `30`。 |
-| `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数，默认 `300`。 |
+| `transport` | `string` | 可选。支持 `streamable_http`、`sse` 或 `stdio`。 |
+| `headers` | `object` | 可选。请求头映射，键和值都会按字符串处理；仅 HTTP/SSE 生效。 |
+| `command` | `string` | `stdio` 必填。外接服务启动命令。 |
+| `args` | `array` | 可选。`stdio` 启动参数，数组项按字符串处理。 |
+| `env` | `object` | 可选。`stdio` 环境变量映射，键和值都会按字符串处理。 |
+| `cwd` | `string` | 可选。`stdio` 工作目录。 |
+| `encoding` | `string` | 可选。`stdio` 编码，默认 `utf-8`。 |
+| `encoding_error_handler` | `string` | 可选。`stdio` 解码错误处理，支持 `strict / ignore / replace`。 |
+| `timeout_sec` | `number` | 可选。请求超时秒数。 |
+| `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
 | `terminate_on_close` | `boolean` | 可选。仅 `streamable_http` 使用，默认 `true`。 |
 | `notes` | `string` | 可选。备注文本，不参与连接逻辑。 |
 
 补充约定：
 
 - 如果 `transport` 省略，且 `url` 以 `/sse` 结尾，会推断为 `sse`
+- 如果 `transport` 省略，且存在 `command` 且没有 `url`，会推断为 `stdio`
 - 其它情况下默认按 `streamable_http` 处理
 - `enabled: false` 会跳过该服务
+- HTTP/SSE 配置里的 `env` 不会生效；stdio 配置里的 `headers` 不会生效
+- 未识别字段会被忽略，不会透传给 MCP SDK
 
 外接服务由本地配置接入。外接服务需提前可访问；`timeout_sec` 用于连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
 

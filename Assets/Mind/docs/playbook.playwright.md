@@ -35,8 +35,9 @@
 |------|------|------|
 | `url` | `string` | 必填。浏览器外接服务地址。 |
 | `enabled` | `boolean` | 可选。是否启用，默认 `true`。 |
-| `transport` | `string` | 可选。支持 `streamable_http` 或 `sse`。 |
-| `headers` | `object` | 可选。附加请求头。 |
+| `transport` | `string` | 可选。支持 `streamable_http`、`sse` 或 `stdio`。 |
+| `headers` | `object` | 可选。附加请求头，仅 HTTP/SSE 生效。 |
+| `env` | `object` | 可选。环境变量映射，仅 `stdio` 生效。 |
 | `timeout_sec` | `number` | 可选。请求超时秒数。 |
 | `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
 | `terminate_on_close` | `boolean` | 可选。`streamable_http` 下是否在关闭时通知远端终止。 |
@@ -47,6 +48,7 @@
 - 这套配置单是通用外接 MCP 结构，不只限于 Playwright
 - `enabled: false` 时，该服务不会参与本轮外接模式
 - 如果 `transport` 省略，通常按 `streamable_http` 处理；`url` 以 `/sse` 结尾时会自动推断为 `sse`
+- 如果要使用 `stdio`，还可配置 `command / args / env / cwd / encoding / encoding_error_handler`
 
 ## 连接配置
 
