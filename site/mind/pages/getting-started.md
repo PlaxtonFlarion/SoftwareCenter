@@ -6,8 +6,8 @@
 <div class="mind-step-grid">
   <div class="mind-step-card">
     <span class="mind-step-index">入口</span>
-    <h3>确认后台管理中心</h3>
-    <p>先用 <code>--hello</code> 打开配置面板，确认模型、日志和服务状态都可见。</p>
+    <h3>确认命令入口</h3>
+    <p>先用 <code>mind --help</code> 确认 CLI 可用；需要 Helix MCP 时再显式加 <code>--helix</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">环境</span>
@@ -27,7 +27,7 @@
 </div>
 
 <div class="mind-command-note">
-  <strong>一条最短路径：</strong><code>npm install -g @craftline/mind</code> → <code>mind --hello</code> → 发一条最小命令。
+  <strong>一条最短路径：</strong><code>npm install -g @craftline/mind</code> → <code>mind --help</code> → 发一条最小命令。
 </div>
 
 ## 安装 Mind CLI
@@ -51,35 +51,26 @@ mind --help
 
 如果安装后提示找不到 `mind` 命令，先关闭并重新打开终端；仍不可用时，再检查 npm 全局 bin 目录是否已经加入 `PATH`。
 
-## 先确认后台管理中心
+## 先确认命令入口
 
 <div class="mind-command-note">
-  <strong>第一件事：</strong>不要一开始就堆长命令。先把管理中心拉起，确认主副模型槽位和本地服务状态都可见。
+  <strong>第一件事：</strong>不要一开始就堆长命令。先确认 CLI 参数正常显示，再跑最小命令。
 </div>
 
 ```bash
-mind --hello
+mind --help
 ```
 
-`--hello` 会拉起本地后台管理中心面板，统一管理：
+普通对话、外接 MCP 和原生 coding 工具不需要默认启动 Helix。需要 Helix MCP 工具时，再使用：
 
-- 主模型 / 副模型配置
-- 本地运行日志
-- 服务状态和基础环境
+```bash
+mind --helix
+```
 
-主副模型槽位为：
+进入 REPL 后可以继续使用：
 
-- `primary`
-- `secondary`
-
-每个槽位当前包含：
-
-- `api`：目前支持 `OpenAI`
-- `type`：`Text` 或 `Multimodal`
-- `route`：`Responses` 或 `chat_completions`
-- `model`
-- `apikey`
-- `base_url`（可选）
+- `/helix-start`：启动本地 Helix 服务
+- `/helix-stop`：停止本地 Helix 服务
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含环境变量、后台管理中心与基础使用说明。
 
@@ -198,7 +189,7 @@ mind
 
 - [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前页面
-- `mind --hello`
+- 模型和密钥配置改为维护本地 `config.toml`
 
 ## 下一步看什么
 

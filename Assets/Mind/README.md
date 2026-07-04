@@ -46,46 +46,28 @@
 
 如果你是第一次进入项目，先把下面三件事跑通：
 
-- 打开后台管理中心，确认模型槽位和服务状态可见
+- 先确认 `mind --help` 可用
 - 先发一条最小命令，确认当前环境可用
-- 再决定是否继续进入交互式、批跑星图或订阅链路
+- 需要 Helix MCP 工具时，再显式加 `--helix` 或在 REPL 中使用 `/helix-start`
 
-### 打开管理中心
+### 确认命令入口
 
-首次使用，建议先打开后台管理中心面板：
+首次使用，建议先确认 CLI 参数能正常显示：
 
 ```bash
-mind --hello
+mind --help
 ```
 
-`--hello` 会拉起本地后台管理中心面板，统一管理：
+普通对话、外接 MCP 和原生 coding 工具不需要默认启动 Helix。需要 Helix MCP 工具时，再使用：
 
-- 配置主模型与副模型
-- 查看本地运行日志
-- 查看服务状态
+```bash
+mind --helix
+```
 
-主副模型槽位为：
+进入 REPL 后可以继续使用：
 
-- `primary`
-- `secondary`
-
-每个槽位当前包含：
-
-- `api`：目前支持 `OpenAI`
-- `type`：`Text` 或 `Multimodal`
-- `route`：`Responses` 或 `chat_completions`
-- `model`
-- `apikey`
-- `base_url`（可选）
-
-填写建议：
-
-- `api`：写 `OpenAI`
-- `type`：按文本模型或多模态模型选择
-- `route`：按当前接入方式选择 `Responses` 或 `chat_completions`
-- `model`：填写对应平台支持的模型名
-- `apikey`：填写该平台的访问密钥
-- `base_url`：直连官方时可留空；走代理、中转或兼容服务时再填写
+- `/helix-start`：启动本地 Helix 服务
+- `/helix-stop`：停止本地 Helix 服务
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含环境变量、后台管理中心与基础使用说明。
 
@@ -158,9 +140,9 @@ mind --agent
 
 - [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前仓库的 [快速开始](#quick-start)
-- `mind --hello`
+- 模型和密钥配置改为维护本地 `config.toml`
 
-**`--hello` 里至少应该先配什么？**
+**`config.toml` 里至少应该先配什么？**
 
 - `primary.api`
 - `primary.model`
@@ -214,7 +196,7 @@ mind --agent
 | `chat` | 边探索边推进 | 探索、问答、临时任务、混合型接口/设备操作 | 追求最稳定步骤形态 |
 | `fast` | 短链路快速完成 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 执行、重型性能链路、需要全域工具时 |
 | `plan` | 先定步骤再稳定执行 | 巡检、固定流程、批处理、需要步骤可读和更强可复盘性时 | 开放式多轮探索、边聊边改策略 |
-| `xtra` | 外接工具与编码协作 | 数据库、浏览器、外部 MCP 服务、Helix 通用工具和原生 coding | 设备/UI 执行、重型性能链路 |
+| `xtra` | 外接工具与编码协作 | 数据库、浏览器、外部 MCP 服务、Mind native 工具和原生 coding | 设备/UI 执行、重型性能链路 |
 
 如果你要继续看外接模式的专项用法，直接跳：
 
@@ -227,7 +209,7 @@ mind --agent
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](docs/agent-mode.md)
 - `plan` 除了顺序执行步骤，还承载执行过程中的规则判断
-- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Helix 通用工具和编码工具
+- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-start`
 - `--code` 里的 `global_rule / rule` 属于星图规则层，不等同于 `plan` 的执行期规则判断
 
 常见误判：
@@ -243,15 +225,15 @@ mind --agent
 ## ⭐️ 命令行参数
 Mind 的参数分两类：
 
-- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --xtra | --agent`，以及 `--hello | --upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强归档、观测、准入和批跑属性。典型是 `--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
+- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --xtra | --agent`，以及 `--upgrade`。
+- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、归档、观测、准入和批跑属性。典型是 `--helix`、`--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
 ### 先记住怎么组合
 
-- 先选一个主入口：`--hello`、`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
-- 再叠加运行属性：比如 `--gravity`、`--reflection`、`--access full`
+- 先选一个主入口：`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
+- 再叠加运行属性：比如 `--helix`、`--gravity`、`--reflection`、`--access`
 - 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
 - `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
@@ -267,8 +249,9 @@ Mind 的参数分两类：
 | 外接工具与编码协作 | `mind --xtra "..."` | 数据库、浏览器、外部 MCP 服务或原生 coding 协作 |
 | 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan / xtra` |
+| 启用 Helix MCP | `mind --xtra "..." --helix` | 本次运行需要 Helix MCP 工具 |
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
-| 调整工具准入 | `mind --chat "..." --access full` | 本次运行使用完整工具访问权限 |
+| 调整工具准入 | `mind --chat "..." --access` | 本次运行使用完整工具访问权限 |
 | 批量执行星图 | `mind --chat --code <source...>` | 批跑、回归、规则化星图执行 |
 
 外接工具协作入口继续看：
@@ -276,21 +259,22 @@ Mind 的参数分两类：
 - 命令行 `mind --xtra "..."`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
 - REPL `/xtra`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
 
-### 中枢协议（参数互斥）
-`--hello`
+### 中枢协议（参数兼容）
+`--helix`
 
-用于拉起本地后台管理中心面板，并统一管理模型配置、日志与服务状态：
-- `primary`：主槽位，主执行链路默认读取这里
-- `secondary`：备用槽位，可用于备用模型或多模态模型
-- 每个槽位包含：`api / type / route / model / apikey / base_url`
-- 可查看本地运行日志
-- 可查看 MCP 服务状态
-- 命令：`mind --hello`
+用于在本次运行前启动本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
+- 不传 `--helix`：普通 CLI / REPL 只使用 Mind native tools 和已连接的外部 MCP tools
+- 传入 `--helix`：先检查/下载 Helix runtime asset，再启动本地 Helix MCP
+- 可与 `--chat / --fast / --plan / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
+- 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --helix`
 
 示例：
 ```
-# 拉起后台管理中心面板
-mind --hello
+# 本次 xtra 请求启用 Helix MCP
+mind --xtra "查询外部服务并结合 Helix 工具返回结果" --helix
+
+# 启动 Helix 后进入 REPL
+mind --helix
 ```
 
 ### 奇点协议（参数互斥）
@@ -311,11 +295,12 @@ mind --upgrade
 ### 渡舟协议（参数互斥）
 `--xtra`
 
-用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Helix 通用工具和原生 coding 工具。
+用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Mind native 工具和原生 coding 工具；需要 Helix MCP 时显式叠加 `--helix`。
 
 - 适用于：数据库、浏览器、外部服务、第三方 MCP 工具和编码任务协作
 - 不等同于 `--fast`：请求会以 `mode=xtra` 进入独立后端链路
 - 适合把 DBHub、浏览器自动化、外部知识库和原生 coding 能力接进本轮任务
+- 需要 Helix MCP 工具时：`mind --xtra "..." --helix`
 - 命令：`mind --xtra "..."`
 
 外接模式专题入口：
@@ -483,18 +468,18 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
 
 ### 准入协议（参数兼容）
-`--access {safe,full}`
+`--access`
 
 设置本次运行的工具访问模式：
-- `safe`：默认模式，敏感工具执行前需要审批
-- `full`：完整访问模式，服务端可按完整权限下发工具执行元数据
+- 不传：默认 `safe` 模式，敏感工具执行前需要审批
+- 传入：开启 `full` 完整访问模式，服务端可按完整权限下发工具执行元数据
 - 适用于单次 `--chat / --fast / --plan / --xtra` 请求，也适用于与 `--code` 组合的批跑
 
 示例：
 ```
-mind --chat "检查项目并修复问题" --access safe
-mind --xtra "连接外部工具并完成修改" --access full
-mind --plan --code workflow.md --access full
+mind --chat "检查项目并修复问题"
+mind --xtra "连接外部工具并完成修改" --access
+mind --plan --code workflow.md --access
 ```
 
 ### 星图协议（参数兼容）
@@ -596,7 +581,7 @@ README 这里只保留入口层信息。
 ### 核心要点
 - 启动 `mind` 即进入循环交互模式
 - REPL 内部有 `CHAT / FAST / PLAN / XTRA` 四种互斥状态
-- 已实现的是模式切换、模型切换、凭证切换和普通目标执行
+- 已实现的是模式切换、会话恢复、附件管理、权限切换、工具状态查看和 Helix 服务控制
 - 批量重复执行优先用 `--code` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
 
 ### 共振协议（参数兼容）
@@ -629,13 +614,10 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/permissions`
 - `/tools`
 - `/mcp`
-- `/pref`
-- `/model <name>`
-- `/base-url <url>`
-- `/apikey <key>`
+- `/helix-start`
+- `/helix-stop`
 - `/help`
 - `/license`
-- `/reboot`
 - `/shutdown`
 - `/quit`
 

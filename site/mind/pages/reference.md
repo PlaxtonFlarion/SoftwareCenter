@@ -24,7 +24,7 @@
   <a class="mind-route-card" href="../getting-started/">
     <span class="mind-route-meta">Path A</span>
     <h3>我还没跑起来</h3>
-    <p>先看环境、管理中心和最小命令，不要直接跳长文。</p>
+    <p>先看命令入口、环境和最小命令，不要直接跳长文。</p>
     <span class="mind-card-arrow">去快速开始 →</span>
   </a>
   <a class="mind-route-card" href="../generated/overview/">
@@ -109,7 +109,7 @@
   <a class="mind-panel mind-panel-link" href="../getting-started/">
     <span class="mind-kicker">目的一</span>
     <h3>我想先跑通一条命令</h3>
-    <p>先去快速开始，把环境、管理中心和最小命令跑通。</p>
+    <p>先去快速开始，把命令入口、环境和最小命令跑通。</p>
   </a>
   <a class="mind-panel mind-panel-link" href="../generated/cli-code/">
     <span class="mind-kicker">目的二</span>

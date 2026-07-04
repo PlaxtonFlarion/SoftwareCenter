@@ -32,7 +32,7 @@
   <a class="mind-route-card" href="./getting-started/">
     <span class="mind-route-meta">Step 1</span>
     <h3>快速开始</h3>
-    <p>适合第一次进项目。先把管理中心、环境变量和最小命令跑通。</p>
+    <p>适合第一次进项目。先确认命令入口、环境变量和最小命令；需要 Helix MCP 时再显式启动。</p>
     <span class="mind-card-arrow">看启动路径 →</span>
   </a>
   <a class="mind-route-card" href="./capabilities/">
@@ -52,13 +52,19 @@
 ## 30 秒跑通
 
 <div class="mind-command-note">
-  <strong>推荐顺序：</strong>先打开管理中心确认环境，再跑一次 CLI，接着再决定是否进入 REPL、切到 `--code`，或直接启用 `--agent`。
+  <strong>推荐顺序：</strong>先确认 `mind --help` 可用，再跑一次 CLI；需要 Helix MCP 时显式加 `--helix`。
 </div>
 
-### 先确认后台管理中心
+### 先确认命令入口
 
 ```bash
-mind --hello
+mind --help
+```
+
+### 需要 Helix MCP 时显式启动
+
+```bash
+mind --helix
 ```
 
 ### 先跑一次 CLI 命令行模式

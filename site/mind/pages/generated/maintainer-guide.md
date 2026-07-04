@@ -29,7 +29,7 @@ device / bench / common / media / coding
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
 - `plan`：先生成计划，再按步骤顺序执行，并承载执行期规则判断能力
-- `xtra`：外接 MCP 工具、Helix 通用工具与编码工具协作通道，走独立 `mode=xtra` 后端链路
+- `xtra`：外接 MCP 工具、Mind native 工具与编码工具协作通道，走独立 `mode=xtra` 后端链路；Helix MCP 由 `--helix` 或 `/helix-start` 显式启动后追加
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 
 维护要求：

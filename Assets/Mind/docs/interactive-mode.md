@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/chat /fast /plan /xtra /new /resume /attach /permissions /tools /mcp /pref /model /base-url /apikey /help /license /reboot /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /tools /mcp /helix-start /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -15,7 +15,7 @@
 ## 怎么读这页
 
 - 先看“启动与提示”和“四种状态”，建立 REPL 的基本运行心智
-- 再看指令索引，确认切换状态、更新模型和退出的方式
+- 再看指令索引，确认切换状态、管理附件、查看工具和退出的方式
 - 最后看输入约束，判断什么时候继续留在 REPL，什么时候该切回 `--code`
 
 ## 启动与提示
@@ -42,15 +42,12 @@
 - `/detach <index|path>`：移除一个待发送附件
 - `/attach-clear`：清空当前待发送附件
 - `/permissions`：切换权限模式
-- `/tools`：查看当前可用 MCP 工具，包含外部 MCP 工具
+- `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已启动 Helix MCP 工具
 - `/mcp`：查看外部 MCP runtime 状态
-- `/pref`：打开偏好配置页
-- `/model <name>`：持久化主模型名称
-- `/base-url <url>`：持久化主模型 Base URL
-- `/apikey <key>`：持久化主模型访问凭证
+- `/helix-start`：启动本地 Helix 服务
+- `/helix-stop`：停止本地 Helix 服务
 - `/help, /h`：指令索引
 - `/license, /lic`：授权许可信息
-- `/reboot`：重启本地后台服务
 - `/shutdown`：退出前台并停止本地运行时
 - `/quit, /q, quit, exit`：安全退出
 
@@ -66,7 +63,7 @@
 | `CHAT` | 对话驱动的流式工具闭环                              | 探索、问答、临场协作      |
 | `FAST` | 裁剪工具集后的快速执行通道                            | 接口、文本、媒体短链路     |
 | `PLAN` | 先生成计划，再按步骤顺序执行，并承载执行期规则判断 | 需要结构化步骤和更稳路径的任务 |
-| `XTRA` | 外接 MCP 工具、Helix 通用工具与编码工具协作通道 | 数据库、浏览器、外部服务、原生 coding |
+| `XTRA` | 外接 MCP 工具、Mind native 工具与编码工具协作通道 | 数据库、浏览器、外部服务、原生 coding |
 
 如果你在 `XTRA` 状态下要继续看专项用法，直接跳：
 
@@ -78,6 +75,7 @@
 - 执行期规则判断只属于 `PLAN` 执行面
 - `--code` 中的 `global_rule / rule` 是星图规则层，不等同于执行期规则判断
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
+- Helix MCP 默认不随工具链启动；需要时用 `/helix-start` 或 CLI `--helix`
 - `XTRA` 同时可调用原生 coding 工具，适合把外部服务排查与代码修改放在同一轮协作里
 
 切换成功后，终端会输出：
@@ -86,23 +84,10 @@
 - `Exchange -> Plan`
 - `Exchange -> Xtra`
 
-## `/model` 指令
-示例：
-```text
-/model gpt-4o-mini
-```
-
-当输入无效或缺失时，会打印候选列表并提示：
-```text
-model invalid: /model <...>
-```
-
-保存成功后，本轮循环后续调用都会使用新的 `model`，并写入本地偏好存储。
-
 ## `/new` 指令
 - `/new`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`
 - 该指令不会发送给模型，也不会重启本地后台服务
-- 当前 `CHAT / FAST / PLAN / XTRA` 状态、模型配置、API key 和待发送附件都会保留
+- 当前 `CHAT / FAST / PLAN / XTRA` 状态、偏好配置和待发送附件都会保留
 - 适合在同一个 REPL 里结束上一段上下文、开启独立问题时使用
 
 ## `/resume` 指令
@@ -111,33 +96,6 @@ model invalid: /model <...>
 - 本地只保存恢复所需的 `cid / sid`、标题、模式、工作区和过期时间；完整对话内容仍以服务端历史为准
 - 菜单中使用 `↑/↓` 滚动，`PgUp/PgDn` 跳转，`Enter` 选择，`q` 取消
 - 适合重启 REPL 后接回某一段对话；如果要开启新上下文，继续使用 `/new`
-
-## `/apikey` 指令
-当输入无效或缺失时，会打印格式提示，例如：
-- `sk-...`
-- `gsk_...`
-- `ds-...`
-- `<token>`
-
-并输出：
-```text
-apikey invalid: /apikey <...>
-```
-
-保存成功后，本轮循环后续调用都会使用新的 `apikey`，并写入本地偏好存储。终端只回显密钥尾部。
-
-## `/base-url` 指令
-示例：
-```text
-/base-url https://api.example.com/v1
-```
-
-当输入无效或缺失时，会打印格式提示：
-```text
-base-url invalid: /base-url <...>
-```
-
-保存成功后，本轮循环后续调用都会使用新的 `base_url`，并写入本地偏好存储。
 
 ## 附件指令
 - `/attach <path|dir|glob>`：把本地文件加入当前待发送附件列表
@@ -155,25 +113,20 @@ base-url invalid: /base-url <...>
 ## `/license`
 - `/license` 或 `/lic`：展示授权许可信息页
 
-## `/reboot`
-- `/reboot`：重启本地后台服务，并在恢复可用后继续停留在 REPL
-- 该指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
-- 适合本地后台服务长时间运行后不可用、连接异常或需要主动恢复执行面时使用
+## Helix 指令
+- `/helix-start`：启动本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
+- `/helix-stop`：停止本地 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
+- 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 
 ## `/shutdown`
 - `/shutdown`：退出前台 Mind，并停止本地运行时
 - 该指令会在退出清理阶段释放本地运行时监听端口
 - 普通 `/quit`、`/q`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止本地运行时
 
-## `/pref`
-- `/pref`：打开偏好配置页
-- 该指令不会发送给模型
-- 页面保存后，REPL 后续轮次会按偏好刷新 TTL 读取最新配置
-
 ## `/tools`
 - `/tools`：列出当前 REPL 模式下可见的 MCP 工具
-- 输出会按外部 MCP 服务或本地 `domain/class` 分组
-- 外部 MCP 工具会优先显示，并标出服务别名和 transport
+- Helix 未启动时，仍会显示 Mind native coding tools 和已连接 external MCP tools
+- Helix 启动后，会追加 Helix MCP tools
 - 该指令只做诊断，不会调用任何工具，也不会发送给模型
 
 ## `/mcp`
