@@ -44,7 +44,7 @@
 - `/permissions`：切换权限模式
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已启动 Helix MCP 工具
 - `/mcp`：查看外部 MCP runtime 状态
-- `/helix-start`：启动本地 Helix 服务
+- `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
 - `/helix-stop`：停止本地 Helix 服务
 - `/help, /h`：指令索引
 - `/license, /lic`：授权许可信息
@@ -114,8 +114,9 @@
 - `/license` 或 `/lic`：展示授权许可信息页
 
 ## Helix 指令
-- `/helix-start`：启动本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
+- `/helix-start`：检查/下载 Helix runtime asset，启动本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
 - `/helix-stop`：停止本地 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
+- Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动
 - 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 
 ## `/shutdown`

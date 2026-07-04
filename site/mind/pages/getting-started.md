@@ -69,8 +69,10 @@ mind --helix
 
 进入 REPL 后可以继续使用：
 
-- `/helix-start`：启动本地 Helix 服务
+- `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
 - `/helix-stop`：停止本地 Helix 服务
+
+Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动。
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含环境变量、后台管理中心与基础使用说明。
 

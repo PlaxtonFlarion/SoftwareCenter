@@ -66,7 +66,7 @@ mind --helix
 
 进入 REPL 后可以继续使用：
 
-- `/helix-start`：启动本地 Helix 服务
+- `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
 - `/helix-stop`：停止本地 Helix 服务
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含环境变量、后台管理中心与基础使用说明。
@@ -264,7 +264,7 @@ Mind 的参数分两类：
 
 用于在本次运行前启动本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
 - 不传 `--helix`：普通 CLI / REPL 只使用 Mind native tools 和已连接的外部 MCP tools
-- 传入 `--helix`：先检查/下载 Helix runtime asset，再启动本地 Helix MCP
+- 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动本地 Helix MCP
 - 可与 `--chat / --fast / --plan / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
 - 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --helix`
 
