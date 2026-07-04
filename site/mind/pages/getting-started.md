@@ -61,7 +61,7 @@ mind --help
 mind --help
 ```
 
-普通对话、外接 MCP 和原生 coding 工具不需要默认启动 Helix。需要 Helix MCP 工具时，再使用：
+`chat / fast / plan` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
 mind --helix

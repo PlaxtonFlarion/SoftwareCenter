@@ -47,8 +47,8 @@
 如果你是第一次进入项目，先把下面三件事跑通：
 
 - 先确认 `mind --help` 可用
-- 先发一条最小命令，确认当前环境可用
-- 需要 Helix MCP 工具时，再显式加 `--helix` 或在 REPL 中使用 `/helix-start`
+- 先用 `--xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
+- 需要 `chat / fast / plan` 时，先显式加 `--helix` 或在 REPL 中使用 `/helix-start`
 
 ### 确认命令入口
 
@@ -58,7 +58,7 @@
 mind --help
 ```
 
-普通对话、外接 MCP 和原生 coding 工具不需要默认启动 Helix。需要 Helix MCP 工具时，再使用：
+`chat / fast / plan` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
 mind --helix
@@ -209,6 +209,7 @@ mind --agent
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](agent-mode.md)
 - `plan` 除了顺序执行步骤，还承载执行过程中的规则判断
+- `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-start`
 - `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-start`
 - `--code` 里的 `global_rule / rule` 属于星图规则层，不等同于 `plan` 的执行期规则判断
 
@@ -263,7 +264,7 @@ Mind 的参数分两类：
 `--helix`
 
 用于在本次运行前启动本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
-- 不传 `--helix`：普通 CLI / REPL 只使用 Mind native tools 和已连接的外部 MCP tools
+- 不传 `--helix`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast / plan` 不应进入 Helix 执行面
 - 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动本地 Helix MCP
 - 可与 `--chat / --fast / --plan / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
 - 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --helix`

@@ -75,7 +75,8 @@
 - 执行期规则判断只属于 `PLAN` 执行面
 - `--code` 中的 `global_rule / rule` 是星图规则层，不等同于执行期规则判断
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
-- Helix MCP 默认不随工具链启动；需要时用 `/helix-start` 或 CLI `--helix`
+- `CHAT / FAST / PLAN` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-start` 启动 Helix
+- `XTRA` 不依赖 Helix，默认只使用 Mind native tools、原生 coding 工具和已连接 external MCP tools
 - `XTRA` 同时可调用原生 coding 工具，适合把外部服务排查与代码修改放在同一轮协作里
 
 切换成功后，终端会输出：
@@ -117,6 +118,7 @@
 - `/helix-start`：检查/下载 Helix runtime asset，启动本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
 - `/helix-stop`：停止本地 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
 - Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动
+- `CHAT / FAST / PLAN` 需要 Helix ready；如果用户取消下载或启动失败，应保持当前状态，不进入这些模式
 - 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 
 ## `/shutdown`

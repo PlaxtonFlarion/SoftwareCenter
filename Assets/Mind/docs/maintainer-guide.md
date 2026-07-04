@@ -31,6 +31,7 @@ device / bench / common / media / coding
 - `plan`：先生成计划，再按步骤顺序执行，并承载执行期规则判断能力
 - `xtra`：外接 MCP 工具、Mind native 工具与编码工具协作通道，走独立 `mode=xtra` 后端链路；Helix MCP 由 `--helix` 或 `/helix-start` 显式启动后追加
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
+- `chat / fast / plan`：依赖 Helix MCP 服务；入口准入应在模式执行前完成，不要下沉到 `CompositeToolRuntime`
 
 维护要求：
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
