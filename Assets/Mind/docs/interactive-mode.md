@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /tools /mcp /helix-start /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /tools /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -44,9 +44,11 @@
 - `/permissions`：切换权限模式
 - `/model <name>`：持久化主模型名称；写入本地 `config.toml`，下一轮模型请求生效
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
-- `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已启动 Helix MCP 工具
+- `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/mcp`：查看外部 MCP runtime 状态
-- `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
+- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
+- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
+- `/helix-home`：启动或复用本地 Helix 服务，并打开 `http://127.0.0.1:3333`
 - `/helix-stop`：停止本地 Helix 服务
 - `/help, /h`：指令索引
 - `/license, /lic`：授权许可信息
@@ -76,7 +78,7 @@
 补充：
 - `--code` 中的 `global_rule / rule` 是星图文本层，会拼入任务正文，不触发独立执行链路
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
-- `CHAT / FAST / PLAN` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-start` 启动 Helix
+- `CHAT / FAST / PLAN` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-link` 接入 Helix
 - `XTRA` 不依赖 Helix，默认只使用 Mind native tools、原生 coding 工具和已连接 external MCP tools
 - `XTRA` 同时可调用原生 coding 工具，适合把外部服务排查与代码修改放在同一轮协作里
 
@@ -124,10 +126,12 @@
 - `/license` 或 `/lic`：展示授权许可信息页
 
 ## Helix 指令
-- `/helix-start`：检查/下载 Helix runtime asset，启动本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
+- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
+- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务；需要时可再次 `/helix-link`
+- `/helix-home`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并打开首页；不会自动挂载 Helix MCP
 - `/helix-stop`：停止本地 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
 - Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动
-- `CHAT / FAST / PLAN` 需要 Helix ready；如果用户取消下载或启动失败，应保持当前状态，不进入这些模式
+- `CHAT / FAST / PLAN` 需要 Helix 已接入；如果用户取消下载或接入失败，应保持当前状态，不进入这些模式
 - 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 
 ## `/shutdown`

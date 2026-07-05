@@ -71,7 +71,9 @@ mind --helix
 
 - `/model <name>`：只更新主模型名称，写入本地 `config.toml`，下一轮请求生效
 - `/preferences`：打开本地配置页面，维护模型、密钥、Base URL、route 和服务域名
-- `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
+- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
+- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
+- `/helix-home`：启动或复用本地 Helix 服务，并打开 `http://127.0.0.1:3333`
 - `/helix-stop`：停止本地 Helix 服务
 
 Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动。

@@ -48,7 +48,7 @@
 
 - 先确认 `mind --help` 可用
 - 先用 `--xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
-- 需要 `chat / fast / plan` 时，先显式加 `--helix` 或在 REPL 中使用 `/helix-start`
+- 需要 `chat / fast / plan` 时，先显式加 `--helix` 或在 REPL 中使用 `/helix-link`
 
 ### 确认命令入口
 
@@ -66,7 +66,9 @@ mind --helix
 
 进入 REPL 后可以继续使用：
 
-- `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
+- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
+- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
+- `/helix-home`：启动或复用本地 Helix 服务，并打开 `http://127.0.0.1:3333`
 - `/helix-stop`：停止本地 Helix 服务
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含环境变量、后台管理中心与基础使用说明。
@@ -209,8 +211,8 @@ mind --agent
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](agent-mode.md)
 - `plan` 先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
-- `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-start`
-- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-start`
+- `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-link`
+- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-link`
 - `--code` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 
 常见误判：
@@ -263,9 +265,9 @@ Mind 的参数分两类：
 ### 中枢协议（参数兼容）
 `--helix`
 
-用于在本次运行前启动本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
+用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
 - 不传 `--helix`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast / plan` 不应进入 Helix 执行面
-- 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动本地 Helix MCP
+- 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
 - 可与 `--chat / --fast / --plan / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
 - 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --helix`
 
@@ -617,7 +619,9 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/preferences`
 - `/tools`
 - `/mcp`
-- `/helix-start`
+- `/helix-link`
+- `/helix-unlink`
+- `/helix-home`
 - `/helix-stop`
 - `/help`
 - `/license`
