@@ -69,6 +69,8 @@ mind --helix
 
 进入 REPL 后可以继续使用：
 
+- `/model <name>`：只更新主模型名称，写入本地 `config.toml`，下一轮请求生效
+- `/preferences`：打开本地配置页面，维护模型、密钥、Base URL、route 和服务域名
 - `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
 - `/helix-stop`：停止本地 Helix 服务
 
@@ -173,6 +175,12 @@ mind
 
 如果要接回最近 24 小时内的旧会话，输入 `/resume` 打开恢复菜单。恢复列表会按当前模式过滤，例如当前是 `xtra` 时只展示 `xtra` 的历史游标；菜单中用 `↑/↓` 滚动、`Enter` 选择、`q` 取消。
 
+### 在 REPL 中调整模型
+
+- 输入 `/model <name>` 可以只修改主模型名称，例如 `/model gpt-5-codex`。
+- `/model` 会写入本地 `config.toml` 的 `[model.primary].model`；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。
+- 输入 `/preferences` 打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名。
+
 ## 常见问题
 
 ### 已经联网，但一直 timeout？
@@ -192,6 +200,7 @@ mind
 - [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 内置 `README`
 - 当前页面
 - 模型和密钥配置改为维护本地 `config.toml`
+- REPL 中可用 `/model <name>` 快速更新主模型名称，也可用 `/preferences` 打开配置页面
 
 ## 下一步看什么
 

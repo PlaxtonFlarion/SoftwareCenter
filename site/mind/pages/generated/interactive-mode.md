@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /tools /mcp /helix-start /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /tools /mcp /helix-start /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -42,6 +42,8 @@
 - `/detach <index|path>`：移除一个待发送附件
 - `/attach-clear`：清空当前待发送附件
 - `/permissions`：切换权限模式
+- `/model <name>`：持久化主模型名称；写入本地 `config.toml`，下一轮模型请求生效
+- `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已启动 Helix MCP 工具
 - `/mcp`：查看外部 MCP runtime 状态
 - `/helix-start`：检查/下载 Helix runtime asset，并启动本地 Helix 服务
@@ -97,6 +99,14 @@
 - 本地只保存恢复所需的 `cid / sid`、标题、模式、工作区和过期时间；完整对话内容仍以服务端历史为准
 - 菜单中使用 `↑/↓` 滚动，`PgUp/PgDn` 跳转，`Enter` 选择，`q` 取消
 - 适合重启 REPL 后接回某一段对话；如果要开启新上下文，继续使用 `/new`
+
+## `/model` 与 `/preferences`
+- `/model <name>`：只更新主模型名称，适合临时切换模型后继续留在 REPL 里验证
+- 不带模型名称时会显示用法提示，不会修改配置
+- 写入目标是本地 `config.toml` 的 `[model.primary].model`
+- 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新模型
+- 正在进行中的一轮不会中途切换模型；需要等下一轮输入
+- `/preferences`：打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名
 
 ## 附件指令
 - `/attach <path|dir|glob>`：把本地文件加入当前待发送附件列表
