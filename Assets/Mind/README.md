@@ -208,10 +208,10 @@ mind --agent
 - `chat / fast / plan / xtra`：本地主动发起一次任务
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](docs/agent-mode.md)
-- `plan` 除了顺序执行步骤，还承载执行过程中的规则判断
+- `plan` 先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
 - `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-start`
 - `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-start`
-- `--code` 里的 `global_rule / rule` 属于星图规则层，不等同于 `plan` 的执行期规则判断
+- `--code` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 
 常见误判：
 
@@ -568,7 +568,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 - `global_rule` 是整份星图的默认规则文本，`rule` 是单任务覆盖规则文本
 - `prefix/suffix` 会覆盖 `global_prefix/global_suffix`
 - `repeat / pattern / attempts / stop_on_fail` 分别控制跑几轮、跑哪些、单条失败后怎么补救、整包是否继续
-- 这里的 `global_rule / rule` 属于星图规则层，不等同于 `plan` 执行面的规则判断
+- 这里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 - 需要完整执行顺序、覆盖优先级、多文件装载心智和常见误写时，直接看独立文档
 
 ---

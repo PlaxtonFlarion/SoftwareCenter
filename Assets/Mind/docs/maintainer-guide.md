@@ -28,7 +28,7 @@ device / bench / common / media / coding
 ## 模式边界
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
-- `plan`：先生成计划，再按步骤顺序执行，并承载执行期规则判断能力
+- `plan`：先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
 - `xtra`：外接 MCP 工具、Mind native 工具与编码工具协作通道，走独立 `mode=xtra` 后端链路；Helix MCP 由 `--helix` 或 `/helix-start` 显式启动后追加
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 - `chat / fast / plan`：依赖 Helix MCP 服务；入口准入应在模式执行前完成，不要下沉到 `CompositeToolRuntime`
@@ -37,7 +37,7 @@ device / bench / common / media / coding
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
-- 不要把执行期规则判断和 `--code` 里的规则层写成同一个概念
+- 不要把 `--code` 里的 `global_rule / rule` 写成独立工具链路；它们只属于星图文本层
 - 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
 - 不要把 `xtra` 写成 `fast` 别名；它有独立工具过滤和 `mode=xtra` transport
 - `xtra` 外接 MCP 口径保持为外部服务协作，同时允许原生 coding 工具链参与；不要写成由 Mind 托管外部进程
