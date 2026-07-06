@@ -68,7 +68,7 @@ mind --helix
 
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
-- `/helix-home`：启动或复用本地 Helix 服务，并打开 `http://127.0.0.1:3333`
+- `/helix-home`：启动或复用本地 Helix 服务，接入当前会话，并打开 `http://127.0.0.1:3333`
 - `/helix-stop`：停止本地 Helix 服务
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含环境变量、后台管理中心与基础使用说明。
