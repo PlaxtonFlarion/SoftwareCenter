@@ -7,7 +7,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">入口</span>
     <h3>确认命令入口</h3>
-    <p>先用 <code>mind --help</code> 确认 CLI 可用；需要 Helix MCP 时再显式加 <code>--helix</code>。</p>
+    <p>先用 <code>mind --help</code> 确认 CLI 可用；需要 Helix MCP 时再显式加 <code>--mcp</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">环境</span>
@@ -64,7 +64,7 @@ mind --help
 `chat / fast / plan` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
-mind --helix
+mind --mcp
 ```
 
 进入 REPL 后可以继续使用：

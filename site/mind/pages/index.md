@@ -52,7 +52,7 @@
 ## 30 秒跑通
 
 <div class="mind-command-note">
-  <strong>推荐顺序：</strong>先确认 `mind --help` 可用，再跑一次 CLI；需要 Helix MCP 时显式加 `--helix`。
+  <strong>推荐顺序：</strong>先确认 `mind --help` 可用，再跑一次 CLI；需要 Helix MCP 时显式加 `--mcp`。
 </div>
 
 ### 先确认命令入口
@@ -64,7 +64,7 @@ mind --help
 ### 需要 Helix MCP 时显式启动
 
 ```bash
-mind --helix
+mind --mcp
 ```
 
 ### 先跑一次 CLI 命令行模式

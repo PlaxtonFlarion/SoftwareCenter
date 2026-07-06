@@ -48,7 +48,7 @@
 
 - 先确认 `mind --help` 可用
 - 先用 `--xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
-- 需要 `chat / fast / plan` 时，先显式加 `--helix` 或在 REPL 中使用 `/helix-link`
+- 需要 `chat / fast / plan` 时，先显式加 `--mcp` 或在 REPL 中使用 `/helix-link`
 
 ### 确认命令入口
 
@@ -61,7 +61,7 @@ mind --help
 `chat / fast / plan` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
-mind --helix
+mind --mcp
 ```
 
 进入 REPL 后可以继续使用：
@@ -211,8 +211,8 @@ mind --agent
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](agent-mode.md)
 - `plan` 先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
-- `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-link`
-- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-link`
+- `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--mcp`，REPL 中切换前需要 `/helix-link`
+- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--mcp` 或在 REPL 使用 `/helix-link`
 - `--code` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 
 常见误判：
@@ -229,14 +229,14 @@ mind --agent
 Mind 的参数分两类：
 
 - **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --xtra | --agent`，以及 `--upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、归档、观测、准入和批跑属性。典型是 `--helix`、`--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
+- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、归档、观测、准入和批跑属性。典型是 `--mcp`、`--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
 ### 先记住怎么组合
 
 - 先选一个主入口：`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
-- 再叠加运行属性：比如 `--helix`、`--gravity`、`--reflection`、`--access`
+- 再叠加运行属性：比如 `--mcp`、`--gravity`、`--reflection`、`--access`
 - 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
 - `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
@@ -252,7 +252,7 @@ Mind 的参数分两类：
 | 外接工具与编码协作 | `mind --xtra "..."` | 数据库、浏览器、外部 MCP 服务或原生 coding 协作 |
 | 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan / xtra` |
-| 启用 Helix MCP | `mind --xtra "..." --helix` | 本次运行需要 Helix MCP 工具 |
+| 启用 Helix MCP | `mind --xtra "..." --mcp` | 本次运行需要 Helix MCP 工具 |
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
 | 调整工具准入 | `mind --chat "..." --access` | 本次运行使用完整工具访问权限 |
 | 批量执行星图 | `mind --chat --code <source...>` | 批跑、回归、规则化星图执行 |
@@ -263,21 +263,21 @@ Mind 的参数分两类：
 - REPL `/xtra`：配合 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
 
 ### 中枢协议（参数兼容）
-`--helix`
+`--mcp`
 
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
-- 不传 `--helix`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast / plan` 不应进入 Helix 执行面
-- 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
+- 不传 `--mcp`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast / plan` 不应进入 Helix 执行面
+- 传入 `--mcp`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
 - 可与 `--chat / --fast / --plan / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
-- 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --helix`
+- 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --mcp`
 
 示例：
 ```
 # 本次 xtra 请求启用 Helix MCP
-mind --xtra "查询外部服务并结合 Helix 工具返回结果" --helix
+mind --xtra "查询外部服务并结合 Helix 工具返回结果" --mcp
 
 # 启动 Helix 后进入 REPL
-mind --helix
+mind --mcp
 ```
 
 ### 奇点协议（参数互斥）
@@ -298,12 +298,12 @@ mind --upgrade
 ### 渡舟协议（参数互斥）
 `--xtra`
 
-用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Mind native 工具和原生 coding 工具；需要 Helix MCP 时显式叠加 `--helix`。
+用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Mind native 工具和原生 coding 工具；需要 Helix MCP 时显式叠加 `--mcp`。
 
 - 适用于：数据库、浏览器、外部服务、第三方 MCP 工具和编码任务协作
 - 不等同于 `--fast`：请求会以 `mode=xtra` 进入独立后端链路
 - 适合把 DBHub、浏览器自动化、外部知识库和原生 coding 能力接进本轮任务
-- 需要 Helix MCP 工具时：`mind --xtra "..." --helix`
+- 需要 Helix MCP 工具时：`mind --xtra "..." --mcp`
 - 命令：`mind --xtra "..."`
 
 外接模式专题入口：
