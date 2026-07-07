@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /tools /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /compact /tools /diff /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -44,7 +44,9 @@
 - `/permissions`：切换权限模式
 - `/model <name>`：持久化主模型名称；写入本地 `config.toml`，下一轮模型请求生效
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
+- `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
+- `/diff`：查看当前轮由 `apply_patch` 形成的净差异
 - `/mcp`：查看外部 MCP runtime 状态
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
@@ -139,11 +141,21 @@
 - 该指令会在退出清理阶段释放本地运行时监听端口
 - 普通 `/quit`、`/q`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止本地运行时
 
+## `/compact`
+- `/compact`：请求压缩当前对话上下文，成功后后续请求会基于压缩后的历史继续
+- 该指令不会发送给模型；它会调用对话压缩接口，并在完成时展示压缩前后的 item 数
+- 适合长会话、工具调用较多或上下文体积变大后继续留在同一段会话里使用
+
 ## `/tools`
 - `/tools`：列出当前 REPL 模式下可见的 MCP 工具
 - Helix 未启动时，仍会显示 Mind native coding tools 和已连接 external MCP tools
 - Helix 启动后，会追加 Helix MCP tools
 - 该指令只做诊断，不会调用任何工具，也不会发送给模型
+
+## `/diff`
+- `/diff`：展示当前轮 `apply_patch` 累积后的净 unified diff
+- 该指令只读取 Mind native coding 记录的精确 delta，不调用模型，也不主动运行 `git diff`
+- 如果当前轮没有成功的 `apply_patch`，会提示没有可展示的 diff；超长内容会按展示上限截断
 
 ## `/mcp`
 - `/mcp`：查看外部 MCP runtime 状态

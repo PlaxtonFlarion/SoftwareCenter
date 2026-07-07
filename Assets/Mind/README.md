@@ -617,7 +617,9 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/permissions`
 - `/model <name>`
 - `/preferences`
+- `/compact`
 - `/tools`
+- `/diff`
 - `/mcp`
 - `/helix-link`
 - `/helix-unlink`
