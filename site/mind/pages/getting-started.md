@@ -70,6 +70,7 @@ mind --mcp
 进入 REPL 后可以继续使用：
 
 - `/model <model-id>`：只更新主模型 ID，写入本地 `config.toml`，下一轮请求生效
+- `/effort`：打开推理强度选择菜单，写入主模型槽位
 - `/preferences`：打开本地配置页面，维护模型、密钥、Base URL、route 和服务域名
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
@@ -180,7 +181,8 @@ mind
 ### 在 REPL 中调整模型
 
 - 输入 `/model <model-id>` 可以只修改主模型 ID，例如 `/model gpt-5-codex`。
-- `/model` 会写入本地 `config.toml` 的 `[model.primary].model`；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。
+- 输入 `/effort` 可以用二级菜单选择推理强度：`low / medium / high / xhigh`。
+- `/model <model-id>` 会写入本地 `config.toml` 的 `[model.primary].model`；`/effort` 会写入 `[model.primary].reasoning_effort`；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。
 - 输入 `/preferences` 打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名。
 
 ## 常见问题

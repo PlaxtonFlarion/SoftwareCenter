@@ -614,6 +614,7 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/attach-clear`
 - `/permissions`
 - `/model <model-id>`
+- `/effort`
 - `/preferences`
 - `/compact`
 - `/tools`
