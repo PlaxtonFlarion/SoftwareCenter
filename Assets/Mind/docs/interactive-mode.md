@@ -159,7 +159,7 @@
 
 ## `/mcp`
 - `/mcp`：打开外部 MCP runtime 管理菜单
-- `start    enabled servers`：启动配置文件里 `enabled=true` 的外接 MCP 服务。`enabled=false` 的会跳过。
+- `start    enabled servers`：启动配置文件里 `enabled=true` 的外接 MCP 服务；如果当前已启动，则保持当前连接。
 - `force    all configured servers once`：本轮临时启动所有已配置的外接 MCP 服务，包括 `enabled=false` 的。不会修改配置文件，下次启动仍按配置来。
 - `stop     all external MCP connections`：断开当前所有外接 MCP 连接。HTTP/SSE 只是断开连接；stdio 类型会随连接释放关闭对应子进程。
 - `restart  enabled servers`：先断开当前外接 MCP，再重新读取配置并启动 `enabled=true` 的服务。
