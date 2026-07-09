@@ -613,11 +613,12 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/detach <index|path>`
 - `/attach-clear`
 - `/permissions`
-- `/model <name>`
+- `/model <model-id>`
 - `/preferences`
 - `/compact`
 - `/tools`
 - `/diff`
+- `/copy`
 - `/mcp`
 - `/helix-link`
 - `/helix-unlink`

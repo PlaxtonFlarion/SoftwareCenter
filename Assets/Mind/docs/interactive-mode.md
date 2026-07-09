@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /compact /tools /diff /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /preferences /compact /tools /diff /copy /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -42,11 +42,12 @@
 - `/detach <index|path>`：移除一个待发送附件
 - `/attach-clear`：清空当前待发送附件
 - `/permissions`：切换权限模式
-- `/model <name>`：持久化主模型名称；写入本地 `config.toml`，下一轮模型请求生效
+- `/model <model-id>`：持久化主模型 ID；写入本地 `config.toml`，下一轮模型请求生效
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/diff`：查看当前轮由 `apply_patch` 形成的净差异
+- `/copy`：复制最近一次成功完成的模型回复原文到剪贴板
 - `/mcp`：打开外部 MCP runtime 管理菜单
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
@@ -104,12 +105,18 @@
 - 适合重启 REPL 后接回某一段对话；如果要开启新上下文，继续使用 `/new`
 
 ## `/model` 与 `/preferences`
-- `/model <name>`：只更新主模型名称，适合临时切换模型后继续留在 REPL 里验证
-- 不带模型名称时会显示用法提示，不会修改配置
+- `/model <model-id>`：只更新主模型 ID，适合临时切换模型后继续留在 REPL 里验证
+- 不带模型 ID 时会显示用法提示，不会修改配置
 - 写入目标是本地 `config.toml` 的 `[model.primary].model`
 - 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新模型
 - 正在进行中的一轮不会中途切换模型；需要等下一轮输入
 - `/preferences`：打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名
+
+## `/copy`
+- `/copy`：复制最近一次 `CHAT / FAST / XTRA` 成功完成的模型回复原文到系统剪贴板
+- 复制内容是模型返回的 Markdown 原文，不包含终端颜色、打字机动画、工具输出、Sources footer 或耗时 footer
+- `PLAN` 回复不进入 `/copy` 缓存；如果还没有可复制回复，会提示没有 assistant message
+- 该指令不会发送给模型，也不会修改对话上下文
 
 ## 附件指令
 - `/attach <path|dir|glob>`：把本地文件加入当前待发送附件列表
