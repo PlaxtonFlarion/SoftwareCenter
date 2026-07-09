@@ -47,7 +47,7 @@
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/diff`：查看当前轮由 `apply_patch` 形成的净差异
-- `/mcp`：查看外部 MCP runtime 状态
+- `/mcp`：打开外部 MCP runtime 管理菜单
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
 - `/helix-home`：启动或复用本地 Helix 服务，并打开 `http://127.0.0.1:3333`
@@ -158,9 +158,12 @@
 - 如果当前轮没有成功的 `apply_patch`，会提示没有可展示的 diff；超长内容会按展示上限截断
 
 ## `/mcp`
-- `/mcp`：查看外部 MCP runtime 状态
-- 输出包含已解析的外部 MCP server 配置、当前 runtime 是否启动、已连接外部工具数量
-- 该指令只看外部 MCP 生命周期状态，不建立新的模型会话
+- `/mcp`：打开外部 MCP runtime 管理菜单
+- `start    enabled servers`：启动配置文件里 `enabled=true` 的外接 MCP 服务。`enabled=false` 的会跳过。
+- `force    all configured servers once`：本轮临时启动所有已配置的外接 MCP 服务，包括 `enabled=false` 的。不会修改配置文件，下次启动仍按配置来。
+- `stop     all external MCP connections`：断开当前所有外接 MCP 连接。HTTP/SSE 只是断开连接；stdio 类型会随连接释放关闭对应子进程。
+- `restart  enabled servers`：先断开当前外接 MCP，再重新读取配置并启动 `enabled=true` 的服务。
+- `status   show current external MCP status`：只查看状态，不启动、不停止。显示 configured、started、tools，以及已连接工具分组。
 
 ## 退出
 任意时刻输入以下任一指令即可退出：
