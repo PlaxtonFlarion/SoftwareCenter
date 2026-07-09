@@ -146,11 +146,9 @@ mind --agent
 
 **`config.toml` 里至少应该先配什么？**
 
-- `primary.api`
+- `primary.provider`
 - `primary.model`
 - `primary.apikey`
-
-建议同时补全 `secondary` 槽位，用于备用模型或多模态模型。
 
 没有主槽位这三项时，主执行链路无法正常调用模型。
 
