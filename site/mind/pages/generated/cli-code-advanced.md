@@ -147,7 +147,7 @@ rule   = 当前任务 rule   或 global_rule
 
 所以：
 - 改星图结构时，优先看 `global_rule / rule`
-- 改 `plan` 执行行为时，不要反向改成星图规则文案
+- 改 `chat` 执行行为时，不要反向改成星图规则文案
 
 ## 多文件装载心智
 当你执行：
@@ -160,11 +160,11 @@ mind --chat --code a.md b.md c.md
 
 - 一次命令装载多份星图输入
 - 每份文件各自保留自己的 `cfg` 和任务块结构
-- 主模式仍然只有一个：`chat`、`fast` 或 `plan`
+- 主模式仍然只有一个：`chat`、`fast` 或 `chat`
 - `--code` 负责把这些星图交给显式选定的主模式执行
 
 补充约束：
-- `--code` 不能脱离 `--chat / --fast / --plan / --xtra` 单独出现
+- `--code` 不能脱离 `--chat / --fast / --xtra` 单独出现
 
 因此：
 - 主模式决定执行协议

@@ -27,11 +27,11 @@
 | 视觉真值 | Framix 帧分析与阶段报告 |
 | 指标采样 | Memrix 内存 / 流畅度 / 趋势对比 |
 | 稳定性扰动 | 随机扰动 + logcat 异常留痕 |
-| 典型跑法 | `mind --plan --code ...` 或 `mind --chat "..."` |
+| 典型跑法 | `mind --chat --code ...` 或 `mind --chat "..."` |
 
 下面几个 `cfg` 星图示例默认都用同一条命令运行：
 ```bash
-mind --plan --code example.md
+mind --chat --code example.md
 ```
 
 ## E2E 耗时、ASR 首字上屏、VAD 尾字上屏、流式 tokens/s

@@ -6,34 +6,33 @@
 
 ## 先判断是不是这页的范围
 
-- 你要连续试多个目标，并在同一会话里来回切 `chat / fast / plan / xtra`：看这里
-- 你要查 `/chat /fast /plan /xtra /new /resume /attach /detach /permissions /model /effort /preferences /compact /tools /diff /copy /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要连续试多个目标，并在同一会话里来回切 `chat / fast / xtra`：看这里
+- 你要查 `/chat /fast /xtra /new /resume /attach /detach /permissions /model /effort /preferences /compact /tools /diff /copy /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
 
 ## 怎么读这页
 
-- 先看“启动与提示”和“四种状态”，建立 REPL 的基本运行心智
+- 先看“启动与提示”和“三种状态”，建立 REPL 的基本运行心智
 - 再看指令索引，确认切换状态、管理附件、查看工具和退出的方式
 - 最后看输入约束，判断什么时候继续留在 REPL，什么时候该切回 `--code`
 
 ## 启动与提示
-`mind` 进入循环后，会持续读取用户输入，并在 `CHAT / FAST / PLAN / XTRA` 四种互斥状态之间切换执行。
+`mind` 进入循环后，会持续读取用户输入，并在 `CHAT / FAST / XTRA` 三种互斥状态之间切换执行。
 
-- 顶部 banner 会随模式变化：`Chat / Fast / Plan / Xtra`
+- 顶部 banner 会随模式变化：`Chat / Fast / Xtra`
 - 每轮输入提示：`ready 输入目标或 /help`
 - `mind_loop()` 会为一次会话生成 `cid / sid`，用于链路追踪与调用元数据
 
 一句话理解：
 
 - REPL 是连续交互入口
-- 真正决定执行行为的是 `CHAT / FAST / PLAN / XTRA` 四种状态
+- 真正决定执行行为的是 `CHAT / FAST / XTRA` 三种状态
 
 ## 指令索引
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
-- `/plan`：切到 `PLAN`
 - `/xtra`：切到 `XTRA`
 - `/new`：开始新对话，重置 `cid / sid`，保留当前模式、模型和待发送附件
 - `/resume`：从最近 24 小时内的本地会话游标中恢复当前模式的对话
@@ -70,7 +69,7 @@
 |--------|------------------------------------------|-----------------|
 | `CHAT` | 对话驱动的流式工具闭环                              | 探索、问答、临场协作      |
 | `FAST` | 裁剪工具集后的快速执行通道                            | 接口、文本、媒体短链路     |
-| `PLAN` | 先生成计划，再按步骤顺序执行 | 需要结构化步骤和更稳路径的任务 |
+| `CHAT` | 先生成计划，再按步骤顺序执行 | 需要结构化步骤和更稳路径的任务 |
 | `XTRA` | 外接 MCP 工具、Mind native 工具与编码工具协作通道 | 数据库、浏览器、外部服务、原生 coding |
 
 如果你在 `XTRA` 状态下要继续看专项用法，直接跳：
@@ -82,20 +81,20 @@
 补充：
 - `--code` 中的 `global_rule / rule` 是星图文本层，会拼入任务正文，不触发独立执行链路
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
-- `CHAT / FAST / PLAN` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-link` 接入 Helix
+- `CHAT / FAST` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-link` 接入 Helix
 - `XTRA` 不依赖 Helix，默认只使用 Mind native tools、原生 coding 工具和已连接 external MCP tools
 - `XTRA` 同时可调用原生 coding 工具，适合把外部服务排查与代码修改放在同一轮协作里
 
 切换成功后，终端会输出：
 - `Exchange -> Chat`
 - `Exchange -> Fast`
-- `Exchange -> Plan`
+- `Exchange -> Chat`
 - `Exchange -> Xtra`
 
 ## `/new` 指令
 - `/new`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`
 - 该指令不会发送给模型，也不会重启本地后台服务
-- 当前 `CHAT / FAST / PLAN / XTRA` 状态、偏好配置和待发送附件都会保留
+- 当前 `CHAT / FAST / XTRA` 状态、偏好配置和待发送附件都会保留
 - 适合在同一个 REPL 里结束上一段上下文、开启独立问题时使用
 
 ## `/resume` 指令
@@ -122,7 +121,7 @@
 ## `/copy`
 - `/copy`：复制最近一次 `CHAT / FAST / XTRA` 成功完成的模型回复原文到系统剪贴板
 - 复制内容是模型返回的 Markdown 原文，不包含终端颜色、打字机动画、工具输出、Sources footer 或耗时 footer
-- `PLAN` 回复不进入 `/copy` 缓存；如果还没有可复制回复，会提示没有 assistant message
+- `CHAT` 回复不进入 `/copy` 缓存；如果还没有可复制回复，会提示没有 assistant message
 - 该指令不会发送给模型，也不会修改对话上下文
 
 ## 附件指令
@@ -135,7 +134,7 @@
 - 当前允许挂载任意普通文件；图片会保留 `image` 分类，其它文件按 `file` 处理
 - 目录会批量挂载当前层文件；递归请使用通配符，例如 `./docs/**/*.md`
 - `CHAT / FAST / XTRA` 会在发送前自动上传附件
-- `PLAN` 当前不支持附件；如有待发送附件，需要先切回 `CHAT / FAST / XTRA` 或清空
+- `CHAT` 当前不支持附件；如有待发送附件，需要先切回 `CHAT / FAST / XTRA` 或清空
 - 一轮消息发送后，待发送附件会自动清空，避免串到下一轮
 
 ## `/license`
@@ -147,7 +146,7 @@
 - `/helix-home`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并打开首页；不会自动挂载 Helix MCP
 - `/helix-stop`：停止本地 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
 - Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动
-- `CHAT / FAST / PLAN` 需要 Helix 已接入；如果用户取消下载或接入失败，应保持当前状态，不进入这些模式
+- `CHAT / FAST` 需要 Helix 已接入；如果用户取消下载或接入失败，应保持当前状态，不进入这些模式
 - 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 
 ## `/shutdown`

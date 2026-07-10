@@ -48,7 +48,7 @@
 
 - 先确认 `mind --help` 可用
 - 先用 `--xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
-- 需要 `chat / fast / plan` 时，先显式加 `--mcp` 或在 REPL 中使用 `/helix-link`
+- 需要 `chat / fast` 时，先显式加 `--mcp` 或在 REPL 中使用 `/helix-link`
 
 ### 确认命令入口
 
@@ -58,7 +58,7 @@
 mind --help
 ```
 
-`chat / fast / plan` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
+`chat / fast` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
 mind --mcp
@@ -185,7 +185,7 @@ mind --agent
 
 <a id="modes"></a>
 ## ⭐️ 运行模式
-**Mind** 提供四种本地主动执行模式：`--chat`、`--fast`、`--plan`、`--xtra`。  
+**Mind** 提供三种本地主动执行模式：`--chat`、`--fast`、`--xtra`。  
 除此之外，还有一条独立的订阅入口：`--agent`。  
 它们的差异不在“模型强弱”，而在“任务形态”和“执行边界”。
 
@@ -195,7 +195,6 @@ mind --agent
 |------|----------|--------|------------|
 | `chat` | 边探索边推进 | 探索、问答、临时任务、混合型接口/设备操作 | 追求最稳定步骤形态 |
 | `fast` | 短链路快速完成 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 执行、重型性能链路、需要全域工具时 |
-| `plan` | 先定步骤再稳定执行 | 巡检、固定流程、批处理、需要步骤可读和更强可复盘性时 | 开放式多轮探索、边聊边改策略 |
 | `xtra` | 外接工具与编码协作 | 数据库、浏览器、外部 MCP 服务、Mind native 工具和原生 coding | 设备/UI 执行、重型性能链路 |
 
 如果你要继续看外接模式的专项用法，直接跳：
@@ -205,18 +204,16 @@ mind --agent
 
 补充说明：
 
-- `chat / fast / plan / xtra`：本地主动发起一次任务
+- `chat / fast / xtra`：本地主动发起一次任务
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](agent-mode.md)
-- `plan` 先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
-- `chat / fast / plan` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--mcp`，REPL 中切换前需要 `/helix-link`
+- `chat / fast` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--mcp`，REPL 中切换前需要 `/helix-link`
 - `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--mcp` 或在 REPL 使用 `/helix-link`
 - `--code` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 
 常见误判：
 
 - `fast` 不是“轻量版 chat”，而是专门为短链路收窄过的执行面
-- `plan` 不是“所有能力都更强”，它强调的是步骤稳定和顺序执行
 - `xtra` 不是“更多工具版 fast”，它强调外部服务、通用工具和编码工具的协作边界
 - 接口能力统一归在协议与校验能力里，不需要把它理解成单独的 `api` 分类
 
@@ -226,17 +223,17 @@ mind --agent
 ## ⭐️ 命令行参数
 Mind 的参数分两类：
 
-- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --plan | --xtra | --agent`，以及 `--upgrade`。
+- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --xtra | --agent`，以及 `--upgrade`。
 - **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、归档、观测、准入和批跑属性。典型是 `--mcp`、`--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
 ### 先记住怎么组合
 
-- 先选一个主入口：`--upgrade`、`--chat`、`--fast`、`--plan`、`--xtra`、`--agent`
+- 先选一个主入口：`--upgrade`、`--chat`、`--fast`、`--xtra`、`--agent`
 - 再叠加运行属性：比如 `--mcp`、`--gravity`、`--reflection`、`--access`
 - 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
-- `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast`、`--plan` 或 `--xtra`
+- `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
 
 ### 常用速查
@@ -246,10 +243,10 @@ Mind 的参数分两类：
 |------|------|------------|
 | 自然语言探索 | `mind --chat "..."` | 先问能力边界、混合型临时任务 |
 | 快速短链路任务 | `mind --fast "..."` | 接口、媒体、文件类短任务 |
-| 结构化执行 | `mind --plan "..."` | 需要步骤稳定、证据整齐 |
+| 结构化执行 | `mind --chat "..."` | 需要步骤稳定、证据整齐 |
 | 外接工具与编码协作 | `mind --xtra "..."` | 数据库、浏览器、外部 MCP 服务或原生 coding 协作 |
 | 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
-| 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / plan / xtra` |
+| 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / xtra` |
 | 启用 Helix MCP | `mind --xtra "..." --mcp` | 本次运行需要 Helix MCP 工具 |
 | 给本次运行归档 | `mind --chat "..." --gravity <tag>` | 按项目、批次、版本聚合产物 |
 | 调整工具准入 | `mind --chat "..." --access` | 本次运行使用完整工具访问权限 |
@@ -264,9 +261,9 @@ Mind 的参数分两类：
 `--mcp`
 
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
-- 不传 `--mcp`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast / plan` 不应进入 Helix 执行面
+- 不传 `--mcp`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast` 不应进入 Helix 执行面
 - 传入 `--mcp`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
-- 可与 `--chat / --fast / --plan / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
+- 可与 `--chat / --fast / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
 - 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --mcp`
 
 示例：
@@ -284,7 +281,7 @@ mind --mcp
 用于更新本地 **MCP 服务/运行组件** 到最新版本形态（拉取 → 校验 → 覆盖 → 切换）。
 
 - 适用于：需要同步更新底层 MCP 能力集时
-- 不参与 chat/fast/plan/xtra 执行链路：它是一个“单一动作入口”（执行完即退出）
+- 不参与 chat/fast/xtra 执行链路：它是一个“单一动作入口”（执行完即退出）
 - 命令：`mind --upgrade`
 
 示例：
@@ -422,7 +419,7 @@ mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 用于启动订阅模式，本地会注册会话并建立长链路，持续等待服务端下发任务。
 
 - 适用于：远端调度、本地常驻监听、需要断线恢复与重连的任务接收场景
-- 不属于 REPL 的 `CHAT / FAST / PLAN / XTRA` 状态：它是独立 CLI 入口
+- 不属于 REPL 的 `CHAT / FAST / XTRA` 状态：它是独立 CLI 入口
 - 服务端链路核心是 `/agents/open`、`/agents/ws`、`/agents/resume`
 - 协议时序、消息类型和排障细节，直接看 [订阅模式](agent-mode.md)
 
@@ -443,7 +440,7 @@ mind --agent
 示例：
 ```
 # 将本次执行的日志/报告归档到同一 gravity 命名空间
-mind --plan "打开设置，等待2秒，然后截图" --gravity TEST_202602
+mind --chat "打开设置，等待2秒，然后截图" --gravity TEST_202602
 
 # 高速链路归档（同标签可聚合多轮接口 / 媒体 / 分析产物）
 mind --fast "对 path/to/video.mp4 抽帧并返回证据" --gravity Perf_Baseline_v1
@@ -455,12 +452,12 @@ mind --fast "对 path/to/video.mp4 抽帧并返回证据" --gravity Perf_Baselin
 开启 详细调试视角，输出运行轨迹与关键决策信息（用于定位“为什么这么做”）：
 - 打印：关键分支选择、执行路径、路由与决策依据（更丰富的 trace / debug 视角）
 - 适用于：PoC 调试、工具链问题定位、计划偏航分析、线上回归异常复盘
-- 命令：`mind --plan "..." --reflection`
+- 命令：`mind --chat "..." --reflection`
 
 示例：
 ```
-# 开启详细运行轨迹输出（建议与 plan 联用）
-mind --plan "打开App，等待3秒，返回桌面" --reflection
+# 开启详细运行轨迹输出（建议与 chat 联用）
+mind --chat "打开App，等待3秒，返回桌面" --reflection
 
 # 高速模式下查看链路细节（用于异常定位）
 mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Perf_v3 --reflection
@@ -474,13 +471,13 @@ mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Per
 设置本次运行的工具访问模式：
 - 不传：默认 `safe` 模式，敏感工具执行前需要审批
 - 传入：开启 `full` 完整访问模式，服务端可按完整权限下发工具执行元数据
-- 适用于单次 `--chat / --fast / --plan / --xtra` 请求，也适用于与 `--code` 组合的批跑
+- 适用于单次 `--chat / --fast / --xtra` 请求，也适用于与 `--code` 组合的批跑
 
 示例：
 ```
 mind --chat "检查项目并修复问题"
 mind --xtra "连接外部工具并完成修改" --access
-mind --plan --code workflow.md --access
+mind --chat --code workflow.md --access
 ```
 
 ### 星图协议（参数兼容）
@@ -491,7 +488,7 @@ mind --plan --code workflow.md --access
 - 也支持 `--code -` 从标准输入读取
 - 也支持 `--code inline:...` 直接执行内联星图
 - 也支持 `--code https://...` 从 URL 拉取星图
-- 必须与 `--chat / --fast / --plan / --xtra` 之一组合：决定这批星图按哪种主模式执行
+- 必须与 `--chat / --fast / --xtra` 之一组合：决定这批星图按哪种主模式执行
 - 一次可装载多份星图：`--code a.md b.md c.md`
 
 约束：
@@ -504,7 +501,7 @@ mind --plan --code workflow.md --access
 - **元信息（可选）**：每个用例块顶部可写多行 `# key: value`
   - 常用：`# name: xxx`（用于 `cfg.pattern` 正则筛选）
   - 其它字段也允许：`# tag: xxx`、`# owner: xxx` 等（会被解析进 meta）
-- **正文**：元信息之后的所有内容，作为该用例的自然语言目标（交给 chat/fast/plan/xtra 执行）
+- **正文**：元信息之后的所有内容，作为该用例的自然语言目标（交给 chat/fast/xtra 执行）
 - **空行**：块首尾空行会被自动忽略；正文为空的块会被跳过
 
 入口层只需要记住：
@@ -520,8 +517,8 @@ mind --chat --code http.md
 # 指定用 fast 协议执行接口 / 媒体类星图
 mind --fast --code media.md concurrent.md
 
-# 指定用 plan 协议执行编排型星图
-mind --plan --code workflow.md
+# 指定用 chat 协议执行编排型星图
+mind --chat --code workflow.md
 
 # 指定用 xtra 协议执行外接 MCP 星图
 mind --xtra --code external_mcp.md
@@ -562,7 +559,7 @@ mind --chat --code http.md sse.md ws.md graphql.md
 高级批跑说明已拆到独立正文：[星图深入说明](cli-code-advanced.md)。
 
 这里先记住 5 个点就够了：
-- `--code` 必须显式搭配 `--chat / --fast / --plan / --xtra`
+- `--code` 必须显式搭配 `--chat / --fast / --xtra`
 - `cfg` 支持批次级、轮次级和任务级前后置
 - 任务级前后置现在分成两层：`item_prefix / item_suffix` 负责每个任务块外层包裹，`global_prefix / global_suffix` 负责单条任务正文前后置
 - `global_rule` 是整份星图的默认规则文本，`rule` 是单任务覆盖规则文本
@@ -581,7 +578,7 @@ README 这里只保留入口层信息。
 
 ### 核心要点
 - 启动 `mind` 即进入循环交互模式
-- REPL 内部有 `CHAT / FAST / PLAN / XTRA` 四种互斥状态
+- REPL 内部有 `CHAT / FAST / XTRA` 四种互斥状态
 - 已实现的是模式切换、会话恢复、附件管理、权限切换、工具状态查看和 Helix 服务控制
 - 批量重复执行优先用 `--code` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
 
@@ -591,8 +588,8 @@ README 这里只保留入口层信息。
 用于为单次命令行请求挂载本地附件。
 - 可重复传入：`--attach a.png --attach "./docs/**/*.md"`
 - 支持单文件、目录和通配符
-- 当前仅用于单次 `--chat` / `--fast` / `--xtra`
-- 当前不支持与 `--plan` 或 `--code` 组合
+- 当前用于单次 `--chat` / `--fast` / `--xtra`
+- 当前不支持与 `--code` 组合
 
 示例：
 ```
@@ -604,7 +601,7 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 ### 常用指令
 - `/chat`
 - `/fast`
-- `/plan`
+
 - `/xtra`
 - `/new`
 - `/resume`
@@ -692,7 +689,7 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 
 - Framix 负责视觉真值与阶段报告
 - Memrix 负责资源指标、趋势和稳定性采样
-- 性能回归优先用 `mind --plan --code ...`
+- 性能回归优先用 `mind --chat --code ...`
 - Monkey 和长稳扰动场景建议写进星图，不要堆在命令行里
 
 ---
@@ -773,7 +770,7 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 
 ### 提交流程
 1. Fork & 新建分支：`feat/<name>` 或 `fix/<name>`
-2. 本地自测：覆盖 `chat/fast/plan/xtra` 与 REPL 关键路径
+2. 本地自测：覆盖 `chat/fast/xtra` 与 REPL 关键路径
 3. 更新文档：新增/变更能力需同步 README；工具说明与维护约定看 [维护者指南](maintainer-guide.md)
 4. 提交 PR：描述动机、设计、影响范围与回滚策略
 

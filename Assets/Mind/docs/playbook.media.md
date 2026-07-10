@@ -143,7 +143,7 @@ mind --fast "从 /path/to/demo.mp4 提取音轨为 wav，再转成 16000Hz 单�
 更自然的星图写法通常长这样：
 
 ```text
-mind --plan --code media.md
+mind --chat --code media.md
 
 # name: media_evidence_chain
 从 `/path/to/demo.mp4` 中裁出第 `15` 秒到第 `28` 秒的问题片段。

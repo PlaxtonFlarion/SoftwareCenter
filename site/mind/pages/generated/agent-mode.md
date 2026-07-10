@@ -1,13 +1,13 @@
 # 订阅模式
 
 入口页只负责入口摘要；`--agent` 的完整运行心智、协议链路和排障继续看这里。  
-重点是讲清它为什么不是 `chat / fast / plan / xtra` 的附属状态，而是一条独立的订阅执行面。
+重点是讲清它为什么不是 `chat / fast / xtra` 的附属状态，而是一条独立的订阅执行面。
 
 ## 先判断是不是这页的范围
 
-- 你要理解 `--agent` 做了什么，以及它和 `chat / fast / plan / xtra` 的边界：看这里
+- 你要理解 `--agent` 做了什么，以及它和 `chat / fast / xtra` 的边界：看这里
 - 你要排查 `/agents/open`、`/agents/ws`、`resume`、断线重连和消息去重：看这里
-- 你只是想在本地交互输入目标，切换 `CHAT / FAST / PLAN / XTRA`：先看 `交互模式`
+- 你只是想在本地交互输入目标，切换 `CHAT / FAST / XTRA`：先看 `交互模式`
 - 你只想理解项目整体分层，不需要进入协议细节：先看 `背景与架构`
 
 ## 怎么读这页
@@ -19,16 +19,16 @@
 ## 模式定位
 `--agent` 是一条独立的订阅模式，不是 REPL 内部状态之一。
 
-- `chat / fast / plan / xtra`：本地主动发起一次请求，再等待本轮执行结束
+- `chat / fast / xtra`：本地主动发起一次请求，再等待本轮执行结束
 - `agent`：本地先向服务端注册会话，再通过长链路持续接收服务端下发的任务
 
 入口关系：
-- CLI 参数层面，`--agent` 与 `--chat / --fast / --plan / --xtra` 是同级互斥入口
+- CLI 参数层面，`--agent` 与 `--chat / --fast / --xtra` 是同级互斥入口
 - 运行时层面，`Mind.agent_loop()` 直接进入订阅循环，不经过 REPL 状态切换
 
 一句话理解：
 
-- `chat / fast / plan / xtra` 是本地主动请求
+- `chat / fast / xtra` 是本地主动请求
 - `agent` 是本地订阅，等待服务端推任务
 
 ## 启动流程
@@ -82,7 +82,7 @@ mind.forward
   ↓
 mind.received
   ↓
-本地执行 chat / fast / plan / xtra 或 code 任务
+本地执行 chat / fast / xtra 或 code 任务
 ```
 
 几个关键消息：
@@ -101,7 +101,7 @@ mind.received
 下发任务里的执行模式目前只允许：
 - `chat`
 - `fast`
-- `plan`
+- `chat`
 - `xtra`
 
 如果任务走“输入入口列表”模式：
@@ -171,7 +171,7 @@ mind.received
 ### 可以连上但不执行任务
 优先确认：
 - 是否收到了 `mind.forward`
-- 执行模式是否是 `chat / fast / plan / xtra`
+- 执行模式是否是 `chat / fast / xtra`
 - 文本输入是否非空；如果为空，再看输入入口列表是否是非空列表
 - 消息是否因为缺少必要的任务标识或会话标识被本地丢弃
 
