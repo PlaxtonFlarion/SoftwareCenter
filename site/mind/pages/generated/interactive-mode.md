@@ -47,7 +47,7 @@
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/diff`：查看当前轮由 `apply_patch` 形成的净差异
-- `/copy`：复制最近一次成功完成的模型回复原文到剪贴板
+- `/copy`：复制最近一次成功完成的 assistant 输出原文到剪贴板
 - `/mcp`：打开外部 MCP runtime 管理菜单
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
@@ -119,9 +119,10 @@
 - 当前正在进行中的一轮不会中途切换推理强度；需要等下一轮输入
 
 ## `/copy`
-- `/copy`：复制最近一次 `CHAT / FAST / XTRA` 成功完成的模型回复原文到系统剪贴板
+- `/copy`：复制最近一次 `CHAT / FAST / XTRA` 成功完成的 assistant 输出原文到系统剪贴板
+- 一轮中如果先输出 assistant 文本、再调用工具、再继续输出 assistant 文本，复制内容只取最后一次 assistant 输出
 - 复制内容是模型返回的 Markdown 原文，不包含终端颜色、打字机动画、工具输出、Sources footer 或耗时 footer
-- `CHAT` 回复不进入 `/copy` 缓存；如果还没有可复制回复，会提示没有 assistant message
+- 如果还没有可复制回复，会提示没有 assistant message
 - 该指令不会发送给模型，也不会修改对话上下文
 
 ## 附件指令
