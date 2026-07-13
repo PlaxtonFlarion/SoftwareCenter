@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / xtra`：看这里
-- 你要查 `/chat /fast /xtra /new /resume /attach /detach /permissions /model /effort /preferences /compact /tools /diff /copy /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /xtra /new /resume /attach /detach /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix /help /license /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -42,17 +42,15 @@
 - `/attach-clear`：清空当前待发送附件
 - `/permissions`：切换权限模式
 - `/model <model-id>`：持久化主模型 ID；写入本地 `config.toml`，下一轮模型请求生效
-- `/effort`：打开推理强度选择菜单，写入主模型槽位
+- `/effort`：设置主模型推理强度
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
-- `/diff`：查看当前轮由 `apply_patch` 形成的净差异
-- `/copy`：复制最近一次成功完成的 assistant 输出原文到剪贴板
-- `/mcp`：打开外部 MCP runtime 管理菜单
-- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
-- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
-- `/helix-home`：启动或复用本地 Helix 服务，并打开 `http://127.0.0.1:3333`
-- `/helix-stop`：停止本地 Helix 服务
+- `/diff`：查看本轮补丁净差异
+- `/copy`：复制最近一次助手回复原文到剪贴板
+- `/ps`：查看运行中的命令
+- `/mcp`：管理外部 MCP 服务
+- `/helix`：管理 Helix 服务（接入、移除、打开首页、停止）
 - `/help, /h`：指令索引
 - `/license, /lic`：授权许可信息
 - `/shutdown`：退出前台并停止本地运行时
@@ -81,7 +79,7 @@
 补充：
 - `--code` 中的 `global_rule / rule` 是星图文本层，会拼入任务正文，不触发独立执行链路
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
-- `CHAT / FAST` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-link` 接入 Helix
+- `CHAT / FAST` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix` 接入 Helix
 - `XTRA` 不依赖 Helix，默认只使用 Mind native tools、原生 coding 工具和已连接 external MCP tools
 - `XTRA` 同时可调用原生 coding 工具，适合把外部服务排查与代码修改放在同一轮协作里
 
@@ -142,10 +140,11 @@
 - `/license` 或 `/lic`：展示授权许可信息页
 
 ## Helix 指令
-- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
-- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务；需要时可再次 `/helix-link`
-- `/helix-home`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并打开首页；不会自动挂载 Helix MCP
-- `/helix-stop`：停止本地 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
+- `/helix`：打开 Helix 服务管理菜单，可选择接入、移除、打开首页或停止服务
+- 接入操作会检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
+- 移除操作只从当前会话移除 Helix MCP，不停止本地 Helix 服务；需要时可再次从 `/helix` 菜单接入
+- 打开首页操作会检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并打开首页；不会自动挂载 Helix MCP
+- 停止操作会停止 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
 - Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动
 - `CHAT / FAST` 需要 Helix 已接入；如果用户取消下载或接入失败，应保持当前状态，不进入这些模式
 - 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
@@ -172,7 +171,7 @@
 - 如果当前轮没有成功的 `apply_patch`，会提示没有可展示的 diff；超长内容会按展示上限截断
 
 ## `/mcp`
-- `/mcp`：打开外部 MCP runtime 管理菜单
+- `/mcp`：管理外部 MCP 服务
 - `start    enabled servers`：启动配置文件里 `enabled=true` 的外接 MCP 服务；如果当前已启动，则保持当前连接。
 - `force    all configured servers once`：本轮临时启动所有已配置的外接 MCP 服务，包括 `enabled=false` 的。不会修改配置文件，下次启动仍按配置来。
 - `stop     all external MCP connections`：断开当前所有外接 MCP 连接。HTTP/SSE 只是断开连接；stdio 类型会随连接释放关闭对应子进程。
