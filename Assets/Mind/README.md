@@ -224,14 +224,14 @@ mind --agent
 Mind 的参数分两类：
 
 - **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --xtra | --agent`，以及 `--upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、归档、观测、准入和批跑属性。典型是 `--mcp`、`--gravity`、`--reflection`、`--access`、`--code`、`--attach`。
+- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、归档、输出、准入和批跑属性。典型是 `--mcp`、`--gravity`、`--json`、`--access`、`--code`、`--attach`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
 ### 先记住怎么组合
 
 - 先选一个主入口：`--upgrade`、`--chat`、`--fast`、`--xtra`、`--agent`
-- 再叠加运行属性：比如 `--mcp`、`--gravity`、`--reflection`、`--access`
+- 再叠加运行属性：比如 `--mcp`、`--gravity`、`--json`、`--access`
 - 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
 - `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast` 或 `--xtra`
 - `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
@@ -447,23 +447,20 @@ mind --fast "对 path/to/video.mp4 抽帧并返回证据" --gravity Perf_Baselin
 ```
 
 ### 反射协议（参数兼容）
-`--reflection`
+`--json`
 
-开启 详细调试视角，输出运行轨迹与关键决策信息（用于定位“为什么这么做”）：
-- 打印：关键分支选择、执行路径、路由与决策依据（更丰富的 trace / debug 视角）
-- 适用于：PoC 调试、工具链问题定位、计划偏航分析、线上回归异常复盘
-- 命令：`mind --chat "..." --reflection`
+以 JSONL 事件流输出运行过程，供程序、Agent、CI 和其他界面消费：
+- 每行是一个完整 JSON 对象，并随事件产生立即写出
+- 支持 `--chat`、`--fast`、`--xtra` 三个直接请求模式
+- stdout 只写 JSONL；面向人的非结构化信息不混入事件流
+- 直接执行无论是否使用 `--json` 都不询问、不等待，遇到需要人工确认的工具调用会直接拒绝
+- `--json` 只改变输出格式；需要完整工具访问时使用 `--access`
 
 示例：
 ```
-# 开启详细运行轨迹输出（建议与 chat 联用）
-mind --chat "打开App，等待3秒，返回桌面" --reflection
-
-# 高速模式下查看链路细节（用于异常定位）
-mind --fast "对 /graphql 端点执行查询并校验响应结构" --gravity Perf_v3 --reflection
+mind --chat "检查并修复测试" --json
+mind --fast "分析接口响应" --json
 ```
-
-建议：--reflection 会增加输出量，默认关闭；仅在需要追踪决策与链路细节时开启。
 
 ### 准入协议（参数兼容）
 `--access`
