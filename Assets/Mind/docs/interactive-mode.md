@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / xtra`：看这里
-- 你要查 `/chat /fast /xtra /new /resume /attach /detach /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix-link /helix-unlink /helix-home /helix-stop /help /license /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/chat /fast /xtra /new /resume /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix-link /helix-unlink /helix-home /helix-stop /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -15,14 +15,14 @@
 ## 怎么读这页
 
 - 先看“启动与提示”和“三种状态”，建立 REPL 的基本运行心智
-- 再看指令索引，确认切换状态、管理附件、查看工具和退出的方式
+- 再看指令索引，确认切换状态、查看工具和退出的方式
 - 最后看输入约束，判断什么时候继续留在 REPL，什么时候该切回 `--code`
 
 ## 启动与提示
 `mind` 进入循环后，会持续读取用户输入，并在 `CHAT / FAST / XTRA` 三种互斥状态之间切换执行。
 
 - 顶部 banner 会随模式变化：`Chat / Fast / Xtra`
-- 每轮输入提示：`ready 输入目标或 /help`
+- 每轮输入框持续接收目标或 `/` 命令
 - `mind_loop()` 会为一次会话生成 `cid / sid`，用于链路追踪与调用元数据
 
 一句话理解：
@@ -34,12 +34,8 @@
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
 - `/xtra`：切到 `XTRA`
-- `/new`：开始新对话，重置 `cid / sid`，保留当前模式、模型和待发送附件
+- `/new`：开始新对话，重置 `cid / sid`，保留当前模式和模型
 - `/resume`：从最近 24 小时内的本地会话游标中恢复当前模式的对话
-- `/attach <path|dir|glob>`：添加本轮待发送附件
-- `/attachments`：查看当前待发送附件
-- `/detach <index|path>`：移除一个待发送附件
-- `/attach-clear`：清空当前待发送附件
 - `/permissions`：切换权限模式
 - `/model <model-id>`：持久化主模型 ID；写入本地 `config.toml`，下一轮模型请求生效
 - `/effort`：设置主模型推理强度
@@ -54,8 +50,6 @@
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
 - `/helix-home`：启动或复用本地 Helix 服务，接入当前会话，并打开首页
 - `/helix-stop`：停止本地 Helix 服务
-- `/help, /h`：指令索引
-- `/license, /lic`：授权许可信息
 - `/shutdown`：退出前台并停止本地运行时
 - `/quit, /q, quit, exit`：安全退出
 
@@ -95,7 +89,7 @@
 ## `/new` 指令
 - `/new`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`
 - 该指令不会发送给模型，也不会重启本地后台服务
-- 当前 `CHAT / FAST / XTRA` 状态、偏好配置和待发送附件都会保留
+- 当前 `CHAT / FAST / XTRA` 状态和偏好配置都会保留
 - 适合在同一个 REPL 里结束上一段上下文、开启独立问题时使用
 
 ## `/resume` 指令
@@ -125,22 +119,6 @@
 - 复制内容是模型返回的 Markdown 原文，不包含终端颜色、打字机动画、工具输出、Sources footer 或耗时 footer
 - 如果还没有可复制回复，会提示没有 assistant message
 - 该指令不会发送给模型，也不会修改对话上下文
-
-## 附件指令
-- `/attach <path|dir|glob>`：把本地文件加入当前待发送附件列表
-- `/attachments`：查看当前已挂载但尚未发送的附件
-- `/detach <index|path>`：按序号或路径移除单个附件
-- `/attach-clear`：清空当前待发送附件
-
-约定：
-- 当前允许挂载任意普通文件；图片会保留 `image` 分类，其它文件按 `file` 处理
-- 目录会批量挂载当前层文件；递归请使用通配符，例如 `./docs/**/*.md`
-- `CHAT / FAST / XTRA` 会在发送前自动上传附件
-- `CHAT` 当前不支持附件；如有待发送附件，需要先切回 `CHAT / FAST / XTRA` 或清空
-- 一轮消息发送后，待发送附件会自动清空，避免串到下一轮
-
-## `/license`
-- `/license` 或 `/lic`：展示授权许可信息页
 
 ## Helix 指令
 - `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具

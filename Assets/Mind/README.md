@@ -224,7 +224,7 @@ mind --agent
 Mind 的参数分两类：
 
 - **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --xtra | --agent`，以及 `--upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、输出、准入和批跑属性。典型是 `--mcp`、`--json`、`--access`、`--code`、`--attach`。
+- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、输出、准入和批跑属性。典型是 `--mcp`、`--json`、`--access`、`--code`。
 
 > 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
 
@@ -365,6 +365,7 @@ stdio 外接服务也使用同一层级：
 | `timeout_sec` | `number` | 可选。请求超时秒数。 |
 | `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
 | `terminate_on_close` | `boolean` | 可选。仅 `streamable_http` 使用，默认 `true`。 |
+| `tools` | `object` | 可选。当前服务的工具筛选规则，支持 `allow` 和 `deny` 数组。 |
 | `notes` | `string` | 可选。备注文本，不参与连接逻辑。 |
 
 补充约定：
@@ -373,8 +374,28 @@ stdio 外接服务也使用同一层级：
 - 如果 `transport` 省略，且存在 `command` 且没有 `url`，会推断为 `stdio`
 - 其它情况下默认按 `streamable_http` 处理
 - `enabled: false` 会跳过该服务
+- `tools.allow` 和 `tools.deny` 按服务返回的原始工具名进行大小写敏感 glob 匹配，支持 `*` 和 `?`
+- 未配置 `allow` 时不启用白名单；显式配置 `allow: []` 时不暴露任何工具
+- `deny` 最后执行并优先于 `allow`；`/mcp force` 不会绕过工具筛选规则
 - HTTP/SSE 配置里的 `env` 不会生效；stdio 配置里的 `headers` 不会生效
 - 未识别字段会被忽略，不会透传给 MCP SDK
+
+例如，只开放查询类工具并拒绝删除操作：
+
+```json
+{
+  "mcpServers": {
+    "zentao": {
+      "command": "D:\\mcp-servers\\zentao-mcp\\bin\\zentao-mcp-windows-amd64.exe",
+      "args": ["-config", "D:\\mcp-servers\\zentao-mcp\\config.example.yaml"],
+      "tools": {
+        "allow": ["get_*", "list_*"],
+        "deny": ["delete_*"]
+      }
+    }
+  }
+}
+```
 
 外接服务由本地配置接入。外接服务需提前可访问；`startup_timeout_sec` 用于启动、初始化和工具发现，`timeout_sec` 用于后续连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
 
@@ -559,24 +580,8 @@ README 这里只保留入口层信息。
 ### 核心要点
 - 启动 `mind` 即进入循环交互模式
 - REPL 内部有 `CHAT / FAST / XTRA` 四种互斥状态
-- 已实现的是模式切换、会话恢复、附件管理、权限切换、工具状态查看和 Helix 服务控制
+- 已实现的是模式切换、会话恢复、权限切换、工具状态查看和 Helix 服务控制
 - 批量重复执行优先用 `--code` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
-
-### 共振协议（参数兼容）
-`--attach <path>`
-
-用于为单次命令行请求挂载本地附件。
-- 可重复传入：`--attach a.png --attach "./docs/**/*.md"`
-- 支持单文件、目录和通配符
-- 当前用于单次 `--chat` / `--fast` / `--xtra`
-- 当前不支持与 `--code` 组合
-
-示例：
-```
-mind --chat "总结这些附件" --attach ./report.pdf
-mind --fast "分析这些文件" --attach ./caps --attach "./docs/**/*.md"
-mind --xtra "用外接工具分析这些附件" --attach ./payload.json
-```
 
 ### 常用指令
 - `/chat`
@@ -585,10 +590,6 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/xtra`
 - `/new`
 - `/resume`
-- `/attach <path|dir|glob>`
-- `/attachments`
-- `/detach <index|path>`
-- `/attach-clear`
 - `/permissions`
 - `/model <model-id>`
 - `/effort`
@@ -603,8 +604,6 @@ mind --xtra "用外接工具分析这些附件" --attach ./payload.json
 - `/helix-unlink`
 - `/helix-home`
 - `/helix-stop`
-- `/help`
-- `/license`
 - `/shutdown`
 - `/quit`
 

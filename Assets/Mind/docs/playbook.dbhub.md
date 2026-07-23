@@ -41,12 +41,15 @@
 | `timeout_sec` | `number` | 可选。请求超时秒数。 |
 | `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
 | `terminate_on_close` | `boolean` | 可选。`streamable_http` 下是否在关闭时通知远端终止。 |
+| `tools` | `object` | 可选。工具筛选规则，支持 `allow` 和 `deny` 数组。 |
 | `notes` | `string` | 可选。备注，不参与运行逻辑。 |
 
 补充：
 
 - 这套配置单是通用外接 MCP 结构，不只限于 DBHub
 - `enabled: false` 时，该服务不会参与本轮外接模式
+- `tools.allow`、`tools.deny` 按原始工具名进行大小写敏感 glob 匹配；`deny` 优先于 `allow`
+- 未配置 `allow` 表示不限制；显式配置 `allow: []` 表示不暴露任何工具
 - 如果 `transport` 省略，通常按 `streamable_http` 处理；`url` 以 `/sse` 结尾时会自动推断为 `sse`
 - 如果要使用 `stdio`，还可配置 `command / args / env / cwd / encoding / encoding_error_handler`
 
