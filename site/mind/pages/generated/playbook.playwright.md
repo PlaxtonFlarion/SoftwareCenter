@@ -38,6 +38,7 @@
 | `transport` | `string` | 可选。支持 `streamable_http`、`sse` 或 `stdio`。 |
 | `headers` | `object` | 可选。附加请求头，仅 HTTP/SSE 生效。 |
 | `env` | `object` | 可选。环境变量映射，仅 `stdio` 生效。 |
+| `startup_timeout_sec` | `number` | 可选。单个服务启动超时秒数，默认 `10`。 |
 | `timeout_sec` | `number` | 可选。请求超时秒数。 |
 | `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
 | `terminate_on_close` | `boolean` | 可选。`streamable_http` 下是否在关闭时通知远端终止。 |

@@ -361,6 +361,7 @@ stdio 外接服务也使用同一层级：
 | `cwd` | `string` | 可选。`stdio` 工作目录。 |
 | `encoding` | `string` | 可选。`stdio` 编码，默认 `utf-8`。 |
 | `encoding_error_handler` | `string` | 可选。`stdio` 解码错误处理，支持 `strict / ignore / replace`。 |
+| `startup_timeout_sec` | `number` | 可选。单个服务启动超时秒数，默认 `10`。 |
 | `timeout_sec` | `number` | 可选。请求超时秒数。 |
 | `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
 | `terminate_on_close` | `boolean` | 可选。仅 `streamable_http` 使用，默认 `true`。 |
@@ -375,7 +376,7 @@ stdio 外接服务也使用同一层级：
 - HTTP/SSE 配置里的 `env` 不会生效；stdio 配置里的 `headers` 不会生效
 - 未识别字段会被忽略，不会透传给 MCP SDK
 
-外接服务由本地配置接入。外接服务需提前可访问；`timeout_sec` 用于连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
+外接服务由本地配置接入。外接服务需提前可访问；`startup_timeout_sec` 用于启动、初始化和工具发现，`timeout_sec` 用于后续连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
 
 如果你要接 `sse` 服务，最小结构类似：
 
