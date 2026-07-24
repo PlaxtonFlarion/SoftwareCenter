@@ -52,7 +52,7 @@
 ## 30 秒跑通
 
 <div class="mind-command-note">
-  <strong>推荐顺序：</strong>先确认 `mind --help` 可用，再跑一次 CLI；需要 Helix MCP 时显式加 `--mcp`。
+  <strong>推荐顺序：</strong>先确认 `mind --help` 可用，再跑一次 CLI；需要 Helix MCP 时显式加 `--helix`。
 </div>
 
 ### 先确认命令入口
@@ -61,16 +61,16 @@
 mind --help
 ```
 
-### 需要 Helix MCP 时显式启动
+### 需要 Helix MCP 时显式接入
 
 ```bash
-mind --mcp
+mind exec --mode chat "概述当前系统能力" --helix
 ```
 
 ### 先跑一次 CLI 命令行模式
 
 ```bash
-mind --xtra "概述当前系统的核心能力、边界与典型使用场景"
+mind exec --mode xtra "概述当前系统的核心能力、边界与典型使用场景"
 ```
 
 ### 需要持续交互时进入 REPL
@@ -79,24 +79,24 @@ mind --xtra "概述当前系统的核心能力、边界与典型使用场景"
 mind
 ```
 
-### 需要批跑和回归时用 `--code`
+### 需要批跑和回归时用 `mind batch`
 
 ```bash
-mind --chat --code api_batch.md
+mind batch --mode chat api_batch.md
 ```
 
-### 需要外接工具协作时用 `--xtra`
+### 需要外接工具协作时用 `exec --mode xtra`
 
 ```bash
-mind --xtra "Open DBHub and query the users table"
+mind exec --mode xtra "Open DBHub and query the users table"
 ```
 
 外接 MCP 服务需提前可访问；同一模式也可使用原生 coding 编码链路。
 
-### 需要订阅监听时切到 `--agent`
+### 需要订阅监听时切到 `agent listen`
 
 ```bash
-mind --agent
+mind agent listen
 ```
 
 ## 下一步

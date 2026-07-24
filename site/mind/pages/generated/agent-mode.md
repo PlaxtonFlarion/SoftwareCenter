@@ -1,11 +1,11 @@
 # 订阅模式
 
-入口页只负责入口摘要；`--agent` 的完整运行心智、协议链路和排障继续看这里。  
+入口页只负责入口摘要；`agent listen` 的完整运行心智、协议链路和排障继续看这里。
 重点是讲清它为什么不是 `chat / fast / xtra` 的附属状态，而是一条独立的订阅执行面。
 
 ## 先判断是不是这页的范围
 
-- 你要理解 `--agent` 做了什么，以及它和 `chat / fast / xtra` 的边界：看这里
+- 你要理解 `agent listen` 做了什么，以及它和 `chat / fast / xtra` 的边界：看这里
 - 你要排查 `/agents/open`、`/agents/ws`、`resume`、断线重连和消息去重：看这里
 - 你只是想在本地交互输入目标，切换 `CHAT / FAST / XTRA`：先看 `交互模式`
 - 你只想理解项目整体分层，不需要进入协议细节：先看 `背景与架构`
@@ -17,13 +17,13 @@
 - 最后看“恢复与排障”，确认 409、断线和重放时应该怎么看
 
 ## 模式定位
-`--agent` 是一条独立的订阅模式，不是 REPL 内部状态之一。
+`agent listen` 是一条独立的订阅模式，不是 REPL 内部状态之一。
 
 - `chat / fast / xtra`：本地主动发起一次请求，再等待本轮执行结束
 - `agent`：本地先向服务端注册会话，再通过长链路持续接收服务端下发的任务
 
 入口关系：
-- CLI 参数层面，`--agent` 与 `--chat / --fast / --xtra` 是同级互斥入口
+- CLI 参数层面，`agent listen` 与 `exec --mode chat / exec --mode fast / exec --mode xtra` 是同级互斥入口
 - 运行时层面，`Mind.agent_loop()` 直接进入订阅循环，不经过 REPL 状态切换
 
 一句话理解：
@@ -35,7 +35,7 @@
 当执行：
 
 ```text
-mind --agent
+mind agent listen
 ```
 
 本地会按下面的顺序进入订阅模式：
@@ -64,7 +64,7 @@ mind --agent
 高层时序可以理解成：
 
 ```text
-mind --agent
+mind agent listen
   ↓
 POST /agents/open
   ↓

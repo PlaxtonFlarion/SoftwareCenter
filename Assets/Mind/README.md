@@ -21,7 +21,7 @@
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](docs/playbook.template.md)、[安全工具](docs/playbook.security.md)
 - 外接工具协作：看 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
 - 设备、多媒体和稳定性：看 [设备与 UI 实战](docs/playbook.device.md)、[Monkey 扰动](docs/playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
-- 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `--code`
+- 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `mind batch`
 - 订阅链路：看 [订阅模式](docs/agent-mode.md)
 - 背景设计与实现：看 [背景与架构](#architecture) 和 [构建发布](#build-release)
 
@@ -47,8 +47,8 @@
 如果你是第一次进入项目，先把下面三件事跑通：
 
 - 先确认 `mind --help` 可用
-- 先用 `--xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
-- 需要 `chat / fast` 时，先显式加 `--mcp` 或在 REPL 中使用 `/helix-link`
+- 先用 `exec --mode xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
+- 需要 `chat / fast` 时，先显式加 `--helix` 或在 REPL 中使用 `/helix-link`
 
 ### 确认命令入口
 
@@ -61,7 +61,7 @@ mind --help
 `chat / fast` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
-mind --mcp
+mind
 ```
 
 进入 REPL 后可以继续使用：
@@ -109,22 +109,22 @@ $env:Path += ";C:\Program Files\Mind\MindEngine"
 
 ```
 # 先跑一条最小命令
-mind --xtra "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
+mind exec --mode xtra "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
 
 # 需要持续交互时进入 REPL
 mind
 
-# 需要批跑和回归时用 --code
-mind --chat --code api_batch.md
+# 需要批跑和回归时用 mind batch
+mind batch --mode chat api_batch.md
 
-# 需要外接工具协作时用 --xtra
-mind --xtra "打开 DBHub，查询 users 表并返回结果摘要"
+# 需要外接工具协作时用 exec --mode xtra
+mind exec --mode xtra "打开 DBHub，查询 users 表并返回结果摘要"
 
-# 需要等待远端任务时用 --agent
-mind --agent
+# 需要等待远端任务时用 agent listen
+mind agent listen
 ```
 
-如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `--code`，以及后面的 [接口实战](#playbook-api)。
+如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `mind batch`，以及后面的 [接口实战](#playbook-api)。
 
 ### 常见问题解答
 
@@ -180,14 +180,14 @@ mind --agent
 
 **批跑与回归**
 
-- **宏编排声明层**：用 `--code`、`cfg` 和步骤编排承载批跑与回归
+- **宏编排声明层**：用 `mind batch`、`cfg` 和步骤编排承载批跑与回归
 
 ---
 
 <a id="modes"></a>
 ## ⭐️ 运行模式
-**Mind** 提供三种本地主动执行模式：`--chat`、`--fast`、`--xtra`。  
-除此之外，还有一条独立的订阅入口：`--agent`。  
+**Mind** 提供三种本地主动执行模式：`exec --mode chat`、`exec --mode fast`、`exec --mode xtra`。
+除此之外，还有一条独立的订阅入口：`agent listen`。
 它们的差异不在“模型强弱”，而在“任务形态”和“执行边界”。
 
 ### 模式边界对齐
@@ -208,9 +208,9 @@ mind --agent
 - `chat / fast / xtra`：本地主动发起一次任务
 - `agent`：本地先进入订阅，再等待服务端下发任务
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](docs/agent-mode.md)
-- `chat / fast` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--mcp`，REPL 中切换前需要 `/helix-link`
-- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--mcp` 或在 REPL 使用 `/helix-link`
-- `--code` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
+- `chat / fast` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-link`
+- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-link`
+- `mind batch` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 
 常见误判：
 
@@ -222,84 +222,124 @@ mind --agent
 
 <a id="cli-arguments"></a>
 ## ⭐️ 命令行参数
-Mind 的参数分两类：
+Mind 使用子命令区分运行入口，再通过命令选项调整模式、输出和工具权限。
 
-- **互斥参数**：一条命令里只能选一个，用于确定主入口。典型是 `--chat | --fast | --xtra | --agent`，以及 `--upgrade`。
-- **兼容参数**：一条命令里可以叠加多个，用于增强 Helix、输出、准入和批跑属性。典型是 `--mcp`、`--json`、`--access`、`--code`。
+- **子命令**：`exec`、`batch`、`agent listen`、`helix upgrade`、`doctor`、`mcp-server`
+- **命令选项**：`--mode`、`--helix`、`--json`、`--access`
+- **默认入口**：不带子命令的 `mind` 进入交互模式
 
-> 心智模型：**互斥参数选“你要跑什么主模式”**；**兼容参数加“你要怎么跑、怎么记、怎么查”**。
+> 心智模型：**先选要执行的命令，再为该命令添加运行选项。**
 
 ### 先记住怎么组合
 
-- 先选一个主入口：`--upgrade`、`--chat`、`--fast`、`--xtra`、`--agent`
-- 再叠加运行属性：比如 `--mcp`、`--json`、`--access`
-- 需要批跑或回归时，再在显式主模式后挂上 `--code <source...>`
-- `--code` 不能单独使用，必须显式搭配 `--chat`、`--fast` 或 `--xtra`
-- `--code` 不替代主模式，它只是把一批任务交给你选定的执行协议去跑
+- 单次任务使用 `mind exec [PROMPT]`，默认走 `xtra`
+- 通过 `--mode chat|fast|xtra` 显式切换执行模式
+- 批跑或回归使用 `mind batch <source...> --mode chat|fast|xtra`
+- 远端任务订阅使用 `mind agent listen`
+- Helix 运行组件升级使用 `mind helix upgrade`
+- 本地环境诊断使用 `mind doctor`
+- 向 MCP host 暴露 Mind agent 使用 `mind mcp-server`
 
 ### 常用速查
 如果你只想先跑起来，先记住这些入口：
 
 | 场景 | 入口 | 什么时候用 |
 |------|------|------------|
-| 自然语言探索 | `mind --chat "..."` | 先问能力边界、混合型临时任务 |
-| 快速短链路任务 | `mind --fast "..."` | 接口、媒体、文件类短任务 |
-| 结构化执行 | `mind --chat "..."` | 需要步骤稳定、证据整齐 |
-| 外接工具与编码协作 | `mind --xtra "..."` | 数据库、浏览器、外部 MCP 服务或原生 coding 协作 |
-| 订阅监听 | `mind --agent` | 等待服务端下发任务、维持长链路 |
+| 自然语言探索 | `mind exec --mode chat "..."` | 先问能力边界、混合型临时任务 |
+| 快速短链路任务 | `mind exec --mode fast "..."` | 接口、媒体、文件类短任务 |
+| 结构化执行 | `mind exec --mode chat "..."` | 需要步骤稳定、证据整齐 |
+| 外接工具与编码协作 | `mind exec --mode xtra "..."` | 数据库、浏览器、外部 MCP 服务或原生 coding 协作 |
+| 订阅监听 | `mind agent listen` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / xtra` |
-| 启用 Helix MCP | `mind --xtra "..." --mcp` | 本次运行需要 Helix MCP 工具 |
-| 调整工具准入 | `mind --chat "..." --access` | 本次运行使用完整工具访问权限 |
-| 批量执行星图 | `mind --chat --code <source...>` | 批跑、回归、规则化星图执行 |
+| 启用 Helix MCP | `mind exec --mode xtra "..." --helix` | 本次运行需要 Helix MCP 工具 |
+| 调整工具准入 | `mind exec --mode chat "..." --access full` | 本次运行使用完整工具访问权限 |
+| 批量执行星图 | `mind batch --mode chat <source...>` | 批跑、回归、规则化星图执行 |
+| 环境诊断 | `mind doctor` | 只读检查配置、MCP、Helix 和本地 coding 工具 |
+| MCP 服务 | `mind mcp-server` | 通过 stdio 向 Codex 等 MCP host 暴露 `mind_exec` |
 
 外接工具协作入口继续看：
 
-- 命令行 `mind --xtra "..."`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
+- 命令行 `mind exec --mode xtra "..."`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
 - REPL `/xtra`：配合 [Playwright 外接工具实战](docs/playbook.playwright.md)、[DBHub 外接工具实战](docs/playbook.dbhub.md)
 
-### 中枢协议（参数兼容）
-`--mcp`
+### Helix 接入选项
+`--helix`
 
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
-- 不传 `--mcp`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast` 不应进入 Helix 执行面
-- 传入 `--mcp`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
-- 可与 `--chat / --fast / --xtra / --agent` 叠加；批跑时跟随显式主模式与 `--code` 一起使用
-- 如果只想进入已启动 Helix 的 REPL，可以使用 `mind --mcp`
+- 不传 `--helix`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast` 不应进入 Helix 执行面
+- 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
+- 可用于 `mind exec`、`mind batch` 和 `mind agent listen`
+- 交互模式中使用 `/helix-link` 接入 Helix
 
 示例：
 ```
 # 本次 xtra 请求启用 Helix MCP
-mind --xtra "查询外部服务并结合 Helix 工具返回结果" --mcp
+mind exec --mode xtra "查询外部服务并结合 Helix 工具返回结果" --helix
 
-# 启动 Helix 后进入 REPL
-mind --mcp
+# 进入 REPL 后可使用 /helix-link
+mind
 ```
 
-### 奇点协议（参数互斥）
-`--upgrade`
+### Helix 升级命令
+`mind helix upgrade`
 
 用于更新本地 **MCP 服务/运行组件** 到最新版本形态（拉取 → 校验 → 覆盖 → 切换）。
 
 - 适用于：需要同步更新底层 MCP 能力集时
 - 不参与 chat/fast/xtra 执行链路：它是一个“单一动作入口”（执行完即退出）
-- 命令：`mind --upgrade`
+- 命令：`mind helix upgrade`
 
 示例：
 ```
 # 更新 MCP 服务到最新版本
-mind --upgrade
+mind helix upgrade
 ```
 
-### 渡舟协议（参数互斥）
-`--xtra`
+### 环境诊断命令
+`mind doctor`
 
-用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Mind native 工具和原生 coding 工具；需要 Helix MCP 时显式叠加 `--mcp`。
+只读检查当前平台、源码或打包入口布局、Python、Mind 用户目录、主配置、外部 MCP 配置、Helix 运行组件，以及 `rg`、`jq`、`ast-grep`。诊断不会创建配置文件、启动服务或访问网络。
+
+```bash
+# 适合终端阅读
+mind doctor
+
+# 适合 CI 或脚本消费
+mind doctor --json
+```
+
+没有失败项时返回 `0`；配置无法解析、平台不受支持等失败项返回 `1`。缺少尚未启用的可选组件只报告 warning，不会让诊断失败。
+
+### MCP Server 命令
+`mind mcp-server`
+
+以 stdio 启动长驻 Mind MCP 服务，对外提供结构化工具 `mind_exec`。服务会复用 Mind native tools 和 `~/.mind/mcp_servers.json` 中已启用的外部 MCP，但不会自动启动 Helix。
+
+```bash
+# 打包安装后的 Codex 配置
+codex mcp add mind -- mind mcp-server
+
+# 源码模式
+codex mcp add mind -- python D:\PycharmProjects\ProxyMind\mind.py mcp-server
+
+# 检查 Codex 中的注册结果
+codex mcp get mind --json
+```
+
+`codex mcp add` 中的 `--` 用于结束 Codex 自身的选项解析；`mind mcp-server` 是它随后启动的 stdio 子进程命令。不要把 Mind 自己注册进 `~/.mind/mcp_servers.json`，否则 Mind 启动外部 MCP 时会递归启动自身。
+
+完整工具参数、通用 MCP 配置和生命周期说明见 [Mind MCP Server](docs/mcp-server.md)。
+
+### Xtra 执行模式
+`mind exec --mode xtra`
+
+用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Mind native 工具和原生 coding 工具；需要 Helix MCP 时显式叠加 `--helix`。
 
 - 适用于：数据库、浏览器、外部服务、第三方 MCP 工具和编码任务协作
-- 不等同于 `--fast`：请求会以 `mode=xtra` 进入独立后端链路
+- 不等同于 `exec --mode fast`：请求会以 `mode=xtra` 进入独立后端链路
 - 适合把 DBHub、浏览器自动化、外部知识库和原生 coding 能力接进本轮任务
-- 需要 Helix MCP 工具时：`mind --xtra "..." --mcp`
-- 命令：`mind --xtra "..."`
+- 需要 Helix MCP 工具时：`mind exec --mode xtra "..." --helix`
+- 命令：`mind exec --mode xtra "..."`
 
 外接模式专题入口：
 
@@ -416,10 +456,10 @@ stdio 外接服务也使用同一层级：
 示例：
 ```
 # 使用外接 MCP 工具查询数据库
-mind --xtra "打开 DBHub，查询 users 表并返回结果摘要"
+mind exec --mode xtra "打开 DBHub，查询 users 表并返回结果摘要"
 
 # 使用外部浏览器或网页类 MCP 工具协作
-mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
+mind exec --mode xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 ```
 
 如果你要系统看外接工具本身的完整用法，直接看：
@@ -427,7 +467,7 @@ mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 - [Playwright 外接工具实战](docs/playbook.playwright.md)
 - [DBHub 外接工具实战](docs/playbook.dbhub.md)
 
-如果你要先把外接服务单独启动起来，再让 `--xtra` 通过 HTTP 接入它，可以参考：
+如果你要先把外接服务单独启动起来，再让 `exec --mode xtra` 通过 HTTP 接入它，可以参考：
 
 - Playwright 推荐顺序：
   1. `npx playwright install chromium`
@@ -435,8 +475,8 @@ mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 - DBHub 全局安装：`npm install -g @bytebase/dbhub@latest`
 - DBHub 启动示例：`dbhub --transport http --port 8080 --dsn "sqlserver://user:password@host:1433/dbname"`
 
-### 折跃协议（参数互斥）
-`--agent`
+### 订阅命令
+`mind agent listen`
 
 用于启动订阅模式，本地会注册会话并建立长链路，持续等待服务端下发任务。
 
@@ -448,57 +488,58 @@ mind --xtra "打开目标网页，抓取当前页面快照并总结关键字段"
 示例：
 ```
 # 启动订阅，等待服务端推送任务
-mind --agent
+mind agent listen
 ```
 
-### 反射协议（参数兼容）
+### JSON 输出选项
 `--json`
 
 以 JSONL 事件流输出运行过程，供程序、Agent、CI 和其他界面消费：
 - 每行是一个完整 JSON 对象，并随事件产生立即写出
-- 支持 `--chat`、`--fast`、`--xtra` 三个直接请求模式
+- 支持 `exec --mode chat`、`exec --mode fast`、`exec --mode xtra` 三个直接请求模式
 - stdout 只写 JSONL；面向人的非结构化信息不混入事件流
 - 直接执行无论是否使用 `--json` 都不询问、不等待，遇到需要人工确认的工具调用会直接拒绝
-- `--json` 只改变输出格式；需要完整工具访问时使用 `--access`
+- `--json` 只改变输出格式；需要完整工具访问时使用 `--access full`
+- 完整成功返回退出码 `0`，失败或流提前结束返回 `1`，用户中断返回 `130`
 
 示例：
 ```
-mind --chat "检查并修复测试" --json
-mind --fast "分析接口响应" --json
+mind exec --mode chat "检查并修复测试" --json
+mind exec --mode fast "分析接口响应" --json
 ```
 
-### 准入协议（参数兼容）
-`--access`
+### 访问模式选项
+`--access safe|full`
 
 设置本次运行的工具访问模式：
-- 不传：默认 `safe` 模式，敏感工具执行前需要审批
-- 传入：开启 `full` 完整访问模式，服务端可按完整权限下发工具执行元数据
-- 适用于单次 `--chat / --fast / --xtra` 请求，也适用于与 `--code` 组合的批跑
+- 默认使用 `safe` 模式，非交互运行遇到需要人工审批的工具调用会拒绝执行
+- 传入 `--access full` 后使用完整访问模式
+- 适用于 `mind exec` 和 `mind batch`
 
 示例：
 ```
-mind --chat "检查项目并修复问题"
-mind --xtra "连接外部工具并完成修改" --access
-mind --chat --code workflow.md --access
+mind exec --mode chat "检查项目并修复问题"
+mind exec --mode xtra "连接外部工具并完成修改" --access full
+mind batch --mode chat workflow.md --access full
 ```
 
-### 星图协议（参数兼容）
-`--code <source...>`
+### 星图批处理命令
+`mind batch <source...>`
 
 用于装载一个或多个批量执行星图，并按显式选定的主模式执行。
 - 支持本地 `.md / .txt` 文件
-- 也支持 `--code -` 从标准输入读取
-- 也支持 `--code inline:...` 直接执行内联星图
-- 也支持 `--code https://...` 从 URL 拉取星图
-- 必须与 `--chat / --fast / --xtra` 之一组合：决定这批星图按哪种主模式执行
-- 一次可装载多份星图：`--code a.md b.md c.md`
+- 也支持 `mind batch - --mode chat` 从标准输入读取
+- 也支持 `mind batch inline:... --mode chat` 直接执行内联星图
+- 也支持 `mind batch https://... --mode chat` 从 URL 拉取星图
+- 必须通过 `--mode chat|fast|xtra` 选择这批星图使用的运行模式
+- 一次可装载多份星图：`mind batch a.md b.md c.md --mode chat`
 
 约束：
-- `mind --code ...` 会直接报错
-- 正确写法必须显式带模式，例如 `mind --chat --code ...`
+- 缺少 `--mode` 会直接报错
+- 正确写法必须显式带模式，例如 `mind batch --mode chat cases.md`
 
 文件格式：
-`--code` 采用“自然语言块”作为用例单元：每个用例是一段文本，按 `---` 分隔。
+`mind batch` 采用“自然语言块”作为用例单元：每个用例是一段文本，按 `---` 分隔。
 - **分隔符**：单独一行 `---`（去掉空白后等于 `---`）用于分隔用例块
 - **元信息（可选）**：每个用例块顶部可写多行 `# key: value`
   - 常用：`# name: xxx`（用于 `cfg.pattern` 正则筛选）
@@ -507,26 +548,26 @@ mind --chat --code workflow.md --access
 - **空行**：块首尾空行会被自动忽略；正文为空的块会被跳过
 
 入口层只需要记住：
-- `--code` 适合批跑、回归和规则化执行
+- `mind batch` 适合批跑、回归和规则化执行
 - 正文优先写自然语言，不必在入口文档里展开底层结构
 - 真正的字段、层级和规则写法，直接看 [星图协议](docs/cli-code.md)
 
 #### 示例：
 ```
 # 指定用 chat 协议装载一份星图
-mind --chat --code http.md
+mind batch --mode chat http.md
 
 # 指定用 fast 协议执行接口 / 媒体类星图
-mind --fast --code media.md concurrent.md
+mind batch --mode fast media.md concurrent.md
 
 # 指定用 chat 协议执行编排型星图
-mind --chat --code workflow.md
+mind batch --mode chat workflow.md
 
 # 指定用 xtra 协议执行外接 MCP 星图
-mind --xtra --code external_mcp.md
+mind batch --mode xtra external_mcp.md
 
 # 一次装载多份星图
-mind --chat --code http.md sse.md ws.md graphql.md
+mind batch --mode chat http.md sse.md ws.md graphql.md
 ```
 
 #### 文件样例：
@@ -556,12 +597,12 @@ mind --chat --code http.md sse.md ws.md graphql.md
 ```
 
 ### 深入：三层前后置 + 星图规则层
-`--code <source...>`
+`mind batch <source...>`
 
 高级批跑说明已拆到独立正文：[星图深入说明](docs/cli-code-advanced.md)。
 
 这里先记住 5 个点就够了：
-- `--code` 必须显式搭配 `--chat / --fast / --xtra`
+- `mind batch` 必须通过 `--mode chat|fast|xtra` 显式选择运行模式
 - `cfg` 支持批次级、轮次级和任务级前后置
 - 任务级前后置现在分成两层：`item_prefix / item_suffix` 负责每个任务块外层包裹，`global_prefix / global_suffix` 负责单条任务正文前后置
 - `global_rule` 是整份星图的默认规则文本，`rule` 是单任务覆盖规则文本
@@ -582,7 +623,7 @@ README 这里只保留入口层信息。
 - 启动 `mind` 即进入循环交互模式
 - REPL 内部有 `CHAT / FAST / XTRA` 四种互斥状态
 - 已实现的是模式切换、会话恢复、权限切换、工具状态查看和 Helix 服务控制
-- 批量重复执行优先用 `--code` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
+- 批量重复执行优先用 `mind batch` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
 
 ### 常用指令
 - `/chat`
@@ -610,7 +651,7 @@ README 这里只保留入口层信息。
 
 ### 输入约束
 - REPL 当前支持单行和多行输入
-- 需要多任务编排或长文本星图时，直接改走 `--code`
+- 需要多任务编排或长文本星图时，直接改走 `mind batch`
 
 ---
 
@@ -670,7 +711,7 @@ README 这里只保留入口层信息。
 
 - Framix 负责视觉真值与阶段报告
 - Memrix 负责资源指标、趋势和稳定性采样
-- 性能回归优先用 `mind --chat --code ...`
+- 性能回归优先用 `mind batch --mode chat ...`
 - Monkey 和长稳扰动场景建议写进星图，不要堆在命令行里
 
 ---

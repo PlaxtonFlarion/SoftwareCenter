@@ -2,21 +2,21 @@
 
 入口页只负责交互入口；REPL 指令、状态切换和输入约束继续看这里。
 重点是讲清进入 REPL 之后能做什么、怎么切状态、哪些输入适合留在交互模式里。
-`--agent` 不属于 REPL 状态；它是独立的订阅模式，另见 `订阅模式`。
+`agent listen` 不属于 REPL 状态；它是独立的订阅模式，另见 `订阅模式`。
 
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标，并在同一会话里来回切 `chat / fast / xtra`：看这里
 - 你要查 `/chat /fast /xtra /new /resume /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix-link /helix-unlink /helix-home /helix-stop /shutdown /quit` 这些 REPL 指令：看这里
-- 你要理解 `--agent` 的订阅链路：这页不展开，直接看 `订阅模式`
-- 你要理解单次命令行入口和 `--code` 批跑，不要先从交互模式文档开始
+- 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
+- 你要理解单次命令行入口和 `mind batch` 批跑，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
 
 ## 怎么读这页
 
 - 先看“启动与提示”和“三种状态”，建立 REPL 的基本运行心智
 - 再看指令索引，确认切换状态、查看工具和退出的方式
-- 最后看输入约束，判断什么时候继续留在 REPL，什么时候该切回 `--code`
+- 最后看输入约束，判断什么时候继续留在 REPL，什么时候该切回 `mind batch`
 
 ## 启动与提示
 `mind` 进入循环后，会持续读取用户输入，并在 `CHAT / FAST / XTRA` 三种互斥状态之间切换执行。
@@ -74,7 +74,7 @@
 - [原生 coding 链路](playbook.nativecoding.md)
 
 补充：
-- `--code` 中的 `global_rule / rule` 是星图文本层，会拼入任务正文，不触发独立执行链路
+- `mind batch` 中的 `global_rule / rule` 是星图文本层，会拼入任务正文，不触发独立执行链路
 - `XTRA` 会读取外接服务配置；外接服务需提前可访问，外接失败只进入 debug 日志
 - `CHAT / FAST` 依赖 Helix MCP 服务；切换或执行这些状态前需要先用 `/helix-link` 接入 Helix
 - `XTRA` 不依赖 Helix，默认只使用 Mind native tools、原生 coding 工具和已连接 external MCP tools
@@ -170,4 +170,4 @@ exit
 ## 输入约束
 - REPL 当前支持单行和多行输入
 - 多行输入适合临时探索、长提示和分段目标描述
-- 需要批跑、重复执行或多任务编排时，优先使用 `--code` 配合 `cfg.repeat / loop`
+- 需要批跑、重复执行或多任务编排时，优先使用 `mind batch` 配合 `cfg.repeat / loop`

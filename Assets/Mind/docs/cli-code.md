@@ -1,32 +1,32 @@
 # 星图协议
 
-`--code` 用于装载一个或多个批量执行星图，并按显式选定的主模式执行。
+`mind batch` 用于装载一个或多个批量执行星图，并按显式选定的主模式执行。
 重点是回答两件事：什么时候值得写星图，以及一份星图的最小结构应该怎么组织。
 
 先记住一条硬约束：
 
-- `--code` 不能单独使用
-- 必须显式搭配 `--chat`、`--fast` 或 `--xtra`
-- `mind --code ...` 会直接报错
+- `mind batch` 必须提供至少一个执行源
+- 必须通过 `--mode chat|fast|xtra` 显式选择运行模式
+- 缺少执行源或 `--mode` 会直接报错
 
 当前本地入口除了文件路径，也支持：
 
-- `--code -`：从标准输入读取星图
-- `--code inline:...`：直接执行内联星图文本
-- `--code https://...`：从 URL 拉取星图文本
+- `mind batch - --mode chat`：从标准输入读取星图
+- `mind batch inline:... --mode chat`：直接执行内联星图文本
+- `mind batch https://... --mode chat`：从 URL 拉取星图文本
 
 最小正确示例：
 
 ```text
-mind --chat --code cases.md
-mind --fast --code media.md
-mind --chat --code workflow.md
-mind --xtra --code external_mcp.md
+mind batch --mode chat cases.md
+mind batch --mode fast media.md
+mind batch --mode chat workflow.md
+mind batch --mode xtra external_mcp.md
 ```
 
 ## 先判断要不要写星图
 
-- 只是临时跑一条任务：先用入口页里的基础写法，不必先写 `--code`
+- 只是临时跑一条任务：先用入口页里的基础写法，不必先写 `mind batch`
 - 需要把多条任务批量执行、重试、筛选、加前后置和规则：再进入星图
 - 需要把多步动作整理成可回放、可复用、可回归的执行链：再进入星图
 
@@ -117,7 +117,7 @@ mind --xtra --code external_mcp.md
 - `rule` 存在时覆盖 `global_rule`
 
 边界说明：
-- 这里的 `global_rule / rule` 属于 `--code` 的星图规则层
+- 这里的 `global_rule / rule` 属于 `mind batch` 的星图规则层
 - 它们只会拼入任务正文，不触发独立工具链路
 - 需要继续理解这两者在运行时怎么分工，直接看 `星图深入说明`
 
@@ -244,7 +244,7 @@ item_prefix: |
 
 ## 接口星图到底是什么意思
 
-`--code` 里的星图，不是“再造一套协议参数”，而是把多步工具调用写成一份可批跑、可回放、可加规则的执行脚本。
+`mind batch` 里的星图，不是“再造一套协议参数”，而是把多步工具调用写成一份可批跑、可回放、可加规则的执行脚本。
 
 如果你只想发一次请求：
 - 直接用单请求协议执行入口

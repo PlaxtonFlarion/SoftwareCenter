@@ -7,7 +7,7 @@
 - 模式边界：`chat / fast / xtra / agent`
 - 工具域边界：`device / bench / common / media / coding`
 - 接口执行面：协议执行能力
-- 星图执行链：`--code`
+- 星图执行链：`mind batch`
 - 文档拆分与同步：`README.md`、`docs/*.md`、`.github/workflows/sync-to-software-center.yml`
 
 ## 系统骨架
@@ -29,7 +29,7 @@ device / bench / common / media / coding
 - `chat`：开放式流式工具闭环，工具范围最宽
 - `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
 - `chat`：先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
-- `xtra`：外接 MCP 工具、Mind native 工具与编码工具协作通道，走独立 `mode=xtra` 后端链路；Helix MCP 由 `--mcp` 或 `/helix-link` 显式接入后追加
+- `xtra`：外接 MCP 工具、Mind native 工具与编码工具协作通道，走独立 `mode=xtra` 后端链路；Helix MCP 由 `--helix` 或 `/helix-link` 显式接入后追加
 - `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
 - `chat / fast`：依赖 Helix MCP 服务；入口准入应在模式执行前完成，不要下沉到 `CompositeToolRuntime`
 
@@ -37,7 +37,7 @@ device / bench / common / media / coding
 - 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
-- 不要把 `--code` 里的 `global_rule / rule` 写成独立工具链路；它们只属于星图文本层
+- 不要把 `mind batch` 里的 `global_rule / rule` 写成独立工具链路；它们只属于星图文本层
 - 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
 - 不要把 `xtra` 写成 `fast` 别名；它有独立工具过滤和 `mode=xtra` transport
 - `xtra` 外接 MCP 口径保持为外部服务协作，同时允许原生 coding 工具链参与；不要写成由 Mind 托管外部进程
@@ -54,15 +54,15 @@ device / bench / common / media / coding
 - 如果工具注册名、域名或能力归属变更，README 和 `docs/architecture.md`、`docs/playbook.api.md` 都要一起改
 
 ## 星图执行链
-`--code` 承担批跑、循环、规则和前后置编排，但它不是独立主模式。
+`mind batch` 承担批跑、循环、规则和前后置编排，但它不是独立主模式。
 
 维护约束：
-- `--code` 必须显式搭配 `--chat`、`--fast` 或 `--xtra`
-- 不要在 README 或 `docs/` 里写出 `mind --code ...` 这种会误导用户的独立入口
-- 如果 `--code` 的入口约束变化，README、`docs/cli-code.md` 和 CLI help 必须一起改
+- `mind batch` 必须通过 `--mode chat|fast|xtra` 显式选择运行模式
+- 不要在 README 或 `docs/` 里写出缺少执行源或 `--mode` 的入口
+- 如果 `mind batch` 的入口约束变化，README、`docs/cli-code.md` 和 CLI help 必须一起改
 
 维护时要一起检查：
-- README 的 `--code` 摘要
+- README 的 `mind batch` 摘要
 - `docs/cli-code.md`
 - `docs/cli-code-advanced.md`
 - REPL / README 中对 `cfg.repeat`、`loop` 的引用
@@ -179,6 +179,6 @@ SoftwareCenter/site/mind/
 - 新增工具注册机制或工具路由规则
 - 新增模式或大改模式过滤逻辑
 - 新增同步仓库、发布仓库或目录映射
-- `--code` 解析和执行器出现结构性变化
+- `mind batch` 解析和执行器出现结构性变化
 
 否则优先保持当前文档层次，不要让入口文档重新膨胀。

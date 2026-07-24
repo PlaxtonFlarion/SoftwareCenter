@@ -7,7 +7,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">入口</span>
     <h3>确认命令入口</h3>
-    <p>先用 <code>mind --help</code> 确认 CLI 可用；需要 Helix MCP 时再显式加 <code>--mcp</code>。</p>
+    <p>先用 <code>mind --help</code> 确认 CLI 可用；需要 Helix MCP 时再显式加 <code>--helix</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">环境</span>
@@ -42,7 +42,12 @@ npm install -g @craftline/mind
 
 ```bash
 mind --help
+mind doctor
 ```
+
+`mind doctor` 会只读检查本地配置、外部 MCP 配置、Helix 运行组件和 Mind coding 工具；它不会创建文件、启动服务或访问网络。需要交给脚本处理时使用 `mind doctor --json`。
+
+需要把 Mind 接入 Codex 等 MCP host 时，使用 `mind mcp-server` 作为 stdio server 启动命令。
 
 `@craftline/mind` 是主入口包，安装时会按当前系统拉取对应运行时包：
 
@@ -64,7 +69,7 @@ mind --help
 `chat / fast` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
 
 ```bash
-mind --mcp
+mind
 ```
 
 进入 REPL 后可以继续使用：
@@ -129,7 +134,7 @@ $env:Path += ";C:\Program Files\Mind\MindEngine"
 ### 先跑一条最小命令
 
 ```bash
-mind --xtra "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
+mind exec --mode xtra "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
 ```
 
 ### 需要持续交互时进入 REPL
@@ -138,24 +143,24 @@ mind --xtra "请用工程视角概述当前系统的核心能力、边界与典�
 mind
 ```
 
-### 需要批跑和回归时用 `--code`
+### 需要批跑和回归时用 `mind batch`
 
 ```bash
-mind --chat --code api_batch.md
+mind batch --mode chat api_batch.md
 ```
 
-### 需要外接工具协作时用 `--xtra`
+### 需要外接工具协作时用 `exec --mode xtra`
 
 ```bash
-mind --xtra "Open DBHub and query the users table"
+mind exec --mode xtra "Open DBHub and query the users table"
 ```
 
 外接 MCP 服务需提前可访问；如果同一轮还要搜索、修改或验证代码，也可以继续使用原生 coding 链路。
 
-### 需要等待远端任务时用 `--agent`
+### 需要等待远端任务时用 `agent listen`
 
 ```bash
-mind --agent
+mind agent listen
 ```
 
 ## 交互式运行

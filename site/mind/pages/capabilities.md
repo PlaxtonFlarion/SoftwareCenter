@@ -40,17 +40,17 @@
   <div class="mind-step-card">
     <span class="mind-step-index">外接</span>
     <h3>需要外部服务时走 Xtra</h3>
-    <p>任务依赖数据库、浏览器、外部 MCP 工具，或需要和编码工具放在同一轮协作时，直接走 <code>--xtra</code>。</p>
+    <p>任务依赖数据库、浏览器、外部 MCP 工具，或需要和编码工具放在同一轮协作时，直接走 <code>exec --mode xtra</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">批量</span>
     <h3>需要批跑和规则时改走星图协议</h3>
-    <p>需要批跑、前后置和回归时，不要再堆命令行，在 <code>--chat</code>、<code>--fast</code>、<code>--chat</code> 或 <code>--xtra</code> 后挂 <code>--code</code>。</p>
+    <p>需要批跑、前后置和回归时，使用 <code>mind batch &lt;source...&gt; --mode chat|fast|xtra</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">下发</span>
     <h3>需要远端调度时走订阅</h3>
-    <p>任务不是本地主动发起，而是等待服务端下发时，直接进入 <code>--agent</code>。</p>
+    <p>任务不是本地主动发起，而是等待服务端下发时，直接进入 <code>agent listen</code>。</p>
   </div>
 </div>
 

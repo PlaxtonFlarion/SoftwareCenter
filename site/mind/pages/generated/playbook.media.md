@@ -14,7 +14,7 @@
 - 只想改视频文件：再看裁剪、缩放、转码、拼接、换容器和去音轨
 - 只想处理音轨：再看抽取音轨、替换音轨、音频转换和本机试听
 - 想做完整证据链：最后看组合链路和星图任务
-- 如果你要把媒体链路真正写进 `--code`，结构层先配合星图协议页，执行语义再配合星图深入说明
+- 如果你要把媒体链路真正写进 `mind batch`，结构层先配合星图协议页，执行语义再配合星图深入说明
 
 一句话理解：
 
@@ -40,94 +40,94 @@
 
 ### 单帧截图
 ```text
-mind --fast "从 /path/to/demo.mp4 的第 3.5 秒抽取一张截图，并返回证据"
+mind exec --mode fast "从 /path/to/demo.mp4 的第 3.5 秒抽取一张截图，并返回证据"
 ```
 
 ### 图片序列
 ```text
-mind --fast "把 /path/to/demo.mp4 从第 0 秒开始按 2fps 导出图片序列，并返回输出目录"
+mind exec --mode fast "把 /path/to/demo.mp4 从第 0 秒开始按 2fps 导出图片序列，并返回输出目录"
 ```
 
 ### 关键帧提取
 ```text
-mind --fast "从 /path/to/demo.mp4 提取关键帧，最多返回 8 张，并输出结果证据"
+mind exec --mode fast "从 /path/to/demo.mp4 提取关键帧，最多返回 8 张，并输出结果证据"
 ```
 
 ### 场景变化抽帧
 ```text
-mind --fast "从 /path/to/demo.mp4 按场景变化抽帧，阈值 0.35，最多保留 10 张"
+mind exec --mode fast "从 /path/to/demo.mp4 按场景变化抽帧，阈值 0.35，最多保留 10 张"
 ```
 
 ### 视频裁剪
 ```text
-mind --fast "把 /path/to/demo.mp4 从第 12 秒裁到第 25 秒，并输出 mp4 片段"
+mind exec --mode fast "把 /path/to/demo.mp4 从第 12 秒裁到第 25 秒，并输出 mp4 片段"
 ```
 
 ### 视频缩放
 ```text
-mind --fast "把 /path/to/demo.mp4 缩放到宽 720，高度等比，并输出新视频"
+mind exec --mode fast "把 /path/to/demo.mp4 缩放到宽 720，高度等比，并输出新视频"
 ```
 
 ### 视频转码
 ```text
-mind --fast "把 /path/to/demo.mov 转成 30fps 的 mp4，编码为 libx264，并返回结果"
+mind exec --mode fast "把 /path/to/demo.mov 转成 30fps 的 mp4，编码为 libx264，并返回结果"
 ```
 
 ### 视频拼接
 ```text
-mind --fast "根据 /path/to/list.txt 拼接多个视频片段，输出 mp4 文件"
+mind exec --mode fast "根据 /path/to/list.txt 拼接多个视频片段，输出 mp4 文件"
 ```
 
 ### 仅换容器
 ```text
-mind --fast "把 /path/to/demo.mkv 仅换容器封装成 mp4，不重编码"
+mind exec --mode fast "把 /path/to/demo.mkv 仅换容器封装成 mp4，不重编码"
 ```
 
 ### 去音轨
 ```text
-mind --fast "把 /path/to/demo.mp4 去掉音轨并输出静音视频"
+mind exec --mode fast "把 /path/to/demo.mp4 去掉音轨并输出静音视频"
 ```
 
 ### 视频信息探测
 ```text
-mind --fast "探测 /path/to/demo.mp4 的视频信息，并返回时长与原始探测结果"
+mind exec --mode fast "探测 /path/to/demo.mp4 的视频信息，并返回时长与原始探测结果"
 ```
 
 ### 音轨抽取
 ```text
-mind --fast "从 /path/to/demo.mp4 提取音轨为 mp3，并返回输出文件"
+mind exec --mode fast "从 /path/to/demo.mp4 提取音轨为 mp3，并返回输出文件"
 ```
 
 ### 替换音轨
 ```text
-mind --fast "用 /path/to/new_audio.m4a 替换 /path/to/demo.mp4 的音轨，并输出 mp4"
+mind exec --mode fast "用 /path/to/new_audio.m4a 替换 /path/to/demo.mp4 的音轨，并输出 mp4"
 ```
 
 ### 音频格式转换
 ```text
-mind --fast "把 /path/to/demo.wav 转成 16000Hz 单声道 mp3，并返回结果"
+mind exec --mode fast "把 /path/to/demo.wav 转成 16000Hz 单声道 mp3，并返回结果"
 ```
 
 ### 音频试听
 ```text
-mind --fast "播放 /path/to/demo.mp3，音量 0.8"
+mind exec --mode fast "播放 /path/to/demo.mp3，音量 0.8"
 ```
 
 ## 组合链路
 
 ### 录屏问题片段精简回放
 ```text
-mind --fast "先探测 /path/to/demo.mp4，再把第 15 秒到第 28 秒裁出来，然后从裁剪结果中提取关键帧，最多保留 6 张"
+mind exec --mode fast "先探测 /path/to/demo.mp4，再把第 15 秒到第 28 秒裁出来，然后从裁剪结果中提取关键帧，最多保留 6 张"
 ```
 
 ### 视觉证据链预处理
 ```text
-mind --fast "把 /path/to/demo.mp4 先缩放到宽 720，再按场景变化抽帧，最多返回 10 张结果图"
+mind exec --mode fast "把 /path/to/demo.mp4 先缩放到宽 720，再按场景变化抽帧，最多返回 10 张结果图"
 ```
 
 ### 音频分离与验证
 ```text
-mind --fast "从 /path/to/demo.mp4 提取音轨为 wav，再转成 16000Hz 单声道 mp3，最后播放结果文件"
+mind exec --mode fast "从 /path/to/demo.mp4 提取音轨为 wav，再转成 16000Hz 单声道 mp3，最后播放结果文件"
 ```
 
 ## 最佳实践
@@ -143,7 +143,7 @@ mind --fast "从 /path/to/demo.mp4 提取音轨为 wav，再转成 16000Hz 单�
 更自然的星图写法通常长这样：
 
 ```text
-mind --chat --code media.md
+mind batch --mode chat media.md
 
 # name: media_evidence_chain
 从 `/path/to/demo.mp4` 中裁出第 `15` 秒到第 `28` 秒的问题片段。
@@ -155,7 +155,7 @@ mind --chat --code media.md
 这个例子真正表达的是：
 - 先裁剪，再抽帧，再抽音轨，再试听
 - 重点是媒体处理顺序和证据链，不是要求读者手写工具参数
-- 如果只是单步动作，直接用上面的 `mind --fast "..."` 更合适
+- 如果只是单步动作，直接用上面的 `mind exec --mode fast "..."` 更合适
 
 ## 相关文档
 

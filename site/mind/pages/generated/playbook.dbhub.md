@@ -1,6 +1,6 @@
 # DBHub 外接工具实战
 
-这一页讲的是：在 `--xtra` 模式下，怎么把数据库当成一个“可搜索、可查询、可控风险”的外部协作面来用。
+这一页讲的是：在 `exec --mode xtra` 模式下，怎么把数据库当成一个“可搜索、可查询、可控风险”的外部协作面来用。
 
 重点不是记底层导出了哪些工具名，而是搞清楚：
 
@@ -10,7 +10,7 @@
 
 ## 先判断是不是这页的范围
 
-- 你要在 `mind --xtra` 里查表、查字段、跑只读 SQL、做数据库排查：看这里
+- 你要在 `mind exec --mode xtra` 里查表、查字段、跑只读 SQL、做数据库排查：看这里
 - 你要的是浏览器自动化：去看 [Playwright 外接工具实战](playbook.playwright.md)
 - 你要的是 HTTP/SSE/WS/GraphQL 协议调试：去看 [接口实战](playbook.api.md)
 
@@ -58,10 +58,10 @@
 最小示例：
 
 ```bash
-mind --xtra "查询 users 表最近 20 条记录"
+mind exec --mode xtra "查询 users 表最近 20 条记录"
 ```
 
-如果你要先把数据库外接服务独立启动起来，再让 `--xtra` 通过 HTTP 去连它，可以参考：
+如果你要先把数据库外接服务独立启动起来，再让 `exec --mode xtra` 通过 HTTP 去连它，可以参考：
 
 ```bash
 npm install -g @bytebase/dbhub@latest
@@ -142,7 +142,7 @@ DBHub 这类数据库外接能力，给人看的核心不是工具名，而是 3
 适合：库不熟、表结构不清楚。
 
 ```bash
-mind --xtra "先搜索和 invoice 相关的表和列，再帮我查最近 10 张发票"
+mind exec --mode xtra "先搜索和 invoice 相关的表和列，再帮我查最近 10 张发票"
 ```
 
 ### 直接只读查询
@@ -150,7 +150,7 @@ mind --xtra "先搜索和 invoice 相关的表和列，再帮我查最近 10 张
 适合：表和字段都明确。
 
 ```bash
-mind --xtra "查询 dbo.users 中 status='active' 的前 50 条记录"
+mind exec --mode xtra "查询 dbo.users 中 status='active' 的前 50 条记录"
 ```
 
 ### 先搜索再生成查询
@@ -158,7 +158,7 @@ mind --xtra "查询 dbo.users 中 status='active' 的前 50 条记录"
 适合：业务知道目标，但不确定表结构。
 
 ```bash
-mind --xtra "先搜索和 customer 相关的表和列，再生成一条只读 SQL，查询最近 30 天新增客户"
+mind exec --mode xtra "先搜索和 customer 相关的表和列，再生成一条只读 SQL，查询最近 30 天新增客户"
 ```
 
 ### 用固定查询收生产风险
@@ -166,7 +166,7 @@ mind --xtra "先搜索和 customer 相关的表和列，再生成一条只读 SQ
 适合：生产环境固定报表、稳定诊断。
 
 ```bash
-mind --xtra "调用 get_active_users，返回最多 20 条活跃用户"
+mind exec --mode xtra "调用 get_active_users，返回最多 20 条活跃用户"
 ```
 
 ## SQL Server 场景建议

@@ -5,7 +5,7 @@
 
 ## 先判断是不是这页的范围
 
-- 你已经知道 `--code` 的基本格式，但不确定前后置到底谁包谁、谁覆盖谁：看这里
+- 你已经知道 `mind batch` 的基本格式，但不确定前后置到底谁包谁、谁覆盖谁：看这里
 - 你要理解 `repeat / pattern / attempts / stop_on_fail` 的执行语义：看这里
 - 你要理解 `global_rule / rule` 怎样拼入任务正文：看这里
 - 你只是第一次接触星图：先看 `星图协议`
@@ -141,7 +141,7 @@ rule   = 当前任务 rule   或 global_rule
 ## `global_rule / rule` 的文本边界
 这是最容易混写的地方。
 
-- `global_rule / rule` 属于 `--code` 的星图文本层
+- `global_rule / rule` 属于 `mind batch` 的星图文本层
 - 它们会拼入当前任务正文，用于表达验收、约束或留证要求
 - 它们不会注册工具，也不会触发独立的二次执行链路
 
@@ -153,7 +153,7 @@ rule   = 当前任务 rule   或 global_rule
 当你执行：
 
 ```text
-mind --chat --code a.md b.md c.md
+mind batch --mode chat a.md b.md c.md
 ```
 
 更稳的理解不是“把三份文件拼成一份超级星图”，而是：
@@ -161,10 +161,10 @@ mind --chat --code a.md b.md c.md
 - 一次命令装载多份星图输入
 - 每份文件各自保留自己的 `cfg` 和任务块结构
 - 主模式仍然只有一个：`chat`、`fast` 或 `chat`
-- `--code` 负责把这些星图交给显式选定的主模式执行
+- `mind batch` 负责把这些星图交给显式选定的主模式执行
 
 补充约束：
-- `--code` 不能脱离 `--chat / --fast / --xtra` 单独出现
+- `mind batch` 必须通过 `--mode chat|fast|xtra` 显式选择运行模式
 
 因此：
 - 主模式决定执行协议
