@@ -12,8 +12,12 @@
 | `mode` | `chat \| fast \| xtra` | `xtra` | Mind 运行模式。 |
 | `access_mode` | `safe \| full` | `safe` | 工具访问模式。 |
 | `working_directory` | `string \| null` | MCP 进程工作目录 | 可选的任务工作目录，必须已经存在。 |
+| `timeout_sec` | `number \| null` | `900` | 整次请求的超时秒数，包含等待串行调用锁的时间；传 `null` 可关闭服务端超时。 |
+| `session_id` | `string \| null` | `null` | 传入先前返回的会话标识，在同一工作目录续接对话。 |
 
-返回值包含 `status`、`assistant_text`、`usage`、`error` 和 `exit_code`。每次调用开始独立对话；同一服务进程内的调用会串行执行，避免共享 workspace、conversation 和工具运行时发生竞争。
+返回值包含 `status`、`assistant_text`、`usage`、`error`、`exit_code` 和 `session_id`。不传 `session_id` 时开始独立对话；需要继续时，把上次返回的 `session_id` 原样传入。会话游标只保存 24 小时，并且只能在创建它的工作目录恢复。
+
+同一服务进程内的调用会串行执行，避免共享 workspace、conversation 和工具运行时发生竞争。MCP host 发送标准 `notifications/cancelled` 后，取消会沿当前 `mind_exec` 协程传播到底层模型和工具调用，并释放串行调用锁。服务端超时会取消同一条执行链，返回 `status=failed` 和超时原因；客户端主动取消时按照 MCP 规范不再返回重复结果。
 
 ## Codex 配置
 
@@ -56,8 +60,8 @@ codex mcp add mind -- python D:\PycharmProjects\ProxyMind\mind.py mcp-server
 1. 解析源码或打包入口的 `schematic/supports` 路径。
 2. 读取 `~/.mind/config.toml`。
 3. 接入 Mind native tools 和已启用的外部 MCP。
-4. 等待 MCP host 调用 `mind_exec`。
+4. 等待 MCP host 调用 `mind_exec`，并处理请求取消、超时和可选会话续接。
 
-MCP host 断开后，服务会关闭外部 MCP、native coding runtime 和运行报告。服务不会自动启动 Helix；第一阶段也不提供远程 HTTP transport。
+MCP host 断开后，服务会关闭外部 MCP、native coding runtime 和运行报告。服务不会自动启动 Helix，也不提供远程 HTTP transport。
 
 不要在 Mind 自己的 `~/.mind/mcp_servers.json` 中配置 `mind mcp-server`。该文件由 Mind 服务启动时读取，把自身放进去会形成递归子进程。

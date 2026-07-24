@@ -313,7 +313,7 @@ mind doctor --json
 ### MCP Server 命令
 `mind mcp-server`
 
-以 stdio 启动长驻 Mind MCP 服务，对外提供结构化工具 `mind_exec`。服务会复用 Mind native tools 和 `~/.mind/mcp_servers.json` 中已启用的外部 MCP，但不会自动启动 Helix。
+以 stdio 启动长驻 Mind MCP 服务，对外提供结构化工具 `mind_exec`。工具支持请求取消、默认 900 秒超时，以及通过返回的 `session_id` 在原工作目录续接会话。服务会复用 Mind native tools 和 `~/.mind/mcp_servers.json` 中已启用的外部 MCP，但不会自动启动 Helix。
 
 ```bash
 # 打包安装后的 Codex 配置
