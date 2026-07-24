@@ -90,7 +90,8 @@ Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或
     <span class="mind-kicker">终端建议</span>
     <ul class="mind-mini-list">
       <li>Windows：推荐 `Windows Terminal`</li>
-      <li>macOS：推荐 `iTerm2` 或系统 `Terminal`</li>
+      <li>macOS：推荐 `iTerm2`；系统 `Terminal` 不显示窗口进度状态</li>
+      <li>其他终端默认不显示窗口进度状态</li>
       <li>npm 全局安装后，优先重新打开终端验证 `mind --help`</li>
     </ul>
   </div>

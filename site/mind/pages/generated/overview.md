@@ -76,7 +76,8 @@ mind --mcp
 ### 推荐终端与环境变量
 
 - Windows：推荐使用 `Windows Terminal`
-- macOS：推荐使用 `iTerm2` 或系统 `Terminal`
+- macOS：推荐使用 `iTerm2`；系统 `Terminal` 可以使用，但不显示窗口进度状态
+- 其他终端默认不显示窗口进度状态
 - Windows 与 macOS 都建议先把默认 `Mind/MindEngine` 目录加入 `PATH`
 - 不推荐默认配置系统代理或挂 VPN；只有明确需要兼容网关时，再单独配置 `base_url`
 
