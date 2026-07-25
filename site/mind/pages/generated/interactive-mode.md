@@ -55,8 +55,6 @@
 
 外接模式入口继续看：
 
-- `/xtra` 配合 [Playwright 外接工具实战](playbook.playwright.md)
-- `/xtra` 配合 [DBHub 外接工具实战](playbook.dbhub.md)
 - `/xtra` 配合 [原生 coding 链路](playbook.nativecoding.md)
 
 ## 四种状态
@@ -69,8 +67,6 @@
 
 如果你在 `XTRA` 状态下要继续看专项用法，直接跳：
 
-- [Playwright 外接工具实战](playbook.playwright.md)
-- [DBHub 外接工具实战](playbook.dbhub.md)
 - [原生 coding 链路](playbook.nativecoding.md)
 
 补充：
@@ -102,14 +98,14 @@
 ## `/model` 与 `/preferences`
 - `/model <model-id>`：只更新主模型 ID，适合临时切换模型后继续留在 REPL 里验证
 - 不带模型 ID 时会把主模型 ID 清空
-- 写入目标是本地 `config.toml` 的 `[model.primary].model`
+- 写入目标是本地 `config.toml` 的顶层 `model`
 - 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新模型
 - 正在进行中的一轮不会中途切换模型；需要等下一轮输入
 - `/preferences`：打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名
 
 ## `/effort`
 - `/effort`：打开二级菜单设置推理强度，可选 `low / medium / high / xhigh`
-- 写入目标是本地 `config.toml` 的 `[model.primary].reasoning_effort`
+- 写入目标是本地 `config.toml` 的顶层 `model_reasoning_effort`
 - 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新的推理强度
 - 当前正在进行中的一轮不会中途切换推理强度；需要等下一轮输入
 

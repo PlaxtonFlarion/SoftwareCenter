@@ -19,7 +19,7 @@
 **专题跳转**
 
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](playbook.template.md)、[安全工具](playbook.security.md)
-- 外接工具协作：看 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
+- 外接工具协作：看 [外接 MCP 配置](#外接-mcp-配置单格式)
 - 设备、多媒体和稳定性：看 [设备与 UI 实战](playbook.device.md)、[Monkey 扰动](playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
 - 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `mind batch`
 - 订阅链路：看 [订阅模式](agent-mode.md)
@@ -198,10 +198,7 @@ mind agent listen
 | `fast` | 短链路快速完成 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 执行、重型性能链路、需要全域工具时 |
 | `xtra` | 外接工具与编码协作 | 数据库、浏览器、外部 MCP 服务、Mind native 工具和原生 coding | 设备/UI 执行、重型性能链路 |
 
-如果你要继续看外接模式的专项用法，直接跳：
-
-- [Playwright 外接工具实战](playbook.playwright.md)
-- [DBHub 外接工具实战](playbook.dbhub.md)
+外接服务的接入方式见 [外接 MCP 配置](#外接-mcp-配置单格式)。
 
 补充说明：
 
@@ -257,10 +254,7 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 | 环境诊断 | `mind doctor` | 只读检查配置、MCP、Helix 和本地 coding 工具 |
 | MCP 服务 | `mind mcp-server` | 通过 stdio 向 Codex 等 MCP host 暴露 `mind_exec` |
 
-外接工具协作入口继续看：
-
-- 命令行 `mind exec --mode xtra "..."`：配合 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
-- REPL `/xtra`：配合 [Playwright 外接工具实战](playbook.playwright.md)、[DBHub 外接工具实战](playbook.dbhub.md)
+外接工具可以通过命令行 `mind exec --mode xtra "..."` 或 REPL `/xtra` 使用，服务定义见 [外接 MCP 配置](#外接-mcp-配置单格式)。
 
 ### Helix 接入选项
 `--helix`
@@ -313,7 +307,7 @@ mind doctor --json
 ### MCP Server 命令
 `mind mcp-server`
 
-以 stdio 启动长驻 Mind MCP 服务，对外提供结构化工具 `mind_exec`。工具支持请求取消、默认 900 秒超时，以及通过返回的 `session_id` 在原工作目录续接会话。服务会复用 Mind native tools 和 `~/.mind/mcp_servers.json` 中已启用的外部 MCP，但不会自动启动 Helix。
+以 stdio 启动长驻 Mind MCP 服务，对外提供结构化工具 `mind_exec`。工具支持请求取消、默认 900 秒超时，以及通过返回的 `session_id` 在原工作目录续接会话。服务会复用 Mind native tools 和 `~/.mind/config.toml` 中已启用的外部 MCP，但不会自动启动 Helix。
 
 ```bash
 # 打包安装后的 Codex 配置
@@ -326,7 +320,7 @@ codex mcp add mind -- python D:\PycharmProjects\ProxyMind\mind.py mcp-server
 codex mcp get mind --json
 ```
 
-`codex mcp add` 中的 `--` 用于结束 Codex 自身的选项解析；`mind mcp-server` 是它随后启动的 stdio 子进程命令。不要把 Mind 自己注册进 `~/.mind/mcp_servers.json`，否则 Mind 启动外部 MCP 时会递归启动自身。
+`codex mcp add` 中的 `--` 用于结束 Codex 自身的选项解析；`mind mcp-server` 是它随后启动的 stdio 子进程命令。不要在 Mind 自己的 `[mcp_servers]` 中注册 `mind mcp-server`，否则会递归启动自身。
 
 完整工具参数、通用 MCP 配置和生命周期说明见 [Mind MCP Server](docs/mcp-server.md)。
 
@@ -337,56 +331,36 @@ codex mcp get mind --json
 
 - 适用于：数据库、浏览器、外部服务、第三方 MCP 工具和编码任务协作
 - 不等同于 `exec --mode fast`：请求会以 `mode=xtra` 进入独立后端链路
-- 适合把 DBHub、浏览器自动化、外部知识库和原生 coding 能力接进本轮任务
+- 适合把 Playwright、外部知识库和原生 coding 能力接进本轮任务
 - 需要 Helix MCP 工具时：`mind exec --mode xtra "..." --helix`
 - 命令：`mind exec --mode xtra "..."`
 
-外接模式专题入口：
-
-- [Playwright 外接工具实战](playbook.playwright.md)
-- [DBHub 外接工具实战](playbook.dbhub.md)
-
 #### 外接 MCP 配置单格式
 
-配置单采用统一结构：
+配置写入 `~/.mind/config.toml`，并参与用户、Profile、可信项目和 CLI 覆盖的统一解析：
 
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "url": "http://localhost:8931/mcp"
-    },
-    "dbhub-sqlserver": {
-      "url": "http://localhost:8080/mcp"
-    }
-  }
-}
+```toml
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+allow = ["browser_*"]
+deny = ["browser_evaluate", "browser_file_upload"]
 ```
 
-stdio 外接服务也使用同一层级：
+Playwright MCP 如果已作为远程服务运行，也使用同一层级：
 
-```json
-{
-  "mcpServers": {
-    "local-tool": {
-      "transport": "stdio",
-      "command": "node",
-      "args": ["server.js"],
-      "env": {
-        "TOKEN": "xxx"
-      },
-      "cwd": "D:/path/to/server"
-    }
-  }
-}
+```toml
+[mcp_servers.playwright]
+url = "http://127.0.0.1:8931/mcp"
+allow = ["browser_*"]
+deny = ["browser_evaluate", "browser_file_upload"]
 ```
 
 说明：
 
-- 顶层必须是对象
-- `mcpServers` 必须是对象
-- `mcpServers` 下每个 key 都表示一个外接服务名，例如 `playwright`、`dbhub-sqlserver`
-- 每个服务项也必须是对象
+- `[mcp_servers.<name>]` 下的 `<name>` 是外接服务名
+- 配置 `command` 表示 stdio 服务，配置 `url` 表示远程服务
+- 同一个服务不能同时配置 `command` 和 `url`
 
 支持字段：
 
@@ -394,86 +368,46 @@ stdio 外接服务也使用同一层级：
 |------|------|------|
 | `url` | `string` | 必填。外接 MCP 服务地址。 |
 | `enabled` | `boolean` | 可选。是否启用，默认 `true`。 |
-| `transport` | `string` | 可选。支持 `streamable_http`、`sse` 或 `stdio`。 |
-| `headers` | `object` | 可选。请求头映射，键和值都会按字符串处理；仅 HTTP/SSE 生效。 |
+| `required` | `boolean` | 可选。启动失败时是否终止应用启动，默认 `false`。 |
 | `command` | `string` | `stdio` 必填。外接服务启动命令。 |
-| `args` | `array` | 可选。`stdio` 启动参数，数组项按字符串处理。 |
-| `env` | `object` | 可选。`stdio` 环境变量映射，键和值都会按字符串处理。 |
+| `args` | `array` | 可选。`stdio` 启动参数。 |
+| `env` | `table` | 可选。`stdio` 环境变量映射。 |
 | `cwd` | `string` | 可选。`stdio` 工作目录。 |
-| `encoding` | `string` | 可选。`stdio` 编码，默认 `utf-8`。 |
-| `encoding_error_handler` | `string` | 可选。`stdio` 解码错误处理，支持 `strict / ignore / replace`。 |
+| `bearer_token_env_var` | `string` | 可选。远程服务 Bearer Token 所在的环境变量。 |
+| `http_headers` | `table` | 可选。远程服务固定请求头。 |
+| `env_http_headers` | `table` | 可选。请求头到环境变量名的映射。 |
 | `startup_timeout_sec` | `number` | 可选。单个服务启动超时秒数，默认 `10`。 |
-| `timeout_sec` | `number` | 可选。请求超时秒数。 |
-| `sse_read_timeout_sec` | `number` | 可选。SSE 读取超时秒数。 |
-| `terminate_on_close` | `boolean` | 可选。仅 `streamable_http` 使用，默认 `true`。 |
-| `tools` | `object` | 可选。当前服务的工具筛选规则，支持 `allow` 和 `deny` 数组。 |
-| `notes` | `string` | 可选。备注文本，不参与连接逻辑。 |
+| `tool_timeout_sec` | `number` | 可选。工具请求超时秒数，默认 `60`。 |
+| `allow` | `array` | 可选。允许暴露的工具名或 glob 模式。 |
+| `deny` | `array` | 可选。拒绝暴露的工具名或 glob 模式。 |
 
 补充约定：
 
-- 如果 `transport` 省略，且 `url` 以 `/sse` 结尾，会推断为 `sse`
-- 如果 `transport` 省略，且存在 `command` 且没有 `url`，会推断为 `stdio`
-- 其它情况下默认按 `streamable_http` 处理
+- 存在 `command` 时按 `stdio` 处理，存在 `url` 时按远程服务处理
+- `url` 以 `/sse` 结尾时会连接 SSE 端点，其余 URL 使用 Streamable HTTP
 - `enabled: false` 会跳过该服务
-- `tools.allow` 和 `tools.deny` 按服务返回的原始工具名进行大小写敏感 glob 匹配，支持 `*` 和 `?`
-- 未配置 `allow` 时不启用白名单；显式配置 `allow: []` 时不暴露任何工具
-- `deny` 最后执行并优先于 `allow`；`/mcp force` 不会绕过工具筛选规则
-- HTTP/SSE 配置里的 `env` 不会生效；stdio 配置里的 `headers` 不会生效
-- 未识别字段会被忽略，不会透传给 MCP SDK
+- `allow` 和 `deny` 按服务返回的原始工具名进行大小写敏感 glob 匹配，支持 `*` 和 `?`
+- 未配置 `allow` 时不启用白名单；显式配置空数组时不暴露任何工具
+- `deny` 最后执行并优先于 `allow`；`/mcp force` 不会绕过筛选规则
+- 未识别字段会导致配置校验失败
 
-例如，只开放查询类工具并拒绝删除操作：
+例如，让 Playwright 只开放常规浏览器操作，并拒绝脚本执行和文件上传：
 
-```json
-{
-  "mcpServers": {
-    "zentao": {
-      "command": "D:\\mcp-servers\\zentao-mcp\\bin\\zentao-mcp-windows-amd64.exe",
-      "args": ["-config", "D:\\mcp-servers\\zentao-mcp\\config.example.yaml"],
-      "tools": {
-        "allow": ["get_*", "list_*"],
-        "deny": ["delete_*"]
-      }
-    }
-  }
-}
+```toml
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+allow = ["browser_*"]
+deny = ["browser_evaluate", "browser_file_upload"]
 ```
 
-外接服务由本地配置接入。外接服务需提前可访问；`startup_timeout_sec` 用于启动、初始化和工具发现，`timeout_sec` 用于后续连接和请求等待，`sse_read_timeout_sec` 用于 SSE 读取等待。
-
-如果你要接 `sse` 服务，最小结构类似：
-
-```json
-{
-  "mcpServers": {
-    "events": {
-      "transport": "sse",
-      "url": "http://localhost:8932/sse"
-    }
-  }
-}
-```
+外接服务由本地配置接入。外接服务需提前可访问；`startup_timeout_sec` 用于启动、初始化和工具发现，`tool_timeout_sec` 用于后续工具请求等待。
 
 示例：
 ```
-# 使用外接 MCP 工具查询数据库
-mind exec --mode xtra "打开 DBHub，查询 users 表并返回结果摘要"
-
-# 使用外部浏览器或网页类 MCP 工具协作
-mind exec --mode xtra "打开目标网页，抓取当前页面快照并总结关键字段"
+# 使用 Playwright MCP 打开页面并读取内容
+mind exec --mode xtra "打开 https://example.com，读取页面结构并总结主要内容"
 ```
-
-如果你要系统看外接工具本身的完整用法，直接看：
-
-- [Playwright 外接工具实战](playbook.playwright.md)
-- [DBHub 外接工具实战](playbook.dbhub.md)
-
-如果你要先把外接服务单独启动起来，再让 `exec --mode xtra` 通过 HTTP 接入它，可以参考：
-
-- Playwright 推荐顺序：
-  1. `npx playwright install chromium`
-  2. `npx @playwright/mcp@latest --port 8931`
-- DBHub 全局安装：`npm install -g @bytebase/dbhub@latest`
-- DBHub 启动示例：`dbhub --transport http --port 8080 --dsn "sqlserver://user:password@host:1433/dbname"`
 
 ### 订阅命令
 `mind agent listen`

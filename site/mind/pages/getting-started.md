@@ -188,7 +188,7 @@ mind
 
 - 输入 `/model <model-id>` 可以只修改主模型 ID，例如 `/model gpt-5-codex`。
 - 输入 `/effort` 可以用二级菜单选择推理强度：`low / medium / high / xhigh`。
-- `/model <model-id>` 会写入本地 `config.toml` 的 `[model.primary].model`；`/effort` 会写入 `[model.primary].reasoning_effort`；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。
+- `/model <model-id>` 会写入本地 `config.toml` 的顶层 `model`；`/effort` 会写入顶层 `model_reasoning_effort`；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。
 - 输入 `/preferences` 打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名。
 
 ## 常见问题

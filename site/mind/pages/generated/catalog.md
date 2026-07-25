@@ -41,10 +41,6 @@
 
 - [设备域实战](playbook.device.md)  
   适合看设备能力分层、多设备广播模型和稳定执行建议。
-- [Playwright 外接工具实战](playbook.playwright.md)  
-  适合看 --xtra 下浏览器协作、页面取证、交互动作和网络诊断。
-- [DBHub 外接工具实战](playbook.dbhub.md)  
-  适合看 --xtra 下数据库搜索、只读查询、固定查询和 SQL Server 场景建议。
 - [原生 coding 链路](playbook.nativecoding.md)  
   适合看 shell 诊断、工作区写文件、unified diff patch 和验证收束。
 - [Monkey 扰动](playbook.monkey.md)  

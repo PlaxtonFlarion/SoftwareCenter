@@ -64,4 +64,4 @@ codex mcp add mind -- python D:\PycharmProjects\ProxyMind\mind.py mcp-server
 
 MCP host 断开后，服务会关闭外部 MCP、native coding runtime 和运行报告。服务不会自动启动 Helix，也不提供远程 HTTP transport。
 
-不要在 Mind 自己的 `~/.mind/mcp_servers.json` 中配置 `mind mcp-server`。该文件由 Mind 服务启动时读取，把自身放进去会形成递归子进程。
+不要在 Mind 自己的 `~/.mind/config.toml` 的 `[mcp_servers]` 中配置 `mind mcp-server`。Mind 服务启动时会读取这些外部服务，把自身放进去会形成递归子进程。
