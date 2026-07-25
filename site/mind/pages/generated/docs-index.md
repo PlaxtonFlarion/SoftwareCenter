@@ -5,55 +5,57 @@
 ### 入门与入口
 适合补齐交互入口、REPL 切换、订阅和输入约束。
 
-- [交互模式](interactive-mode.md)  
+- [命令行使用参考](cli-usage.md)
+  适合查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合规则。
+- [交互模式](interactive-mode.md)
   适合看 REPL 指令、CHAT / FAST / XTRA 状态切换和输入约束。
-- [订阅模式](agent-mode.md)  
-  适合看 --agent 的会话、长链路监听、任务下发和恢复链路。
+- [订阅模式](agent-mode.md)
+  适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。
 
 ### 编排与协议
-适合处理 `--code`、协议校验、模板层和批量执行结构。
+适合处理 `mind batch`、协议校验、模板层和批量执行结构。
 
-- [星图协议](cli-code.md)  
-  适合看 --code 的字段、层级、前后置和规则结构。
-- [星图深入说明](cli-code-advanced.md)  
+- [星图协议](cli-code.md)
+  适合看 mind batch 的字段、层级、前后置和规则结构。
+- [星图深入说明](cli-code-advanced.md)
   适合看覆盖优先级、执行顺序、批跑控制语义和常见误写。
-- [星图样例](code-blueprints.md)  
-  适合看跨域 --code 编排的高层自然语言样例，以及什么时候该写星图。
-- [星图源抽象设计](cli-code-source-design.md)  
-  适合看 --code 当前如何解析本地文件、stdin、inline 和 URL source。
-- [接口实战](playbook.api.md)  
+- [星图样例](code-blueprints.md)
+  适合看跨域 mind batch 编排的高层自然语言样例，以及什么时候该写星图。
+- [星图源抽象设计](cli-code-source-design.md)
+  适合看 mind batch 当前如何解析本地文件、stdin、inline 和 URL source。
+- [接口实战](playbook.api.md)
   适合看协议边界、提取、断言和批量请求。
-- [模板能力](playbook.template.md)  
+- [模板能力](playbook.template.md)
   适合看模板表达式、签名前置材料和模板层边界。
 
 ### 执行与取证
 适合处理设备动作、多媒体证据链和端侧执行收束。
 
-- [设备域实战](playbook.device.md)  
+- [设备域实战](playbook.device.md)
   适合看设备能力分层、多设备广播模型和稳定执行建议。
-- [原生 coding 链路](playbook.nativecoding.md)  
+- [原生 coding 链路](playbook.nativecoding.md)
   适合看 shell 诊断、工作区写文件、unified diff patch 和验证收束。
-- [Monkey 扰动](playbook.monkey.md)  
+- [Monkey 扰动](playbook.monkey.md)
   适合看随机扰动的全部参数、执行流程和返回结构。
-- [多媒体链路](playbook.media.md)  
+- [多媒体链路](playbook.media.md)
   适合看抽帧、裁剪、转码、拼接和音频处理。
 
 ### 性能与安全
 适合处理性能回归、稳定性诊断、签名和加解密链路。
 
-- [安全工具](playbook.security.md)  
+- [安全工具](playbook.security.md)
   适合看摘要、JWT、RSA、AES 和安全层边界。
-- [压测与脚本执行](playbook.load.md)  
+- [压测与脚本执行](playbook.load.md)
   适合看本地标准脚本、本地自由脚本、云端分布式压测和结果收束边界。
-- [性能实战](playbook.performance.md)  
+- [性能实战](playbook.performance.md)
   适合看视觉真值、资源趋势、稳定性扰动和性能星图样例。
 
 ### 结构与维护
 适合继续读系统骨架、站点同步链路和维护约定。
 
-- [背景与架构](architecture.md)  
+- [背景与架构](architecture.md)
   适合看系统分层、工具域、云端增强和推理集群。
-- [维护者指南](maintainer-guide.md)  
+- [维护者指南](maintainer-guide.md)
   适合在维护文档、官网壳和同步链路时阅读。
 
 ## 阅读建议

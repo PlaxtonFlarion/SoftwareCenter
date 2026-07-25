@@ -13,11 +13,18 @@
       "summary": "完整正文目录入口；已经知道要找什么时，从这里按专题跳文档最快。"
     },
     {
+      "source": "docs/cli-usage.md",
+      "target": "cli-usage.md",
+      "label": "命令行使用参考",
+      "category": "入门与入口",
+      "summary": "适合查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合规则。"
+    },
+    {
       "source": "docs/cli-code.md",
       "target": "cli-code.md",
       "label": "星图协议",
       "category": "编排与协议",
-      "summary": "适合看 --code 的字段、层级、前后置和规则结构。"
+      "summary": "适合看 mind batch 的字段、层级、前后置和规则结构。"
     },
     {
       "source": "docs/cli-code-advanced.md",
@@ -31,14 +38,14 @@
       "target": "code-blueprints.md",
       "label": "星图样例",
       "category": "编排与协议",
-      "summary": "适合看跨域 --code 编排的高层自然语言样例，以及什么时候该写星图。"
+      "summary": "适合看跨域 mind batch 编排的高层自然语言样例，以及什么时候该写星图。"
     },
     {
       "source": "docs/cli-code-source-design.md",
       "target": "cli-code-source-design.md",
       "label": "星图源抽象设计",
       "category": "编排与协议",
-      "summary": "适合看 --code 当前如何解析本地文件、stdin、inline 和 URL source。"
+      "summary": "适合看 mind batch 当前如何解析本地文件、stdin、inline 和 URL source。"
     },
     {
       "source": "docs/playbook.api.md",
@@ -101,7 +108,7 @@
       "target": "agent-mode.md",
       "label": "订阅模式",
       "category": "入门与入口",
-      "summary": "适合看 --agent 的会话、长链路监听、任务下发和恢复链路。"
+      "summary": "适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。"
     },
     {
       "source": "docs/playbook.media.md",

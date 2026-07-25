@@ -131,6 +131,8 @@ $env:Path += ";C:\Program Files\Mind\MindEngine"
 
 ## 最小命令
 
+完整的选项位置、图片与模型组合、stdin、会话恢复和 MCP 管理示例见[命令行使用参考](../generated/cli-usage/)。
+
 ### 先跑一条最小命令
 
 ```bash
@@ -215,6 +217,12 @@ mind
 ## 下一步看什么
 
 <div class="mind-route-grid">
+  <a class="mind-route-card" href="../generated/cli-usage/">
+    <span class="mind-route-meta">Next</span>
+    <h3>命令行使用参考</h3>
+    <p>继续查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合方式。</p>
+    <span class="mind-card-arrow">查看命令 →</span>
+  </a>
   <a class="mind-route-card" href="../capabilities/">
     <span class="mind-route-meta">Next</span>
     <h3>能力概览</h3>

@@ -221,8 +221,8 @@ mind agent listen
 ## ⭐️ 命令行参数
 Mind 使用子命令区分运行入口，再通过命令选项调整模式、输出和工具权限。
 
-- **子命令**：`exec`、`batch`、`agent listen`、`helix upgrade`、`doctor`、`mcp-server`
-- **命令选项**：`--mode`、`--helix`、`--json`、`--access`
+- **子命令**：`exec`、`resume`、`batch`、`agent listen`、`helix upgrade`、`doctor`、`mcp`、`mcp-server`、`completion`
+- **常用选项**：`--mode`、`--helix`、`--json`、`--access`、`--image`、`--model`
 - **默认入口**：不带子命令的 `mind` 进入交互模式
 
 > 心智模型：**先选要执行的命令，再为该命令添加运行选项。**
@@ -230,12 +230,17 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 ### 先记住怎么组合
 
 - 单次任务使用 `mind exec [PROMPT]`，默认走 `xtra`
+- `mind exec` 也可以简写为 `mind e`
+- 图片使用 `-i/--image`，模型使用 `-m/--model`；两者都可以放在根命令或 `exec`/`resume` 子命令
+- prompt 可以与管道输入组合，例如 `git diff | mind exec "审查这些改动"`
 - 通过 `--mode chat|fast|xtra` 显式切换执行模式
 - 批跑或回归使用 `mind batch <source...> --mode chat|fast|xtra`
 - 远端任务订阅使用 `mind agent listen`
 - Helix 运行组件升级使用 `mind helix upgrade`
 - 本地环境诊断使用 `mind doctor`
 - 向 MCP host 暴露 Mind agent 使用 `mind mcp-server`
+
+完整的选项位置、图片合并、模型覆盖、stdin、会话恢复、MCP 管理与补全命令见[命令行使用参考](docs/cli-usage.md)。
 
 ### 常用速查
 如果你只想先跑起来，先记住这些入口：

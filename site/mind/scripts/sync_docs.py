@@ -16,7 +16,7 @@ CATEGORY_ORDER = [
 ]
 CATEGORY_GUIDES = {
     "入门与入口": "适合补齐交互入口、REPL 切换、订阅和输入约束。",
-    "编排与协议": "适合处理 `--code`、协议校验、模板层和批量执行结构。",
+    "编排与协议": "适合处理 `mind batch`、协议校验、模板层和批量执行结构。",
     "执行与取证": "适合处理设备动作、多媒体证据链和端侧执行收束。",
     "性能与安全": "适合处理性能回归、稳定性诊断、签名和加解密链路。",
     "结构与维护": "适合继续读系统骨架、站点同步链路和维护约定。",
@@ -170,11 +170,11 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
     ]
 
     if overview:
-        lines.append(f"- [{overview.label}]({overview.target})  ")
+        lines.append(f"- [{overview.label}]({overview.target})")
         if overview.summary:
             lines.append(f"  {overview.summary}")
     if docs_index:
-        lines.append(f"- [{docs_index.label}]({docs_index.target})  ")
+        lines.append(f"- [{docs_index.label}]({docs_index.target})")
         if docs_index.summary:
             lines.append(f"  {docs_index.summary}")
 
@@ -193,7 +193,7 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
             lines.append(guide)
         lines.append("")
         for entry in entries_in_category:
-            lines.append(f"- [{entry.label}]({entry.target})  ")
+            lines.append(f"- [{entry.label}]({entry.target})")
             if entry.summary:
                 lines.append(f"  {entry.summary}")
         lines.append("")
@@ -204,7 +204,7 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
         lines.append(f"### {category}")
         lines.append("")
         for entry in entries_in_category:
-            lines.append(f"- [{entry.label}]({entry.target})  ")
+            lines.append(f"- [{entry.label}]({entry.target})")
             if entry.summary:
                 lines.append(f"  {entry.summary}")
         lines.append("")
@@ -240,7 +240,7 @@ def render_docs_readme(source_root: Path, entries: list[DocEntry]) -> None:
             lines.append(guide)
         lines.append("")
         for entry in entries_in_category:
-            lines.append(f"- [{entry.label}]({Path(entry.source).name})  ")
+            lines.append(f"- [{entry.label}]({Path(entry.source).name})")
             if entry.summary:
                 lines.append(f"  {entry.summary}")
         lines.append("")
@@ -251,7 +251,7 @@ def render_docs_readme(source_root: Path, entries: list[DocEntry]) -> None:
         lines.append(f"### {category}")
         lines.append("")
         for entry in entries_in_category:
-            lines.append(f"- [{entry.label}]({Path(entry.source).name})  ")
+            lines.append(f"- [{entry.label}]({Path(entry.source).name})")
             if entry.summary:
                 lines.append(f"  {entry.summary}")
         lines.append("")

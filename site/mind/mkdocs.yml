@@ -48,6 +48,7 @@ nav:
   - 能力概览: capabilities.md
   - 参考文档:
       - 阅读导览: reference.md
+      - 命令行使用: generated/cli-usage.md
       - 项目总览: generated/overview.md
       - 文档索引: generated/docs-index.md
       - 专题目录: generated/catalog.md

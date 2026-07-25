@@ -102,6 +102,11 @@
 ## 按常见目的进入
 
 <div class="mind-panel-grid mind-panel-grid-tight">
+  <a class="mind-panel mind-panel-link" href="../generated/cli-usage/">
+    <span class="mind-kicker">命令参考</span>
+    <h3>我想确认选项怎么组合</h3>
+    <p>查看 exec、resume、图片、模型、stdin、MCP 和补全命令的完整组合。</p>
+  </a>
   <a class="mind-panel mind-panel-link" href="../getting-started/">
     <span class="mind-kicker">目的一</span>
     <h3>我想先跑通一条命令</h3>
