@@ -10,7 +10,8 @@
 |---|---|---|---|
 | `prompt` | `string` | 必填 | 本次任务内容。 |
 | `mode` | `chat \| fast \| xtra` | `xtra` | Mind 运行模式。 |
-| `access_mode` | `safe \| full` | `safe` | 工具访问模式。 |
+| `sandbox_mode` | `read-only \| workspace-write \| danger-full-access \| null` | 配置值或 `read-only` | 沙箱边界。 |
+| `approval_policy` | `untrusted \| on-request \| never \| null` | 配置值或 `never` | 工具审批策略。 |
 | `working_directory` | `string \| null` | MCP 进程工作目录 | 可选的任务工作目录，必须已经存在。 |
 | `timeout_sec` | `number \| null` | `900` | 整次请求的超时秒数，包含等待串行调用锁的时间；传 `null` 可关闭服务端超时。 |
 | `session_id` | `string \| null` | `null` | 传入先前返回的会话标识，在同一工作目录续接对话。 |

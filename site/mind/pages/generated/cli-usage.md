@@ -31,7 +31,7 @@ mind [OPTIONS] <COMMAND> [ARGS]
 
 ## 进程级选项
 
-`-c/--config` 和 `-p/--profile` 是进程级选项，可以写在子命令之前或之后：
+配置、沙箱和审批选项都是进程级选项，可以写在子命令之前或之后：
 
 ```powershell
 mind -p work exec "检查当前项目"
@@ -43,6 +43,8 @@ mind exec "检查当前项目" -c 'model_reasoning_effort="high"'
 |------|------|
 | `-c, --config <key=value>` | 按点路径临时覆盖配置；值优先按 TOML 解析，可重复传入 |
 | `-p, --profile <PROFILE>` | 在基础配置之上叠加 `~/.mind/<name>.config.toml` |
+| `-s, --sandbox <MODE>` | 选择 `read-only`、`workspace-write` 或 `danger-full-access` |
+| `-a, --ask-for-approval <POLICY>` | 选择 `untrusted`、`on-request` 或 `never` |
 | `-V, --version` | 输出版本号 |
 | `-h, --help` | 输出帮助 |
 
@@ -76,11 +78,11 @@ mind e [OPTIONS] [PROMPT]
 常用示例：
 
 ```powershell
-# 默认使用 xtra 和 safe 访问模式
+# 非交互运行默认使用 xtra、read-only 和 never
 mind exec "检查当前项目并给出结论"
 
-# 选择模式、工具权限和本次模型
-mind exec --mode xtra --access full -m gpt-5.5 "修复测试失败"
+# 选择模式、沙箱、审批策略和本次模型
+mind exec --mode xtra -s workspace-write -a on-request -m gpt-5.5 "修复测试失败"
 
 # 输出 newline-delimited JSON 事件
 mind exec --json "检查当前项目"
@@ -94,7 +96,6 @@ mind exec --helix "检查设备状态"
 | 选项 | 说明 |
 |------|------|
 | `--mode <chat|fast|xtra>` | 选择执行模式，默认 `xtra` |
-| `--access <ACCESS_MODE>` | 选择工具访问模式，默认 `safe` |
 | `--json` | 输出 JSONL 事件流 |
 | `--helix` | 启动或复用本地 Helix，并接入其 MCP 工具 |
 | `-i, --image <FILE>` | 添加图片附件 |
@@ -178,13 +179,13 @@ mind resume <SESSION_ID> "继续检查剩余问题"
 
 ```powershell
 mind batch --mode chat .\api_batch.md
-mind batch --mode xtra .\first.md .\second.md --access full
+mind batch --mode xtra .\first.md .\second.md -s danger-full-access -a never
 Get-Content .\task.md | mind batch --mode chat -
 mind batch --mode fast "inline: 在这里写星图内容"
 mind batch --mode chat https://example.com/task.md
 ```
 
-`SOURCE` 支持本地文件、`-`、`inline:` 内容和 URL，并且可以一次传入多个 source。`--mode` 必填；`--access` 默认是 `safe`；需要 Helix MCP 工具时添加 `--helix`。
+`SOURCE` 支持本地文件、`-`、`inline:` 内容和 URL，并且可以一次传入多个 source。`--mode` 必填；未覆盖时非交互运行使用 `read-only + never`；需要 Helix MCP 工具时添加 `--helix`。
 
 ## 外部 MCP 管理
 

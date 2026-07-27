@@ -222,7 +222,7 @@ mind agent listen
 Mind 使用子命令区分运行入口，再通过命令选项调整模式、输出和工具权限。
 
 - **子命令**：`exec`、`resume`、`batch`、`agent listen`、`helix upgrade`、`doctor`、`mcp`、`mcp-server`、`completion`
-- **常用选项**：`--mode`、`--helix`、`--json`、`--access`、`--image`、`--model`
+- **常用选项**：`--mode`、`--sandbox`、`--ask-for-approval`、`--helix`、`--json`、`--image`、`--model`
 - **默认入口**：不带子命令的 `mind` 进入交互模式
 
 > 心智模型：**先选要执行的命令，再为该命令添加运行选项。**
@@ -254,7 +254,7 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 | 订阅监听 | `mind agent listen` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / xtra` |
 | 启用 Helix MCP | `mind exec --mode xtra "..." --helix` | 本次运行需要 Helix MCP 工具 |
-| 调整工具准入 | `mind exec --mode chat "..." --access full` | 本次运行使用完整工具访问权限 |
+| 调整工具准入 | `mind exec "..." -s workspace-write -a on-request` | 本次运行允许工作区写入，越界前请求审批 |
 | 批量执行星图 | `mind batch --mode chat <source...>` | 批跑、回归、规则化星图执行 |
 | 环境诊断 | `mind doctor` | 只读检查配置、MCP、Helix 和本地 coding 工具 |
 | MCP 服务 | `mind mcp-server` | 通过 stdio 向 Codex 等 MCP host 暴露 `mind_exec` |
@@ -438,7 +438,7 @@ mind agent listen
 - 支持 `exec --mode chat`、`exec --mode fast`、`exec --mode xtra` 三个直接请求模式
 - stdout 只写 JSONL；面向人的非结构化信息不混入事件流
 - 直接执行无论是否使用 `--json` 都不询问、不等待，遇到需要人工确认的工具调用会直接拒绝
-- `--json` 只改变输出格式；需要完整工具访问时使用 `--access full`
+- `--json` 只改变输出格式；沙箱和审批策略仍由各自选项决定
 - 完整成功返回退出码 `0`，失败或流提前结束返回 `1`，用户中断返回 `130`
 
 示例：
@@ -447,19 +447,22 @@ mind exec --mode chat "检查并修复测试" --json
 mind exec --mode fast "分析接口响应" --json
 ```
 
-### 访问模式选项
-`--access safe|full`
+### 沙箱与审批选项
+`--sandbox read-only|workspace-write|danger-full-access`
 
-设置本次运行的工具访问模式：
-- 默认使用 `safe` 模式，非交互运行遇到需要人工审批的工具调用会拒绝执行
-- 传入 `--access full` 后使用完整访问模式
-- 适用于 `mind exec` 和 `mind batch`
+`--ask-for-approval untrusted|on-request|never`
+
+沙箱决定工具能够触达的资源边界，审批策略决定何时询问用户。两个维度独立配置，且可以写在子命令之前或之后：
+- 交互模式默认使用 `workspace-write + on-request`（`Auto`）
+- 非交互运行默认使用 `read-only + never`，不会等待人工输入
+- 完整访问需要显式组合 `danger-full-access + never`
+- 交互模式可通过 `/permissions` 在 `Read Only`、`Auto`、`Full Access` 三个预设间切换
 
 示例：
 ```
 mind exec --mode chat "检查项目并修复问题"
-mind exec --mode xtra "连接外部工具并完成修改" --access full
-mind batch --mode chat workflow.md --access full
+mind exec --mode xtra "连接外部工具并完成修改" -s workspace-write -a on-request
+mind batch --mode chat workflow.md -s danger-full-access -a never
 ```
 
 ### 星图批处理命令

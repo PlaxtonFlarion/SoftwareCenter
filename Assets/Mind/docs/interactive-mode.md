@@ -36,7 +36,7 @@
 - `/xtra`：切到 `XTRA`
 - `/new`：开始新对话，重置 `cid / sid`，保留当前模式和模型
 - `/resume`：从最近 24 小时内的本地会话游标中恢复当前模式的对话
-- `/permissions`：切换权限模式
+- `/permissions`：在 `Read Only`、`Auto`、`Full Access` 三个权限预设间切换；分别对应 `read-only + on-request`、`workspace-write + on-request`、`danger-full-access + never`
 - `/model <model-id>`：持久化主模型 ID；写入本地 `config.toml`，下一轮模型请求生效
 - `/effort`：设置主模型推理强度
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
