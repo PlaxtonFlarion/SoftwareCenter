@@ -14,7 +14,7 @@
 - 只想改视频文件：再看裁剪、缩放、转码、拼接、换容器和去音轨
 - 只想处理音轨：再看抽取音轨、替换音轨、音频转换和本机试听
 - 想做完整证据链：最后看组合链路和星图任务
-- 如果你要把媒体链路真正写进 `mind batch`，结构层先配合星图协议页，执行语义再配合星图深入说明
+- 如果你要把媒体链路真正写进 `mind flow`，结构层先配合星图协议页，执行语义再配合星图深入说明
 
 一句话理解：
 
@@ -143,7 +143,7 @@ mind exec --mode fast "从 /path/to/demo.mp4 提取音轨为 wav，再转成 160
 更自然的星图写法通常长这样：
 
 ```text
-mind batch --mode chat media.md
+mind flow --mode chat media.md
 
 # name: media_evidence_chain
 从 `/path/to/demo.mp4` 中裁出第 `15` 秒到第 `28` 秒的问题片段。

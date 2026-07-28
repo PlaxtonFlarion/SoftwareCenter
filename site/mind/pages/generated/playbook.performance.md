@@ -13,7 +13,7 @@
 - 想看端到端体验：先看 `E2E / ASR / VAD / tokens/s`
 - 想看资源趋势：再看 `Android 内存基线 / 内存泄漏 / 流畅度`
 - 想做稳定性扰动：最后看 `Android 扰动`
-- 如果你要把这些案例真正写成 `mind batch` 批跑，结构层先配合星图协议页，执行语义再配合星图深入说明
+- 如果你要把这些案例真正写成 `mind flow` 批跑，结构层先配合星图协议页，执行语义再配合星图深入说明
 
 一句话理解：
 
@@ -27,11 +27,11 @@
 | 视觉真值 | Framix 帧分析与阶段报告 |
 | 指标采样 | Memrix 内存 / 流畅度 / 趋势对比 |
 | 稳定性扰动 | 随机扰动 + logcat 异常留痕 |
-| 典型跑法 | `mind batch --mode chat ...` 或 `mind exec --mode chat "..."` |
+| 典型跑法 | `mind flow --mode chat ...` 或 `mind exec --mode chat "..."` |
 
 下面几个 `cfg` 星图示例默认都用同一条命令运行：
 ```bash
-mind batch --mode chat example.md
+mind flow --mode chat example.md
 ```
 
 ## E2E 耗时、ASR 首字上屏、VAD 尾字上屏、流式 tokens/s
@@ -134,7 +134,7 @@ loop_suffix: |
 
 说明：
 - 同类目标也可以用英文或日文描述，执行语义保持一致
-- 如果更偏批跑回归，建议把这类扰动任务写入 `mind batch` 星图统一管理
+- 如果更偏批跑回归，建议把这类扰动任务写入 `mind flow` 星图统一管理
 
 ## 相关文档
 

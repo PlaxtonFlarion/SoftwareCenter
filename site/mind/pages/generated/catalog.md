@@ -23,16 +23,16 @@
   适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。
 
 ### 编排与协议
-适合处理 `mind batch`、协议校验、模板层和批量执行结构。
+适合处理 `mind flow`、协议校验、模板层和批量执行结构。
 
 - [星图协议](cli-code.md)
-  适合看 mind batch 的字段、层级、前后置和规则结构。
+  适合看 mind flow 的字段、层级、前后置和规则结构。
 - [星图深入说明](cli-code-advanced.md)
   适合看覆盖优先级、执行顺序、批跑控制语义和常见误写。
 - [星图样例](code-blueprints.md)
-  适合看跨域 mind batch 编排的高层自然语言样例，以及什么时候该写星图。
+  适合看跨域 mind flow 编排的高层自然语言样例，以及什么时候该写星图。
 - [星图源抽象设计](cli-code-source-design.md)
-  适合看 mind batch 当前如何解析本地文件、stdin、inline 和 URL source。
+  适合看 mind flow 当前如何解析本地文件、stdin、inline 和 URL source。
 - [接口实战](playbook.api.md)
   适合看协议边界、提取、断言和批量请求。
 - [模板能力](playbook.template.md)

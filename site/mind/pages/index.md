@@ -79,10 +79,10 @@ mind exec --mode xtra "概述当前系统的核心能力、边界与典型使用
 mind
 ```
 
-### 需要批跑和回归时用 `mind batch`
+### 需要批跑和回归时用 `mind flow`
 
 ```bash
-mind batch --mode chat api_batch.md
+mind flow --mode chat api_batch.md
 ```
 
 ### 需要外接工具协作时用 `exec --mode xtra`

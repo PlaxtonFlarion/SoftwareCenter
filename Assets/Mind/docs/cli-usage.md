@@ -21,7 +21,7 @@ mind [OPTIONS] <COMMAND> [ARGS]
 | `mind` | 进入交互模式 |
 | `mind exec` / `mind e` | 执行一次非交互任务 |
 | `mind resume` | 恢复已有交互会话 |
-| `mind batch` | 执行一个或多个星图 source |
+| `mind flow` | 执行一个或多个星图 source |
 | `mind agent listen` | 监听远端下发任务 |
 | `mind helix upgrade` | 下载或更新 Helix 运行组件 |
 | `mind doctor` | 只读诊断本地运行环境 |
@@ -178,11 +178,11 @@ mind resume <SESSION_ID> "继续检查剩余问题"
 ## 批量执行
 
 ```powershell
-mind batch --mode chat .\api_batch.md
-mind batch --mode xtra .\first.md .\second.md -s danger-full-access -a never
-Get-Content .\task.md | mind batch --mode chat -
-mind batch --mode fast "inline: 在这里写星图内容"
-mind batch --mode chat https://example.com/task.md
+mind flow --mode chat .\api_batch.md
+mind flow --mode xtra .\first.md .\second.md -s danger-full-access -a never
+Get-Content .\task.md | mind flow --mode chat -
+mind flow --mode fast "inline: 在这里写星图内容"
+mind flow --mode chat https://example.com/task.md
 ```
 
 `SOURCE` 支持本地文件、`-`、`inline:` 内容和 URL，并且可以一次传入多个 source。`--mode` 必填；未覆盖时非交互运行使用 `read-only + never`；需要 Helix MCP 工具时添加 `--helix`。

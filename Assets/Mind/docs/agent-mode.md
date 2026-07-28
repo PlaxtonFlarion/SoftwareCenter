@@ -111,7 +111,7 @@ mind.received
 
 映射关系：
 - 文本输入非空：`mind.calling(message=..., mode=...)`
-- 文本输入为空且输入入口列表非空：`mind.mind_pack(profile, mode, ...)`
+- 文本输入为空且输入入口列表非空：`mind.run_flow(profile, mode, ...)`
 
 关键约束：
 - `mode` 不是任意字符串，只能落回本地现有四种执行面

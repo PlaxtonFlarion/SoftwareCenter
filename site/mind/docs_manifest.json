@@ -24,7 +24,7 @@
       "target": "cli-code.md",
       "label": "星图协议",
       "category": "编排与协议",
-      "summary": "适合看 mind batch 的字段、层级、前后置和规则结构。"
+      "summary": "适合看 mind flow 的字段、层级、前后置和规则结构。"
     },
     {
       "source": "docs/cli-code-advanced.md",
@@ -38,14 +38,14 @@
       "target": "code-blueprints.md",
       "label": "星图样例",
       "category": "编排与协议",
-      "summary": "适合看跨域 mind batch 编排的高层自然语言样例，以及什么时候该写星图。"
+      "summary": "适合看跨域 mind flow 编排的高层自然语言样例，以及什么时候该写星图。"
     },
     {
       "source": "docs/cli-code-source-design.md",
       "target": "cli-code-source-design.md",
       "label": "星图源抽象设计",
       "category": "编排与协议",
-      "summary": "适合看 mind batch 当前如何解析本地文件、stdin、inline 和 URL source。"
+      "summary": "适合看 mind flow 当前如何解析本地文件、stdin、inline 和 URL source。"
     },
     {
       "source": "docs/playbook.api.md",

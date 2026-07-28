@@ -45,7 +45,7 @@
   <div class="mind-step-card">
     <span class="mind-step-index">批量</span>
     <h3>需要批跑和规则时改走星图协议</h3>
-    <p>需要批跑、前后置和回归时，使用 <code>mind batch &lt;source...&gt; --mode chat|fast|xtra</code>。</p>
+    <p>需要批跑、前后置和回归时，使用 <code>mind flow &lt;source...&gt; --mode chat|fast|xtra</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">下发</span>

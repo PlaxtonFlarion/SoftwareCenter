@@ -114,7 +114,7 @@
   </a>
   <a class="mind-panel mind-panel-link" href="../generated/cli-code/">
     <span class="mind-kicker">目的二</span>
-    <h3>我想写 <code>mind batch</code></h3>
+    <h3>我想写 <code>mind flow</code></h3>
     <p>先读星图协议，再补星图深入说明和样例。</p>
   </a>
   <a class="mind-panel mind-panel-link" href="../generated/agent-mode/">
