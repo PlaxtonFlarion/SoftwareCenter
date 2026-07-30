@@ -412,6 +412,4 @@ adb -s <serial> shell monkey -p <package> \
 
 - [设备与 UI 实战](playbook.device.md)
 - [性能实战](playbook.performance.md)
-- [星图协议](cli-code.md)
-- [星图深入说明](cli-code-advanced.md)
 - [正文目录](docs-index.md)

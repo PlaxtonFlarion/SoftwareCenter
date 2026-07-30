@@ -82,7 +82,7 @@ mind.forward
   ↓
 mind.received
   ↓
-本地执行 chat / fast / xtra 或 code 任务
+本地执行 chat / fast / xtra 任务
 ```
 
 几个关键消息：
@@ -101,22 +101,15 @@ mind.received
 下发任务里的执行模式目前只允许：
 - `chat`
 - `fast`
-- `chat`
 - `xtra`
 
-如果任务走“输入入口列表”模式：
-- 类型是 `list[str]`
-- 常见项包括本地文件路径、`inline:...`、`https://...` 或 `-`
-- 服务端只做链接合法性校验和透传，不做意图抽取
-
-映射关系：
-- 文本输入非空：`mind.calling(message=..., mode=...)`
-- 文本输入为空且输入入口列表非空：`mind.run_flow(profile, mode, ...)`
+任务通过非空 `message` 下发，并映射为
+`mind.calling(message=..., mode=...)`。可选的意图摘要和 metadata 会继续透传到本地执行上下文。
 
 关键约束：
-- `mode` 不是任意字符串，只能落回本地现有四种执行面
-- 同时存在文本输入和输入入口列表时，本地按文本输入优先执行
-- 文本输入与意图摘要在输入入口列表模式下都可能为空
+- `mode` 不是任意字符串，只能落回本地现有三种执行面
+- `message` 必须是非空字符串
+- 意图摘要可以为空
 - 本地会先发 `mind.received`，再把实际执行放到后台任务里，避免阻塞 WS 心跳
 
 ## 恢复与重连
@@ -172,7 +165,7 @@ mind.received
 优先确认：
 - 是否收到了 `mind.forward`
 - 执行模式是否是 `chat / fast / xtra`
-- 文本输入是否非空；如果为空，再看输入入口列表是否是非空列表
+- 下发的 `payload.message` 是否为非空字符串
 - 消息是否因为缺少必要的任务标识或会话标识被本地丢弃
 
 ### 怀疑任务被重复执行

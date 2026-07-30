@@ -1,7 +1,7 @@
 # 快速开始
 
 如果你只想尽快把 Mind 跑起来，不需要先把所有专题正文看完。  
-按这条路径走就够了：先确认环境，再发一条最小命令，最后再决定是否进入交互式、星图协议或订阅。
+按这条路径走就够了：先确认环境，再发一条最小命令，最后再决定是否进入交互式、外接协作或订阅。
 
 <div class="mind-step-grid">
   <div class="mind-step-card">
@@ -17,12 +17,12 @@
   <div class="mind-step-card">
     <span class="mind-step-index">路径</span>
     <h3>先跑通，再决定怎么继续</h3>
-    <p>先确认一条最小命令能跑通；后面是进入交互循环、批跑星图，还是订阅远端任务，再按需要继续分流。</p>
+    <p>先确认一条最小命令能跑通；后面是进入交互循环、外接协作，还是订阅远端任务，再按需要继续分流。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">命令</span>
     <h3>发送最小命令</h3>
-    <p>先跑通一条最小任务，再进入设备、协议、多媒体或星图专题。</p>
+    <p>先跑通一条最小任务，再进入设备、协议或多媒体专题。</p>
   </div>
 </div>
 
@@ -145,12 +145,6 @@ mind exec --mode xtra "请用工程视角概述当前系统的核心能力、边
 mind
 ```
 
-### 需要批跑和回归时用 `mind flow`
-
-```bash
-mind flow --mode chat api_batch.md
-```
-
 ### 需要外接工具协作时用 `exec --mode xtra`
 
 ```bash
@@ -232,7 +226,7 @@ mind
   <a class="mind-route-card" href="../reference/">
     <span class="mind-route-meta">Next</span>
     <h3>参考文档</h3>
-    <p>准备继续读设备、协议、多媒体、性能或星图专题时，从这里进入。</p>
+    <p>准备继续读设备、协议、多媒体或性能专题时，从这里进入。</p>
     <span class="mind-card-arrow">查看专题 →</span>
   </a>
 </div>

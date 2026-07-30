@@ -21,7 +21,6 @@
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](docs/playbook.template.md)、[安全工具](docs/playbook.security.md)
 - 外接工具协作：看 [外接 MCP 配置](#外接-mcp-配置单格式)
 - 设备、多媒体和稳定性：看 [设备与 UI 实战](docs/playbook.device.md)、[Monkey 扰动](docs/playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
-- 批跑与回归：看 [命令行参数](#cli-arguments) 中的 `mind flow`
 - 订阅链路：看 [订阅模式](docs/agent-mode.md)
 - 背景设计与实现：看 [背景与架构](#architecture) 和 [构建发布](#build-release)
 
@@ -114,9 +113,6 @@ mind exec --mode xtra "请用工程视角概述当前系统的核心能力、边
 # 需要持续交互时进入 REPL
 mind
 
-# 需要批跑和回归时用 mind flow
-mind flow --mode chat api_batch.md
-
 # 需要外接工具协作时用 exec --mode xtra
 mind exec --mode xtra "打开 DBHub，查询 users 表并返回结果摘要"
 
@@ -124,7 +120,7 @@ mind exec --mode xtra "打开 DBHub，查询 users 表并返回结果摘要"
 mind agent listen
 ```
 
-如果你要跑批量任务或协议用例，直接看 [命令行参数](#cli-arguments) 里的 `mind flow`，以及后面的 [接口实战](#playbook-api)。
+如果你要处理协议或批量请求，直接看后面的 [接口实战](#playbook-api)。
 
 ### 常见问题解答
 
@@ -178,9 +174,9 @@ mind agent listen
 - **Framix 链路**：做帧级分析、阶段诊断和视觉证据沉淀
 - **稳定性扰动**：结合 Monkey 与日志留痕做异常探测
 
-**批跑与回归**
+**执行与订阅**
 
-- **宏编排声明层**：用 `mind flow`、`cfg` 和步骤编排承载批跑与回归
+- **多模式执行与订阅**：用 `chat / fast / xtra` 覆盖主动任务，用 `agent listen` 接收服务端下发任务
 
 ---
 
@@ -207,7 +203,6 @@ mind agent listen
 - `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](docs/agent-mode.md)
 - `chat / fast` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-link`
 - `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-link`
-- `mind flow` 里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
 
 常见误判：
 
@@ -221,7 +216,7 @@ mind agent listen
 ## ⭐️ 命令行参数
 Mind 使用子命令区分运行入口，再通过命令选项调整模式、输出和工具权限。
 
-- **子命令**：`exec`、`resume`、`flow`、`agent listen`、`helix upgrade`、`doctor`、`mcp`、`mcp-server`、`completion`
+- **子命令**：`exec`、`resume`、`agent listen`、`helix upgrade`、`doctor`、`mcp`、`mcp-server`、`completion`
 - **常用选项**：`--mode`、`--sandbox`、`--ask-for-approval`、`--helix`、`--json`、`--image`、`--model`
 - **默认入口**：不带子命令的 `mind` 进入交互模式
 
@@ -234,7 +229,6 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 - 图片使用 `-i/--image`，模型使用 `-m/--model`；两者都可以放在根命令或 `exec`/`resume` 子命令
 - prompt 可以与管道输入组合，例如 `git diff | mind exec "审查这些改动"`
 - 通过 `--mode chat|fast|xtra` 显式切换执行模式
-- 批跑或回归使用 `mind flow <source...> --mode chat|fast|xtra`
 - 远端任务订阅使用 `mind agent listen`
 - Helix 运行组件升级使用 `mind helix upgrade`
 - 本地环境诊断使用 `mind doctor`
@@ -255,7 +249,6 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 | 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / xtra` |
 | 启用 Helix MCP | `mind exec --mode xtra "..." --helix` | 本次运行需要 Helix MCP 工具 |
 | 调整工具准入 | `mind exec "..." -s workspace-write -a on-request` | 本次运行允许工作区写入，越界前请求审批 |
-| 批量执行星图 | `mind flow --mode chat <source...>` | 批跑、回归、规则化星图执行 |
 | 环境诊断 | `mind doctor` | 只读检查配置、MCP、Helix 和本地 coding 工具 |
 | MCP 服务 | `mind mcp-server` | 通过 stdio 向 Codex 等 MCP host 暴露 `mind_exec` |
 
@@ -267,7 +260,7 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
 - 不传 `--helix`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast` 不应进入 Helix 执行面
 - 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
-- 可用于 `mind exec`、`mind flow` 和 `mind agent listen`
+- 可用于 `mind exec` 和 `mind agent listen`
 - 交互模式中使用 `/helix-link` 接入 Helix
 
 示例：
@@ -462,96 +455,7 @@ mind exec --mode fast "分析接口响应" --json
 ```
 mind exec --mode chat "检查项目并修复问题"
 mind exec --mode xtra "连接外部工具并完成修改" -s workspace-write -a on-request
-mind flow --mode chat workflow.md -s danger-full-access -a never
 ```
-
-### 星图编排命令
-`mind flow <source...>`
-
-用于装载一个或多个批量执行星图，并按显式选定的主模式执行。
-- 支持本地 `.md / .txt` 文件
-- 也支持 `mind flow - --mode chat` 从标准输入读取
-- 也支持 `mind flow inline:... --mode chat` 直接执行内联星图
-- 也支持 `mind flow https://... --mode chat` 从 URL 拉取星图
-- 必须通过 `--mode chat|fast|xtra` 选择这批星图使用的运行模式
-- 一次可装载多份星图：`mind flow a.md b.md c.md --mode chat`
-
-约束：
-- 缺少 `--mode` 会直接报错
-- 正确写法必须显式带模式，例如 `mind flow --mode chat cases.md`
-
-文件格式：
-`mind flow` 采用“自然语言块”作为用例单元：每个用例是一段文本，按 `---` 分隔。
-- **分隔符**：单独一行 `---`（去掉空白后等于 `---`）用于分隔用例块
-- **元信息（可选）**：每个用例块顶部可写多行 `# key: value`
-  - 常用：`# name: xxx`（用于 `cfg.pattern` 正则筛选）
-  - 其它字段也允许：`# tag: xxx`、`# owner: xxx` 等（会被解析进 meta）
-- **正文**：元信息之后的所有内容，作为该用例的自然语言目标（交给 chat/fast/xtra 执行）
-- **空行**：块首尾空行会被自动忽略；正文为空的块会被跳过
-
-入口层只需要记住：
-- `mind flow` 适合批跑、回归和规则化执行
-- 正文优先写自然语言，不必在入口文档里展开底层结构
-- 真正的字段、层级和规则写法，直接看 [星图协议](docs/cli-code.md)
-
-#### 示例：
-```
-# 指定用 chat 协议装载一份星图
-mind flow --mode chat http.md
-
-# 指定用 fast 协议执行接口 / 媒体类星图
-mind flow --mode fast media.md concurrent.md
-
-# 指定用 chat 协议执行编排型星图
-mind flow --mode chat workflow.md
-
-# 指定用 xtra 协议执行外接 MCP 星图
-mind flow --mode xtra external_mcp.md
-
-# 一次装载多份星图
-mind flow --mode chat http.md sse.md ws.md graphql.md
-```
-
-#### 文件样例：
-```
-# name: open_home
-打开 `com.example.app`。
-等待 `3` 秒。
-回到桌面。
----
-
-# name: quick_shot
-打开相机。
-等待 `1` 秒。
-截图。
----
-```
-
-#### 一行写法：
-```
-# name: open_home
-打开 `com.example.app`，等待 `3` 秒，回到桌面。
----
-
-# name: quick_shot
-打开相机，等待 `1` 秒，截图。
----
-```
-
-### 深入：三层前后置 + 星图规则层
-`mind flow <source...>`
-
-高级批跑说明已拆到独立正文：[星图深入说明](docs/cli-code-advanced.md)。
-
-这里先记住 5 个点就够了：
-- `mind flow` 必须通过 `--mode chat|fast|xtra` 显式选择运行模式
-- `cfg` 支持批次级、轮次级和任务级前后置
-- 任务级前后置现在分成两层：`item_prefix / item_suffix` 负责每个任务块外层包裹，`global_prefix / global_suffix` 负责单条任务正文前后置
-- `global_rule` 是整份星图的默认规则文本，`rule` 是单任务覆盖规则文本
-- `prefix/suffix` 会覆盖 `global_prefix/global_suffix`
-- `repeat / pattern / attempts / stop_on_fail` 分别控制跑几轮、跑哪些、单条失败后怎么补救、整包是否继续
-- 这里的 `global_rule / rule` 属于星图文本层，会拼入任务正文，不触发独立执行链路
-- 需要完整执行顺序、覆盖优先级、多文件装载心智和常见误写时，直接看独立文档
 
 ---
 
@@ -565,7 +469,6 @@ README 这里只保留入口层信息。
 - 启动 `mind` 即进入循环交互模式
 - REPL 内部有 `CHAT / FAST / XTRA` 四种互斥状态
 - 已实现的是模式切换、会话恢复、权限切换、工具状态查看和 Helix 服务控制
-- 批量重复执行优先用 `mind flow` 配合 `cfg.repeat / loop`，不要依赖未实现的 `/again`
 
 ### 常用指令
 - `/chat`
@@ -593,7 +496,7 @@ README 这里只保留入口层信息。
 
 ### 输入约束
 - REPL 当前支持单行和多行输入
-- 需要多任务编排或长文本星图时，直接改走 `mind flow`
+- 复杂任务建议拆成目标明确的多轮请求，避免在单次输入中混合无关目标
 
 ---
 
@@ -649,12 +552,12 @@ README 这里只保留入口层信息。
 
 <a id="playbook-performance"></a>
 ## ⭐️ 性能实战
-完整性能案例和星图样例已拆到独立正文：[性能实战](docs/playbook.performance.md)。
+完整性能案例已拆到独立正文：[性能实战](docs/playbook.performance.md)。
 
 - Framix 负责视觉真值与阶段报告
 - Memrix 负责资源指标、趋势和稳定性采样
-- 性能回归优先用 `mind flow --mode chat ...`
-- Monkey 和长稳扰动场景建议写进星图，不要堆在命令行里
+- 性能回归应固定输入、环境与验收条件，保留可比较的结果产物
+- Monkey 和长稳扰动场景建议保存为可复用脚本，不要堆在命令行里
 
 ---
 
@@ -665,19 +568,19 @@ README 这里只保留入口层信息。
 - 接口能力统一归在协议与校验能力里
 - 协议覆盖 `HTTP / SSE / WebSocket / GraphQL / TCP / UDP / SMTP / IMAP / FTP`
 - 单请求、批量请求、提取和验收都有稳定字段边界，细节直接看接口专题页
-- 安全场景重点看星图结构、模板变量和通过条件，不必在 README 里保留运行回放
-- 需要字段级骨架、`env / items / concurrency / fail_fast` 的真实写法时，直接看 [星图协议](docs/cli-code.md) 和 [接口实战](docs/playbook.api.md)
+- 安全场景重点看模板变量和通过条件，不必在 README 里保留运行回放
+- 需要字段级骨架、`env / items / concurrency / fail_fast` 的真实写法时，直接看 [接口实战](docs/playbook.api.md)
 
 ---
 <a id="playbook-media"></a>
 ## ⭐️ 多媒体链路
-完整媒体命令、组合链路和星图任务已拆到独立正文：[多媒体链路](docs/playbook.media.md)。
+完整媒体命令和组合链路已拆到独立正文：[多媒体链路](docs/playbook.media.md)。
 
 - `fast` 模式适合媒体短链路任务
 - 能力覆盖抽帧、裁剪、转码、拼接、换容器、音轨处理和播放验证
 - 推荐顺序是 `probe -> trim / extract -> convert / replace -> play`
 - 长视频优先先裁剪，再抽帧或转码
-- 需要完整证据链或多步星图时，直接看独立文档
+- 需要完整证据链或多步处理时，直接看独立文档
 
 ---
 

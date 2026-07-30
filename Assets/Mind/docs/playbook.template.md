@@ -224,7 +224,7 @@ SSE batch 特别注意：
 
 ## 什么时候优先看这页
 
-- 你在写协议与校验类星图
+- 你在写协议与校验请求
 - 你要做 query / body / header 的模板化构造
 - 你要准备签名前置材料
 - 你想知道模板层和专用安全能力的边界
@@ -233,5 +233,3 @@ SSE batch 特别注意：
 
 - [接口实战](playbook.api.md)
 - [正文目录](README.md)
-- [星图协议](cli-code.md)
-- [星图深入说明](cli-code-advanced.md)

@@ -6,7 +6,7 @@
   <div class="mind-panel mind-panel-accent">
     <span class="mind-kicker">先这样读</span>
     <h3>先定目标，再进正文</h3>
-    <p>这页只负责把你送进对应正文，不重复讲快速开始、能力判断或星图结构。</p>
+    <p>这页只负责把你送进对应正文，不重复讲快速开始、能力判断或协议结构。</p>
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">这页不做什么</span>
@@ -112,13 +112,8 @@
     <h3>我想先跑通一条命令</h3>
     <p>先去快速开始，把命令入口、环境和最小命令跑通。</p>
   </a>
-  <a class="mind-panel mind-panel-link" href="../generated/cli-code/">
-    <span class="mind-kicker">目的二</span>
-    <h3>我想写 <code>mind flow</code></h3>
-    <p>先读星图协议，再补星图深入说明和样例。</p>
-  </a>
   <a class="mind-panel mind-panel-link" href="../generated/agent-mode/">
-    <span class="mind-kicker">目的三</span>
+    <span class="mind-kicker">目的二</span>
     <h3>我想接远端下发任务</h3>
     <p>直接进订阅模式，看会话、长链路和恢复链路。</p>
   </a>

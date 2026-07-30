@@ -1,6 +1,6 @@
 # 命令行使用参考
 
-这份文档说明当前 CLI 的入口、选项组合和参数边界。交互模式中的 `/` 指令见[交互模式](interactive-mode.md)，星图批跑的输入格式见[星图协议](cli-code.md)。
+这份文档说明当前 CLI 的入口、选项组合和参数边界。交互模式中的 `/` 指令见[交互模式](interactive-mode.md)。
 
 ## 基本结构
 
@@ -21,7 +21,6 @@ mind [OPTIONS] <COMMAND> [ARGS]
 | `mind` | 进入交互模式 |
 | `mind exec` / `mind e` | 执行一次非交互任务 |
 | `mind resume` | 恢复已有交互会话 |
-| `mind flow` | 执行一个或多个星图 source |
 | `mind agent listen` | 监听远端下发任务 |
 | `mind helix upgrade` | 下载或更新 Helix 运行组件 |
 | `mind doctor` | 只读诊断本地运行环境 |
@@ -174,18 +173,6 @@ mind resume <SESSION_ID> "继续检查剩余问题"
 | `-m, --model <MODEL>` | 临时覆盖恢复会话使用的主模型 |
 
 根命令上的 `-i/--image` 和 `-m/--model` 同样会传播给 `resume`；子命令模型优先，图片按顺序合并。
-
-## 批量执行
-
-```powershell
-mind flow --mode chat .\api_batch.md
-mind flow --mode xtra .\first.md .\second.md -s danger-full-access -a never
-Get-Content .\task.md | mind flow --mode chat -
-mind flow --mode fast "inline: 在这里写星图内容"
-mind flow --mode chat https://example.com/task.md
-```
-
-`SOURCE` 支持本地文件、`-`、`inline:` 内容和 URL，并且可以一次传入多个 source。`--mode` 必填；未覆盖时非交互运行使用 `read-only + never`；需要 Helix MCP 工具时添加 `--helix`。
 
 ## 外部 MCP 管理
 

@@ -38,13 +38,13 @@
   <a class="mind-route-card" href="./capabilities/">
     <span class="mind-route-meta">Step 2</span>
     <h3>能力概览</h3>
-    <p>适合确认当前该走命令行、交互式、外接模式、星图协议还是订阅。</p>
+    <p>适合确认当前该走命令行、交互式、外接模式还是订阅。</p>
     <span class="mind-card-arrow">看边界 →</span>
   </a>
   <a class="mind-route-card" href="./reference/">
     <span class="mind-route-meta">Step 3</span>
     <h3>参考文档</h3>
-    <p>适合已经知道目标方向，要继续读设备、协议、星图、多媒体或性能正文时进入。</p>
+    <p>适合已经知道目标方向，要继续读设备、协议、多媒体或性能正文时进入。</p>
     <span class="mind-card-arrow">看专题入口 →</span>
   </a>
 </div>
@@ -77,12 +77,6 @@ mind exec --mode xtra "概述当前系统的核心能力、边界与典型使用
 
 ```bash
 mind
-```
-
-### 需要批跑和回归时用 `mind flow`
-
-```bash
-mind flow --mode chat api_batch.md
 ```
 
 ### 需要外接工具协作时用 `exec --mode xtra`

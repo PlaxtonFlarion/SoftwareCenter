@@ -170,5 +170,4 @@ P95 小于 200ms。
 
 - [接口实战](playbook.api.md)
 - [性能实战](playbook.performance.md)
-- [星图协议](cli-code.md)
 - [正文目录](docs-index.md)
