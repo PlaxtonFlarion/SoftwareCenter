@@ -42,7 +42,7 @@ open_transcript = "f12"
 [tui.keymap.pager]
 scroll_down = ["down", "n"]
 page_down = ["page-down", "space"]
-close = ["esc", "q"]
+close = ["q", "ctrl-c"]
 ```
 
 `pager` 还支持 `scroll_up`、`page_up`、`half_page_up`、
@@ -51,6 +51,9 @@ close = ["esc", "q"]
 `ctrl-<字符>`、`alt-<键>`、`shift-<字母/Tab>`、`f1` 到 `f24`，以及
 方向键、Home/End、PageUp/PageDown 等命名键。同一上下文中的重复按键会导致配置校验失败。
 项目级配置不能覆盖 TUI 按键。
+
+空输入时连续按两次 `Esc` 可以直接选择最近的用户消息；在完整记录中使用
+`Esc/Left` 向前选择、`Right` 向后选择，按 `Enter` 从选中消息前创建分支并恢复输入。
 
 ## 指令索引
 - `/chat`：切到 `CHAT`
