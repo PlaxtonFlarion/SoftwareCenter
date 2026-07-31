@@ -30,6 +30,28 @@
 - REPL 是连续交互入口
 - 真正决定执行行为的是 `CHAT / FAST / XTRA` 三种状态
 
+### 完整记录与按键配置
+
+`Ctrl+T` 打开完整会话记录。按键可以在用户 `config.toml` 或 Profile 中覆盖，
+配置在下次启动时生效：
+
+```toml
+[tui.keymap.global]
+open_transcript = "f12"
+
+[tui.keymap.pager]
+scroll_down = ["down", "n"]
+page_down = ["page-down", "space"]
+close = ["esc", "q"]
+```
+
+`pager` 还支持 `scroll_up`、`page_up`、`half_page_up`、
+`half_page_down`、`jump_top`、`jump_bottom` 和 `close_transcript`。
+值可以是单个按键字符串或字符串数组；空数组表示显式解绑。支持普通字符、
+`ctrl-<字符>`、`alt-<键>`、`shift-<字母/Tab>`、`f1` 到 `f24`，以及
+方向键、Home/End、PageUp/PageDown 等命名键。同一上下文中的重复按键会导致配置校验失败。
+项目级配置不能覆盖 TUI 按键。
+
 ## 指令索引
 - `/chat`：切到 `CHAT`
 - `/fast`：切到 `FAST`
