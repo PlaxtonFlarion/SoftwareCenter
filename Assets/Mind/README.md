@@ -21,7 +21,7 @@
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](docs/playbook.template.md)、[安全工具](docs/playbook.security.md)
 - 外接工具协作：看 [外接 MCP 配置](#外接-mcp-配置单格式)
 - 生命周期脚本：看 [Hooks 配置](docs/hooks.md)
-- 设备、多媒体和稳定性：看 [设备与 UI 实战](docs/playbook.device.md)、[Monkey 扰动](docs/playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
+- 设备、多媒体和稳定性：看 [设备与 UI 实战](docs/playbook.device.md)、[Monkey 扰动](docs/playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[云端压测与任务收束](#playbook-load)
 - 订阅链路：看 [订阅模式](docs/agent-mode.md)
 - 背景设计与实现：看 [背景与架构](#architecture) 和 [构建发布](#build-release)
 
@@ -541,11 +541,11 @@ README 这里只保留入口层信息。
 ---
 
 <a id="playbook-load"></a>
-## ⭐️ 压测与脚本执行
-完整边界、典型跑法和结果收束说明已拆到独立正文：[压测与脚本执行](docs/playbook.load.md)。
+## ⭐️ 云端压测与任务收束
+完整边界、典型跑法和结果收束说明已拆到独立正文：[云端压测与任务收束](docs/playbook.load.md)。
 
-- 本地执行适合快速验证、近端回放、单机调试和自由脚本运行
 - 云端压测适合分布式 worker、异步任务管理和统一收束
+- 本地脚本使用工作区自己的命令行和脚本工具，不走 Helix MCP
 - 文档聚焦任务边界、通过条件和结果形态，不展开内部实现名词
 - 需要协议字段、提取和断言细节时，继续看 [接口实战](docs/playbook.api.md)
 

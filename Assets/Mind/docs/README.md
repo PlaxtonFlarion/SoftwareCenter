@@ -37,8 +37,8 @@
 
 - [安全工具](playbook.security.md)
   适合看摘要、JWT、RSA、AES 和安全层边界。
-- [压测与脚本执行](playbook.load.md)
-  适合看本地标准脚本、本地自由脚本、云端分布式压测和结果收束边界。
+- [云端压测与任务收束](playbook.load.md)
+  适合看云端分布式压测、异步任务管理和结果收束边界。
 - [性能实战](playbook.performance.md)
   适合看视觉真值、资源趋势、稳定性扰动和性能案例。
 

@@ -81,10 +81,10 @@ items = [
 - 返回收束层：只负责构造统一返回包，不再承载检查逻辑
 
 ### 协议字段边界
-- 单请求里，`request` 始终承载协议原生字段，不把 `url / host / headers / body / query` 这类协议参数抬到工具顶层
+- 单请求里，`request` 始终承载协议原生字段，不把 `url / host / headers / body_text / query` 这类协议参数抬到工具顶层
 - 批量请求里，每个 item 都使用统一结构：协议原生字段写进 `items[].request`
 - `env` 在批量工具里用于共享默认值，在单请求的 `render / validate` 里也可作为预执行默认值；执行前会先物化最终请求
-- 当前默认物化语义：标量字段由当前请求覆盖，`headers / json / json_body / params / form / variables` 做对象合并，其余字段按当前请求覆盖
+- 当前默认物化语义：标量字段由当前请求覆盖，`headers / json / params / form / variables` 做对象合并，其余字段按当前请求覆盖
 - `extract` 和 `asserts` 都作用于最终结果包中的 `data`
 - 如果你只想确认模板展开结果，用 `render`
 - 如果你想先检查必填字段和请求结构，用 `validate`
