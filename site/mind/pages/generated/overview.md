@@ -20,6 +20,7 @@
 
 - 协议、模板和安全：看 [接口实战](#playbook-api)、[模板能力](playbook.template.md)、[安全工具](playbook.security.md)
 - 外接工具协作：看 [外接 MCP 配置](#外接-mcp-配置单格式)
+- 生命周期脚本：看 [Hooks 配置](docs/hooks.md)
 - 设备、多媒体和稳定性：看 [设备与 UI 实战](playbook.device.md)、[Monkey 扰动](playbook.monkey.md)、[多媒体链路](#playbook-media)、[性能实战](#playbook-performance)、[压测与脚本执行](#playbook-load)
 - 订阅链路：看 [订阅模式](agent-mode.md)
 - 背景设计与实现：看 [背景与架构](#architecture) 和 [构建发布](#build-release)
