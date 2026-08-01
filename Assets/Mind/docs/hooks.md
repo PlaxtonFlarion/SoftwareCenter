@@ -85,6 +85,36 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 `transcript_path` 指向当前执行实际写入的会话记录；子执行主体使用独立记录文件，
 `SubagentStop.agent_transcript_path` 指向同一子执行记录。
 
+会话记录位于应用主目录下的
+`sessions/YYYY/MM/DD/session-<session_id>.jsonl`。日期取自会话标识中的创建时间；
+同一会话始终解析到同一路径，根执行主体和每个子执行主体各自使用独立文件。
+进程级终端展示记录仍位于 `reports`，不再作为 `transcript_path`。
+
+文件采用本产品定义的追加式 JSONL，每行都是一个完整事件对象：
+
+```json
+{
+  "timestamp": "2026-08-01T10:20:30.123Z",
+  "event": "message.created",
+  "session_id": "sid_...",
+  "turn_id": "...",
+  "actor": "user",
+  "payload": {"content": "hello"}
+}
+```
+
+固定字段为 `timestamp`、`event`、`session_id`、`turn_id`、`actor` 和 `payload`，
+不包含 `version` 或 `schema_version`。当前事件包括 `session.started`、
+`session.ended`、`turn.started`、`turn.completed`、`turn.failed`、
+`turn.interrupted`、`message.created`、`message.updated`、`tool.started`、
+`tool.completed`、`tool.failed`、`context.compacted` 和
+`context.compaction.failed`。恢复已有会话时继续追加到原文件，并以新的
+`session.started` 标记本地生命周期重新进入。
+
+该路径和生命周期语义用于 Hook 集成，但文件内容是本产品契约，不承诺兼容
+Codex 内部 rollout/transcript 格式。依赖 Codex 内部记录结构的 Hook 需要适配上述
+JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook 可以直接使用。
+
 退出码 `0` 表示正常完成。只有 `PreToolUse`、`PermissionRequest`、
 `PostToolUse`、`UserPromptSubmit`、`Stop` 和 `SubagentStop` 可以用退出码 `2`
 表达业务阻断，而且原因必须写入 stderr；其他事件的退出码 `2` 与其余非零
