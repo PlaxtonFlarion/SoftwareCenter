@@ -82,6 +82,8 @@ canonical 名称：`session_id`、`transcript_path`、`cwd`、`hook_event_name` 
 `tool_response`。Shell 工具的输入名称为 `Bash`，补丁工具的输入名称为
 `apply_patch`。Shell 与补丁工具都把可执行文本放在 `tool_input.command`；补丁
 Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
+`transcript_path` 指向当前执行实际写入的会话记录；子执行主体使用独立记录文件，
+`SubagentStop.agent_transcript_path` 指向同一子执行记录。
 
 退出码 `0` 表示正常完成。只有 `PreToolUse`、`PermissionRequest`、
 `PostToolUse`、`UserPromptSubmit`、`Stop` 和 `SubagentStop` 可以用退出码 `2`
@@ -94,6 +96,8 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 命令超时、启动失败、非零退出、非法 JSON 或输出协议校验失败只会把本次 Hook
 标记为失败，主操作继续执行。只有有效控制输出或上述受支持事件的退出码 `2`
 可以表达业务阻断。
+结构化输出中的 `systemMessage` 会记录为 Hook warning，不会注入模型请求；需要
+提供模型可见内容时使用受支持事件的 `additionalContext`。
 过大的输出或附加上下文会写入会话临时文件，并在会话结束时清理。
 
 `PreToolUse` 使用嵌套控制输出：
@@ -112,6 +116,7 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 `permissionDecision: "deny"` 必须包含非空 `permissionDecisionReason`。
 多个并发 Hook 都返回 `updatedInput` 时，采用最后完成 Hook 的完整对象，不逐字段
 合并。
+多个 Hook 同时阻断时，使用配置顺序中第一个有效阻断原因。
 `permissionDecision: "ask"`、顶层 `decision: "approve"` 以及该事件的
 `continue: false`、`stopReason`、`suppressOutput: true` 会使当前 Hook 运行失败。
 
@@ -142,6 +147,7 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 `hookSpecificOutput`。
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
-`UserPromptSubmit` 或模型请求。多个 `Stop` Hook 中任意一个返回
+`UserPromptSubmit` 或模型请求；同一批结果中的 `additionalContext` 会保留给
+下一轮。多个 `Stop` Hook 中任意一个返回
 `continue: false` 时停止结果优先；只有没有停止结果时，才会聚合
 `decision: "block"` 的原因并创建续跑 Prompt。
