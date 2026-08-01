@@ -4,6 +4,32 @@ Hooks 统一写入配置层的 `config.toml`。用户配置位于
 `~/.mind/config.toml`，可信项目也可以在 `.mind/config.toml` 中追加项目级
 Hooks；不读取 `hooks.json`。
 
+## 信任与启用状态
+
+只有 managed 配置提供的 Hook 自动可信并始终启用。user、profile、project、CLI
+和 plugin 等普通来源的 Hook 默认状态都是 `untrusted`，不会执行；项目配置被加载
+不等于其中的 Hook 自动可信。普通 Hook 必须先审核并信任当前内容。
+
+信任和启用状态保存在用户 `config.toml`，不使用独立的 `hook-trust.json`：
+
+```toml
+[hooks.state."<hook-key>"]
+enabled = false
+trusted_hash = "sha256:<64 hex>"
+```
+
+`trusted_hash` 由 Hook 管理界面写入。用户配置和当前进程的 CLI override 可以提供
+Hook state；profile、project 或 plugin 配置中的 state 不能为自身授权。`enabled`
+与信任相互独立，因此受信任的 Hook 可以单独禁用，内容改变后重新信任也会保留
+原有禁用状态。
+
+信任状态有四种：
+
+- `managed`：由 managed 配置提供，始终启用并执行，用户不能修改其状态。
+- `trusted`：当前内容摘要与 `trusted_hash` 相同；仅在 `enabled=true` 时执行。
+- `modified`：保存过信任摘要，但当前内容已经变化，不执行。
+- `untrusted`：没有保存当前 Hook 的信任摘要，不执行。
+
 每个事件包含多个 MatcherGroup，每组使用一个可选的 `matcher`，并按声明顺序
 包含多个命令处理器：
 
@@ -24,16 +50,24 @@ hooks = [
 | `command` | string | 必填 | 默认平台执行的 shell 命令 |
 | `commandWindows` | string | 无 | Windows 上覆盖 `command`；也接受 `command_windows` |
 | `statusMessage` | string | 无 | 命令执行期间显示的临时状态 |
-| `timeout` | integer | `600` | 超时秒数；`SessionEnd` 默认 `1` 且最大为 `3` |
-| `async` | boolean | `false` | 后台执行；输出不参与当前事件控制 |
+| `timeout` | integer | `600` | 超时秒数；`SessionEnd` 默认 `1`，超过 `3` 时钳制为 `3` 并警告 |
+| `async` | boolean | `false` | 当前不支持异步命令；非 `SessionEnd` 事件会跳过并警告，`SessionEnd` 仍同步执行 |
 | `additionalContextLimit` | integer | `2500` | 附加上下文近似 token 上限，`0` 不限制 |
 
-MatcherGroup 只能包含 `matcher` 和 `hooks`。处理器只能包含上表字段；旧的事件
-直挂处理器结构以及 `handler`、`enabled`、`on_error` 字段会作为无效配置拒绝。
+MatcherGroup 使用 `matcher` 和 `hooks`，命令处理器使用上表字段。未知字段会被忽略
+并记录 discovery warning，不会使整个配置加载失败。
+
+Hook discovery 按匹配组和处理器分别容错：非法 matcher 只跳过当前匹配组；空命令、
+字段类型错误、不支持的 handler type 或非 `SessionEnd` 的异步处理器只跳过当前
+处理器，其他合法 Hook 继续加载。`type = "prompt"` 和 `type = "agent"` 可以被
+解析，但当前不执行，并产生明确的“不支持” warning。warning 会写入 Hook 观察
+日志，并显示在 `/hooks` 汇总界面。
 
 Matcher 规则与工具名称：
 
 - 未填写、空字符串和 `*` 匹配全部。
+- 非法正则会产生 warning 并跳过当前 MatcherGroup。
+- `UserPromptSubmit` 和 `Stop` 当前不支持 matcher，配置的 matcher 会被忽略。
 - 不含正则控制字符的单值按全等匹配，例如 `Bash` 不会匹配 `BashOutput`。
 - 仅由字面候选组成的 `|` 表达式按候选集合匹配，例如 `Edit|Write`。
 - 只有出现其他正则控制字符时才按正则匹配。
@@ -57,6 +91,9 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 上下文；`Stop` 与 `SubagentStop` 必须返回 JSON，其余事件的普通 stdout 会忽略。
 以 `{` 或 `[` 开头但不能解析为协议对象的 stdout 会作为无效 JSON 报错，而不
 会降级为普通文本。
+命令超时、启动失败、非零退出、非法 JSON 或输出协议校验失败只会把本次 Hook
+标记为失败，主操作继续执行。只有有效控制输出或上述受支持事件的退出码 `2`
+可以表达业务阻断。
 过大的输出或附加上下文会写入会话临时文件，并在会话结束时清理。
 
 `PreToolUse` 使用嵌套控制输出：
@@ -73,6 +110,8 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 
 `permissionDecision: "allow"` 只有同时返回 `updatedInput` 时才受支持；
 `permissionDecision: "deny"` 必须包含非空 `permissionDecisionReason`。
+多个并发 Hook 都返回 `updatedInput` 时，采用最后完成 Hook 的完整对象，不逐字段
+合并。
 `permissionDecision: "ask"`、顶层 `decision: "approve"` 以及该事件的
 `continue: false`、`stopReason`、`suppressOutput: true` 会使当前 Hook 运行失败。
 
@@ -101,3 +140,8 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 `replacementResult` 完成；上游保留字段 `updatedMCPToolOutput` 当前不执行替换，
 返回非空值会使 Hook 运行失败。`PostCompact` 只接受通用输出字段，不接受
 `hookSpecificOutput`。
+
+`SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
+`UserPromptSubmit` 或模型请求。多个 `Stop` Hook 中任意一个返回
+`continue: false` 时停止结果优先；只有没有停止结果时，才会聚合
+`decision: "block"` 的原因并创建续跑 Prompt。
