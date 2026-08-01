@@ -117,6 +117,8 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 多个并发 Hook 都返回 `updatedInput` 时，采用最后完成 Hook 的完整对象，不逐字段
 合并。
 多个 Hook 同时阻断时，使用配置顺序中第一个有效阻断原因。
+阻断结果中的有效 `additionalContext` 仍会随工具或审批结果传给模型，不会因为
+拒绝执行而丢失。
 `permissionDecision: "ask"`、顶层 `decision: "approve"` 以及该事件的
 `continue: false`、`stopReason`、`suppressOutput: true` 会使当前 Hook 运行失败。
 
@@ -148,6 +150,7 @@ Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
 `UserPromptSubmit` 或模型请求；同一批结果中的 `additionalContext` 会保留给
-下一轮。多个 `Stop` Hook 中任意一个返回
+下一轮。`UserPromptSubmit` 阻断当前轮次时也会保留同批结果中的
+`additionalContext`。多个 `Stop` Hook 中任意一个返回
 `continue: false` 时停止结果优先；只有没有停止结果时，才会聚合
 `decision: "block"` 的原因并创建续跑 Prompt。
