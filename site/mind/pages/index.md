@@ -65,7 +65,10 @@ mind --help
 
 ```bash
 mind exec "概述当前系统能力" --helix
+mind exec "检查接口能力" --helix api
 ```
+
+`--helix` 默认使用 `app` 工具过滤器，也可显式选择 `api`；不传该选项时不连接 Helix。
 
 ### 先跑一次 CLI 命令行模式
 

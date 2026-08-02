@@ -48,7 +48,7 @@
 
 - 先确认 `mind --help` 可用
 - 先用 `exec` 发一条最小命令，确认 native tools / 外接 MCP 链路可用
-- 需要 Helix 工具时，显式加 `--helix` 或在 REPL 中使用 `/helix-link`
+- 需要 Helix 工具时，启动命令加 `--helix`，或进入 REPL 后使用 `/helix-link`
 
 ### 确认命令入口
 
@@ -58,18 +58,21 @@
 mind --help
 ```
 
-默认执行链路可使用 native tools 和已启用的外接 MCP。需要 Helix 工具时，再进入交互界面接入服务：
+默认执行链路可使用 native tools 和已启用的外接 MCP。需要 Helix 工具时，在进入交互界面时接入服务：
 
 ```bash
-mind
+mind --helix
 ```
 
 进入 REPL 后可以继续使用：
 
-- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
+- `/helix-link`：检查并启动 Helix 服务，将 MCP 接入当前会话
+- `/helix-mode`：在已连接 Helix 的会话中选择 `app / api` 工具过滤器
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
-- `/helix-home`：启动或复用本地 Helix 服务，接入当前会话，并打开首页
+- `/helix-home`：在已连接 Helix 的会话中打开首页
 - `/helix-stop`：停止本地 Helix 服务
+
+`/helix-mode` 和 `/helix-home` 发现 runtime asset 缺失时只执行下载；下载完成后需要重新打开应用，再通过 `--helix` 或 `/helix-link` 接入。
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，请优先阅读 Software 首页内置的 `README`：其中包含环境变量、后台管理中心与基础使用说明。
 
@@ -186,7 +189,7 @@ mind agent listen
 **Mind** 使用一条统一的主动执行链路：单次任务使用 `mind exec`，持续交互使用 `mind`。
 远程任务订阅使用独立入口 `mind agent listen`，不改变主动执行链路的状态。
 
-工具范围由本地 runtime、已启用的外接 MCP 和会话是否接入 Helix 决定。CLI 可用 `--helix` 在启动时接入 Helix，交互会话可用 `/helix-link` 和 `/helix-unlink` 动态管理连接。外接服务配置见 [外接 MCP 配置](#外接-mcp-配置单格式)，订阅协议见 [订阅模式](docs/agent-mode.md)。
+工具范围由本地 runtime、已启用的外接 MCP 和会话是否接入 Helix 决定。CLI 可用 `--helix [app|api]` 在启动时接入 Helix；只写 `--helix` 时默认选择 `app`，不传时不连接。交互会话可用 `/helix-link` 接入、用 `/helix-mode` 选择过滤器，或用 `/helix-unlink` 移除连接。外接服务配置见 [外接 MCP 配置](#外接-mcp-配置单格式)，订阅协议见 [订阅模式](docs/agent-mode.md)。
 
 ---
 
@@ -229,21 +232,26 @@ Mind 使用子命令区分运行入口，再通过命令选项调整输出、模
 外接工具可以通过命令行 `mind exec "..."` 或交互会话使用，服务定义见 [外接 MCP 配置](#外接-mcp-配置单格式)。
 
 ### Helix 接入选项
-`--helix`
+`--helix [app|api]`
 
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
 - 不传 `--helix`：使用 native tools 和已连接的外部 MCP tools
-- 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
-- 可用于 `mind exec` 和 `mind agent listen`
-- 交互模式中使用 `/helix-link` 接入 Helix
+- 只传 `--helix`：接入 Helix 并默认选择 `app` 工具过滤器
+- 传入 `--helix api`：接入 Helix 并选择 `api` 工具过滤器
+- 可用于交互入口、`mind resume`、`mind exec` 和 `mind agent listen`
+- 接入前先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
+- 交互模式可通过 `mind --helix` 启动时接入，也可进入后使用 `/helix-link`
 
 示例：
 ```
 # 本次请求启用 Helix MCP
 mind exec "查询外部服务并结合 Helix 工具返回结果" --helix
 
-# 进入 REPL 后可使用 /helix-link
-mind
+# 进入 REPL 并接入 Helix
+mind --helix
+
+# 进入 REPL 并使用 API 自动化工具
+mind --helix api
 ```
 
 ### Helix 升级命令
@@ -456,6 +464,7 @@ README 这里只保留入口层信息。
 - `/ps`
 - `/mcp`
 - `/helix-link`
+- `/helix-mode`
 - `/helix-unlink`
 - `/helix-home`
 - `/helix-stop`
@@ -544,7 +553,7 @@ README 这里只保留入口层信息。
 ## ⭐️ 多媒体链路
 完整媒体命令和组合链路已拆到独立正文：[多媒体链路](docs/playbook.media.md)。
 
-- `fast` 模式适合媒体短链路任务
+- Helix `app` 工具过滤器覆盖媒体与应用自动化链路
 - 能力覆盖抽帧、裁剪、转码、拼接、换容器、音轨处理和播放验证
 - 推荐顺序是 `probe -> trim / extract -> convert / replace -> play`
 - 长视频优先先裁剪，再抽帧或转码

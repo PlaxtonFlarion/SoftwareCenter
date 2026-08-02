@@ -51,16 +51,16 @@
 
 <div class="mind-card-grid">
   <div class="mind-card">
-    <h3>chat</h3>
-    <p>适合探索、问答、临时诊断和混合型任务。建议先看项目总览，再按主题跳设备、协议或多媒体正文。</p>
+    <h3>原生与外接工具</h3>
+    <p>适合编码、数据库、浏览器和通用 MCP 协作，不需要启动 Helix。</p>
   </div>
   <div class="mind-card">
-    <h3>fast</h3>
-    <p>适合接口、媒体、文件类短链路任务。建议优先看接口实战和多媒体链路；需要留证或归档时，再补看命令参数。</p>
+    <h3>Helix app</h3>
+    <p>面向应用自动化、设备、媒体和性能分析，通过 `/helix-mode` 选择。</p>
   </div>
   <div class="mind-card">
-    <h3>xtra</h3>
-    <p>适合数据库、浏览器、外部 MCP 服务、通用工具和编码工具协作。先看快速开始和能力概览，再按外接工具或编码链路的实际文档补细节。</p>
+    <h3>Helix api</h3>
+    <p>面向 API 自动化、安全检查和接口性能分析，通过 `/helix-mode` 选择。</p>
   </div>
 </div>
 

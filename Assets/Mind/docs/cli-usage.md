@@ -56,6 +56,7 @@ mind
 mind "先检查当前项目结构"
 mind -m gpt-5.5 "先检查当前项目结构"
 mind -i .\screen.png "分析这张截图"
+mind --helix api "检查接口"
 ```
 
 根命令支持：
@@ -64,6 +65,7 @@ mind -i .\screen.png "分析这张截图"
 |------|------|
 | `-m, --model <MODEL>` | 为本次运行覆盖主模型 |
 | `-i, --image <FILE>` | 添加初始图片；可重复，也可用逗号分隔多个路径 |
+| `--helix [PROFILE]` | 接入 Helix；省略 profile 时使用 `app`，也可选择 `api` |
 
 `-m` 是本次运行的临时覆盖，不会写入持久配置。需要在交互会话中持久修改模型时，使用 `/model` 或 `/preferences`。
 
@@ -86,8 +88,11 @@ mind exec -s workspace-write -a on-request -m gpt-5.5 "修复测试失败"
 # 输出 newline-delimited JSON 事件
 mind exec --json "检查当前项目"
 
-# 本次运行启动或复用 Helix，并挂载其 MCP 工具
+# 本次运行启动或复用 Helix；省略 profile 时使用 app
 mind exec --helix "检查设备状态"
+
+# 接入 Helix 并使用 api 工具过滤器
+mind exec --helix api "检查接口状态"
 ```
 
 `exec` 选项：
@@ -95,7 +100,7 @@ mind exec --helix "检查设备状态"
 | 选项 | 说明 |
 |------|------|
 | `--json` | 输出 JSONL 事件流 |
-| `--helix` | 启动或复用本地 Helix，并接入其 MCP 工具 |
+| `--helix [PROFILE]` | 启动或复用本地 Helix；profile 可选 `app` 或 `api`，默认 `app` |
 | `-i, --image <FILE>` | 添加图片附件 |
 | `-m, --model <MODEL>` | 临时覆盖本次请求使用的主模型 |
 
@@ -161,6 +166,7 @@ Get-Content .\task.txt | mind exec
 mind resume
 mind resume --last
 mind resume <SESSION_ID> "继续检查剩余问题"
+mind resume --helix api
 ```
 
 | 选项 | 说明 |
@@ -170,6 +176,7 @@ mind resume <SESSION_ID> "继续检查剩余问题"
 | `--include-non-interactive` | 同时显示由非交互命令创建的会话 |
 | `-i, --image <FILE>` | 为恢复后的首条消息添加图片 |
 | `-m, --model <MODEL>` | 临时覆盖恢复会话使用的主模型 |
+| `--helix [PROFILE]` | 恢复时接入 Helix；省略 profile 时使用 `app` |
 
 根命令上的 `-i/--image` 和 `-m/--model` 同样会传播给 `resume`；子命令模型优先，图片按顺序合并。
 
@@ -223,9 +230,12 @@ mind mcp add demo -- server --model child-model
 mind doctor
 mind doctor --json
 
-# 监听远端下发任务，需要 Helix 时添加 --helix
+# 监听远端下发任务，需要 Helix app 时添加 --helix
 mind agent listen
 mind agent listen --helix
+
+# 使用 Helix api 工具过滤器
+mind agent listen --helix api
 
 # 更新 Helix 运行组件
 mind helix upgrade
@@ -248,6 +258,7 @@ mind completion elvish
 - `-c/--config` 和 `-p/--profile` 是进程级选项，可以跨命令层级提取。
 - 根命令的图片和模型会传播给 `exec` 与 `resume`。
 - 图片会合并；具体子命令上的模型会覆盖根模型。
+- 不传 `--helix` 时不连接 Helix；传入但省略 profile 时使用 `app`。
 - `exec` 的显式 prompt 可以和非交互 stdin 同时使用。
 - `mcp add ... -- <COMMAND>` 中 `--` 之后的参数只属于 stdio 子进程。
 - 遇到组合疑问时，以 `mind --help` 和 `mind <command> --help` 的当前输出为准。

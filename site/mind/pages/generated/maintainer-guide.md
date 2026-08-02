@@ -27,7 +27,7 @@ device / bench / common / media / coding
 ## 执行边界
 - `exec` 和交互会话共用统一模型轮次、工具生命周期和请求协议
 - `agent` 是订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
-- Helix MCP 由 `--helix` 或 `/helix-link` 显式接入，不下沉到 `CompositeToolRuntime` 自动启动
+- Helix MCP 由启动参数 `--helix` 或 `/helix-link` 显式接入，不下沉到 `CompositeToolRuntime` 自动启动；`/helix-mode` 只选择工具过滤器
 - 工具过滤策略保留独立过滤模式，调用来源确定前不得复用为应用运行模式
 
 维护要求：

@@ -66,23 +66,27 @@ mind doctor
 mind --help
 ```
 
-`chat / fast` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
+默认执行链路使用原生工具和已启用的外接 MCP。需要进入 Helix 执行面时，可以在启动时显式接入：
 
 ```bash
-mind
+mind --helix
+mind --helix api
 ```
+
+只写 `--helix` 时默认选择 `app` 工具过滤器；可显式传入 `api`。不传 `--helix` 时不连接 Helix。
 
 进入 REPL 后可以继续使用：
 
 - `/model <model-id>`：只更新主模型 ID，写入本地 `config.toml`，下一轮请求生效
 - `/effort`：打开推理强度选择菜单，写入主模型槽位
 - `/preferences`：打开本地配置页面，维护模型、密钥、Base URL、route 和服务域名
-- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
+- `/helix-link`：启动或复用 Helix 服务，并将 MCP 接入当前会话
+- `/helix-mode`：在已连接 Helix 的会话中选择 `app / api` 工具过滤器
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
-- `/helix-home`：启动或复用本地 Helix 服务，接入当前会话，并打开首页
+- `/helix-home`：在已连接 Helix 的会话中打开首页
 - `/helix-stop`：停止本地 Helix 服务
 
-Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动。
+`/helix-mode` 和 `/helix-home` 发现 Helix runtime asset 缺失时会先显示确认菜单；确认后只下载，完成后需要重新打开应用，再通过 `--helix` 或 `/helix-link` 接入，不会在当前命令中启动服务。
 
 如果你是从 [Software Center](https://github.com/PlaxtonFlarion/SoftwareCenter) 进入，建议先阅读 Software 首页内置 `README`，其中包含环境变量、后台管理中心与基础使用说明。
 
@@ -176,9 +180,9 @@ mind
 查询外接数据库里的 users 表
 ```
 
-需要结束上一段上下文但继续留在 REPL 时，输入 `/new` 开始新对话；当前模式、模型配置和待发送附件会保留。
+需要结束上一段上下文但继续留在 REPL 时，输入 `/new` 开始新对话；当前模型配置和待发送附件会保留。
 
-如果要接回最近 24 小时内的旧会话，输入 `/resume` 打开恢复菜单。恢复列表会按当前模式过滤，例如当前是 `xtra` 时只展示 `xtra` 的历史游标；菜单中用 `↑/↓` 滚动、`Enter` 选择、`q` 取消。
+如果要接回最近 24 小时内的旧会话，输入 `/resume` 打开恢复菜单。恢复列表会按当前工作区和会话来源筛选；菜单中用 `↑/↓` 滚动、`Enter` 选择、`q` 取消。
 
 ### 在 REPL 中调整模型
 

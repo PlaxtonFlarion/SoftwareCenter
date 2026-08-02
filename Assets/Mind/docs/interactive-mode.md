@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix-link /helix-unlink /helix-home /helix-stop /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -67,9 +67,10 @@ close = ["q", "ctrl-c"]
 - `/copy`：复制最近一次助手回复原文到剪贴板
 - `/ps`：查看运行中的命令
 - `/mcp`：管理外部 MCP 服务
-- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并接入当前会话
+- `/helix-link`：启动或复用 Helix 服务，并将 MCP 接入当前会话
+- `/helix-mode`：在已连接 Helix 的会话中选择 `app / api` 工具过滤器
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
-- `/helix-home`：启动或复用本地 Helix 服务，接入当前会话，并打开首页
+- `/helix-home`：在已连接 Helix 的会话中打开首页
 - `/helix-stop`：停止本地 Helix 服务
 - `/shutdown`：退出前台并停止本地运行时
 - `/quit, /q, quit, exit`：安全退出
@@ -111,11 +112,13 @@ close = ["q", "ctrl-c"]
 - 该指令不会发送给模型，也不会修改对话上下文
 
 ## Helix 指令
-- `/helix-link`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，并在后续 `/tools` 或模型请求中挂载 Helix MCP 工具
-- `/helix-unlink`：只从当前会话移除 Helix MCP，不停止本地 Helix 服务；需要时可再次用 `/helix-link` 接入
-- `/helix-home`：检查/下载 Helix runtime asset，启动或复用本地 Helix 服务，接入当前会话，并打开首页
+- `/helix-link`：检查或下载 runtime asset，启动或复用 Helix 服务，并以默认 `app` 过滤器接入当前会话
+- `/helix-mode`：仅在 Helix 已连接时选择 `app / api` 工具过滤器，不启动或接入服务
+- `/helix-unlink`：只从当前会话移除 Helix MCP，不停止本地 Helix 服务；需要时可再次使用 `/helix-link` 接入
+- `/helix-home`：仅在 Helix 已连接时打开首页，不启动或接入服务
 - `/helix-stop`：停止 Helix 服务；Mind native tools 和已连接 external MCP tools 仍可用
-- Helix runtime asset 缺失时会先显示确认菜单，取消后不会下载或启动
+- `/helix-mode` 或 `/helix-home` 发现 runtime asset 缺失时会先显示确认菜单；确认后只下载，完成后需要重新打开应用，取消后不下载
+- runtime asset 已存在但 Helix 未连接时，`/helix-mode` 和 `/helix-home` 会直接提示未连接
 - 接入失败时保留当前会话和已有工具目录
 - 这些指令是本地控制命令，不会发送给模型，也不会作为 MCP 工具调用
 
