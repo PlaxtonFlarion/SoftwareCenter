@@ -12,8 +12,8 @@
 
 **阅读导航**
 
-- 第一次进入项目：先看 [快速开始](#quick-start) → [运行模式](#modes) → [命令行参数](#cli-arguments)
-- 只想确认能力边界：看 [Top10 核心能力](#top10) 和 [运行模式](#modes)
+- 第一次进入项目：先看 [快速开始](#quick-start) → [执行入口](#execution) → [命令行参数](#cli-arguments)
+- 只想确认能力边界：看 [Top10 核心能力](#top10) 和 [执行入口](#execution)
 - 已经知道要找什么：直接走 [正文目录](docs/README.md)
 
 **专题跳转**
@@ -47,8 +47,8 @@
 如果你是第一次进入项目，先把下面三件事跑通：
 
 - 先确认 `mind --help` 可用
-- 先用 `exec --mode xtra` 发一条最小命令，确认 Mind native tools / 外接 MCP 链路可用
-- 需要 `chat / fast` 时，先显式加 `--helix` 或在 REPL 中使用 `/helix-link`
+- 先用 `exec` 发一条最小命令，确认 native tools / 外接 MCP 链路可用
+- 需要 Helix 工具时，显式加 `--helix` 或在 REPL 中使用 `/helix-link`
 
 ### 确认命令入口
 
@@ -58,7 +58,7 @@
 mind --help
 ```
 
-`chat / fast` 依赖 Helix MCP 服务；外接 MCP 和原生 coding 协作优先使用不依赖 Helix 的 `xtra`。需要进入 Helix 执行面时，再使用：
+默认执行链路可使用 native tools 和已启用的外接 MCP。需要 Helix 工具时，再进入交互界面接入服务：
 
 ```bash
 mind
@@ -109,13 +109,13 @@ $env:Path += ";C:\Program Files\Mind\MindEngine"
 
 ```
 # 先跑一条最小命令
-mind exec --mode xtra "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
+mind exec "请用工程视角概述当前系统的核心能力、边界与典型使用场景"
 
 # 需要持续交互时进入 REPL
 mind
 
-# 需要外接工具协作时用 exec --mode xtra
-mind exec --mode xtra "打开 DBHub，查询 users 表并返回结果摘要"
+# 需要外接工具协作时直接使用 exec
+mind exec "打开 DBHub，查询 users 表并返回结果摘要"
 
 # 需要等待远端任务时用 agent listen
 mind agent listen
@@ -177,59 +177,35 @@ mind agent listen
 
 **执行与订阅**
 
-- **多模式执行与订阅**：用 `chat / fast / xtra` 覆盖主动任务，用 `agent listen` 接收服务端下发任务
+- **主动执行与订阅**：用 `exec` 或交互会话发起任务，用 `agent listen` 接收服务端下发任务
 
 ---
 
-<a id="modes"></a>
-## ⭐️ 运行模式
-**Mind** 提供三种本地主动执行模式：`exec --mode chat`、`exec --mode fast`、`exec --mode xtra`。
-除此之外，还有一条独立的订阅入口：`agent listen`。
-它们的差异不在“模型强弱”，而在“任务形态”和“执行边界”。
+<a id="execution"></a>
+## ⭐️ 执行入口
+**Mind** 使用一条统一的主动执行链路：单次任务使用 `mind exec`，持续交互使用 `mind`。
+远程任务订阅使用独立入口 `mind agent listen`，不改变主动执行链路的状态。
 
-### 模式边界对齐
-
-| 模式 | 任务形态 | 更适合 | 不建议主打 |
-|------|----------|--------|------------|
-| `chat` | 边探索边推进 | 探索、问答、临时任务、混合型接口/设备操作 | 追求最稳定步骤形态 |
-| `fast` | 短链路快速完成 | 接口请求、事件流采样、媒体处理、短路径任务 | 设备/UI 执行、重型性能链路、需要全域工具时 |
-| `xtra` | 外接工具与编码协作 | 数据库、浏览器、外部 MCP 服务、Mind native 工具和原生 coding | 设备/UI 执行、重型性能链路 |
-
-外接服务的接入方式见 [外接 MCP 配置](#外接-mcp-配置单格式)。
-
-补充说明：
-
-- `chat / fast / xtra`：本地主动发起一次任务
-- `agent`：本地先进入订阅，再等待服务端下发任务
-- `agent` 不属于 REPL 内部状态；协议细节见 [订阅模式](docs/agent-mode.md)
-- `chat / fast` 依赖 Helix MCP 服务；CLI 中使用这些模式前需要显式 `--helix`，REPL 中切换前需要 `/helix-link`
-- `xtra` 不是 `fast` 的别名；它走独立 `mode=xtra` 后端链路，暴露外接 MCP 工具、Mind native 工具和编码工具；需要 Helix MCP 时显式加 `--helix` 或在 REPL 使用 `/helix-link`
-
-常见误判：
-
-- `fast` 不是“轻量版 chat”，而是专门为短链路收窄过的执行面
-- `xtra` 不是“更多工具版 fast”，它强调外部服务、通用工具和编码工具的协作边界
-- 接口能力统一归在协议与校验能力里，不需要把它理解成单独的 `api` 分类
+工具范围由本地 runtime、已启用的外接 MCP 和会话是否接入 Helix 决定。CLI 可用 `--helix` 在启动时接入 Helix，交互会话可用 `/helix-link` 和 `/helix-unlink` 动态管理连接。外接服务配置见 [外接 MCP 配置](#外接-mcp-配置单格式)，订阅协议见 [订阅模式](docs/agent-mode.md)。
 
 ---
 
 <a id="cli-arguments"></a>
 ## ⭐️ 命令行参数
-Mind 使用子命令区分运行入口，再通过命令选项调整模式、输出和工具权限。
+Mind 使用子命令区分运行入口，再通过命令选项调整输出、模型和工具权限。
 
 - **子命令**：`exec`、`resume`、`agent listen`、`helix upgrade`、`doctor`、`mcp`、`mcp-server`、`completion`
-- **常用选项**：`--mode`、`--sandbox`、`--ask-for-approval`、`--helix`、`--json`、`--image`、`--model`
+- **常用选项**：`--sandbox`、`--ask-for-approval`、`--helix`、`--json`、`--image`、`--model`
 - **默认入口**：不带子命令的 `mind` 进入交互模式
 
 > 心智模型：**先选要执行的命令，再为该命令添加运行选项。**
 
 ### 先记住怎么组合
 
-- 单次任务使用 `mind exec [PROMPT]`，默认走 `xtra`
+- 单次任务使用 `mind exec [PROMPT]`
 - `mind exec` 也可以简写为 `mind e`
 - 图片使用 `-i/--image`，模型使用 `-m/--model`；两者都可以放在根命令或 `exec`/`resume` 子命令
 - prompt 可以与管道输入组合，例如 `git diff | mind exec "审查这些改动"`
-- 通过 `--mode chat|fast|xtra` 显式切换执行模式
 - 远端任务订阅使用 `mind agent listen`
 - Helix 运行组件升级使用 `mind helix upgrade`
 - 本地环境诊断使用 `mind doctor`
@@ -242,32 +218,29 @@ Mind 使用子命令区分运行入口，再通过命令选项调整模式、输
 
 | 场景 | 入口 | 什么时候用 |
 |------|------|------------|
-| 自然语言探索 | `mind exec --mode chat "..."` | 先问能力边界、混合型临时任务 |
-| 快速短链路任务 | `mind exec --mode fast "..."` | 接口、媒体、文件类短任务 |
-| 结构化执行 | `mind exec --mode chat "..."` | 需要步骤稳定、证据整齐 |
-| 外接工具与编码协作 | `mind exec --mode xtra "..."` | 数据库、浏览器、外部 MCP 服务或原生 coding 协作 |
+| 单次主动任务 | `mind exec "..."` | 探索、接口、媒体、编码或外接工具协作 |
 | 订阅监听 | `mind agent listen` | 等待服务端下发任务、维持长链路 |
-| 进入交互模式 | `mind` | 想在 REPL 里切换 `chat / fast / xtra` |
-| 启用 Helix MCP | `mind exec --mode xtra "..." --helix` | 本次运行需要 Helix MCP 工具 |
+| 进入交互模式 | `mind` | 在同一会话内连续处理多个目标 |
+| 启用 Helix MCP | `mind exec "..." --helix` | 本次运行需要 Helix MCP 工具 |
 | 调整工具准入 | `mind exec "..." -s workspace-write -a on-request` | 本次运行允许工作区写入，越界前请求审批 |
 | 环境诊断 | `mind doctor` | 只读检查配置、MCP、Helix 和本地 coding 工具 |
 | MCP 服务 | `mind mcp-server` | 通过 stdio 向 Codex 等 MCP host 暴露 `mind_exec` |
 
-外接工具可以通过命令行 `mind exec --mode xtra "..."` 或 REPL `/xtra` 使用，服务定义见 [外接 MCP 配置](#外接-mcp-配置单格式)。
+外接工具可以通过命令行 `mind exec "..."` 或交互会话使用，服务定义见 [外接 MCP 配置](#外接-mcp-配置单格式)。
 
 ### Helix 接入选项
 `--helix`
 
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
-- 不传 `--helix`：`xtra` 只使用 Mind native tools 和已连接的外部 MCP tools；`chat / fast` 不应进入 Helix 执行面
+- 不传 `--helix`：使用 native tools 和已连接的外部 MCP tools
 - 传入 `--helix`：先检查 Helix runtime asset；缺失时在交互终端确认下载，再启动或复用本地 Helix MCP
 - 可用于 `mind exec` 和 `mind agent listen`
 - 交互模式中使用 `/helix-link` 接入 Helix
 
 示例：
 ```
-# 本次 xtra 请求启用 Helix MCP
-mind exec --mode xtra "查询外部服务并结合 Helix 工具返回结果" --helix
+# 本次请求启用 Helix MCP
+mind exec "查询外部服务并结合 Helix 工具返回结果" --helix
 
 # 进入 REPL 后可使用 /helix-link
 mind
@@ -279,7 +252,7 @@ mind
 用于更新本地 **MCP 服务/运行组件** 到最新版本形态（拉取 → 校验 → 覆盖 → 切换）。
 
 - 适用于：需要同步更新底层 MCP 能力集时
-- 不参与 chat/fast/xtra 执行链路：它是一个“单一动作入口”（执行完即退出）
+- 不参与模型执行链路：它是一个“单一动作入口”（执行完即退出）
 - 命令：`mind helix upgrade`
 
 示例：
@@ -323,16 +296,15 @@ codex mcp get mind --json
 
 完整工具参数、通用 MCP 配置和生命周期说明见 [Mind MCP Server](docs/mcp-server.md)。
 
-### Xtra 执行模式
-`mind exec --mode xtra`
+### 外接工具与编码协作
+`mind exec "..."`
 
-用于外接 MCP 与编码协作链路，暴露外接 MCP 工具、Mind native 工具和原生 coding 工具；需要 Helix MCP 时显式叠加 `--helix`。
+统一执行链路可使用外接 MCP 工具、native tools 和原生 coding 工具；需要 Helix MCP 时显式叠加 `--helix`。
 
 - 适用于：数据库、浏览器、外部服务、第三方 MCP 工具和编码任务协作
-- 不等同于 `exec --mode fast`：请求会以 `mode=xtra` 进入独立后端链路
 - 适合把 Playwright、外部知识库和原生 coding 能力接进本轮任务
-- 需要 Helix MCP 工具时：`mind exec --mode xtra "..." --helix`
-- 命令：`mind exec --mode xtra "..."`
+- 需要 Helix MCP 工具时：`mind exec "..." --helix`
+- 命令：`mind exec "..."`
 
 #### 外接 MCP 配置单格式
 
@@ -405,7 +377,7 @@ deny = ["browser_evaluate", "browser_file_upload"]
 示例：
 ```
 # 使用 Playwright MCP 打开页面并读取内容
-mind exec --mode xtra "打开 https://example.com，读取页面结构并总结主要内容"
+mind exec "打开 https://example.com，读取页面结构并总结主要内容"
 ```
 
 ### 订阅命令
@@ -414,7 +386,7 @@ mind exec --mode xtra "打开 https://example.com，读取页面结构并总结�
 用于启动订阅模式，本地会注册会话并建立长链路，持续等待服务端下发任务。
 
 - 适用于：远端调度、本地常驻监听、需要断线恢复与重连的任务接收场景
-- 不属于 REPL 的 `CHAT / FAST / XTRA` 状态：它是独立 CLI 入口
+- 它是独立 CLI 入口，不改变交互会话状态
 - 服务端链路核心是 `/agents/open`、`/agents/ws`、`/agents/resume`
 - 协议时序、消息类型和排障细节，直接看 [订阅模式](docs/agent-mode.md)
 
@@ -429,7 +401,7 @@ mind agent listen
 
 以 JSONL 事件流输出运行过程，供程序、Agent、CI 和其他界面消费：
 - 每行是一个完整 JSON 对象，并随事件产生立即写出
-- 支持 `exec --mode chat`、`exec --mode fast`、`exec --mode xtra` 三个直接请求模式
+- 支持 `exec` 直接请求
 - stdout 只写 JSONL；面向人的非结构化信息不混入事件流
 - 直接执行无论是否使用 `--json` 都不询问、不等待，遇到需要人工确认的工具调用会直接拒绝
 - `--json` 只改变输出格式；沙箱和审批策略仍由各自选项决定
@@ -437,8 +409,8 @@ mind agent listen
 
 示例：
 ```
-mind exec --mode chat "检查并修复测试" --json
-mind exec --mode fast "分析接口响应" --json
+mind exec "检查并修复测试" --json
+mind exec "分析接口响应" --json
 ```
 
 ### 沙箱与审批选项
@@ -454,8 +426,8 @@ mind exec --mode fast "分析接口响应" --json
 
 示例：
 ```
-mind exec --mode chat "检查项目并修复问题"
-mind exec --mode xtra "连接外部工具并完成修改" -s workspace-write -a on-request
+mind exec "检查项目并修复问题"
+mind exec "连接外部工具并完成修改" -s workspace-write -a on-request
 ```
 
 ---
@@ -468,14 +440,9 @@ README 这里只保留入口层信息。
 
 ### 核心要点
 - 启动 `mind` 即进入循环交互模式
-- REPL 内部有 `CHAT / FAST / XTRA` 四种互斥状态
-- 已实现的是模式切换、会话恢复、权限切换、工具状态查看和 Helix 服务控制
+- 已实现会话恢复、权限切换、工具状态查看和 Helix 服务控制
 
 ### 常用指令
-- `/chat`
-- `/fast`
-
-- `/xtra`
 - `/new`
 - `/resume`
 - `/permissions`
@@ -638,7 +605,7 @@ README 这里只保留入口层信息。
 
 ### 提交流程
 1. Fork & 新建分支：`feat/<name>` 或 `fix/<name>`
-2. 本地自测：覆盖 `chat/fast/xtra` 与 REPL 关键路径
+2. 本地自测：覆盖 `exec`、订阅与 REPL 关键路径
 3. 更新文档：新增/变更能力需同步 README；工具说明与维护约定看 [维护者指南](docs/maintainer-guide.md)
 4. 提交 PR：描述动机、设计、影响范围与回滚策略
 

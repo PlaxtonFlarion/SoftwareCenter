@@ -39,94 +39,94 @@
 
 ### 单帧截图
 ```text
-mind exec --mode fast "从 /path/to/demo.mp4 的第 3.5 秒抽取一张截图，并返回证据"
+mind exec "从 /path/to/demo.mp4 的第 3.5 秒抽取一张截图，并返回证据"
 ```
 
 ### 图片序列
 ```text
-mind exec --mode fast "把 /path/to/demo.mp4 从第 0 秒开始按 2fps 导出图片序列，并返回输出目录"
+mind exec "把 /path/to/demo.mp4 从第 0 秒开始按 2fps 导出图片序列，并返回输出目录"
 ```
 
 ### 关键帧提取
 ```text
-mind exec --mode fast "从 /path/to/demo.mp4 提取关键帧，最多返回 8 张，并输出结果证据"
+mind exec "从 /path/to/demo.mp4 提取关键帧，最多返回 8 张，并输出结果证据"
 ```
 
 ### 场景变化抽帧
 ```text
-mind exec --mode fast "从 /path/to/demo.mp4 按场景变化抽帧，阈值 0.35，最多保留 10 张"
+mind exec "从 /path/to/demo.mp4 按场景变化抽帧，阈值 0.35，最多保留 10 张"
 ```
 
 ### 视频裁剪
 ```text
-mind exec --mode fast "把 /path/to/demo.mp4 从第 12 秒裁到第 25 秒，并输出 mp4 片段"
+mind exec "把 /path/to/demo.mp4 从第 12 秒裁到第 25 秒，并输出 mp4 片段"
 ```
 
 ### 视频缩放
 ```text
-mind exec --mode fast "把 /path/to/demo.mp4 缩放到宽 720，高度等比，并输出新视频"
+mind exec "把 /path/to/demo.mp4 缩放到宽 720，高度等比，并输出新视频"
 ```
 
 ### 视频转码
 ```text
-mind exec --mode fast "把 /path/to/demo.mov 转成 30fps 的 mp4，编码为 libx264，并返回结果"
+mind exec "把 /path/to/demo.mov 转成 30fps 的 mp4，编码为 libx264，并返回结果"
 ```
 
 ### 视频拼接
 ```text
-mind exec --mode fast "根据 /path/to/list.txt 拼接多个视频片段，输出 mp4 文件"
+mind exec "根据 /path/to/list.txt 拼接多个视频片段，输出 mp4 文件"
 ```
 
 ### 仅换容器
 ```text
-mind exec --mode fast "把 /path/to/demo.mkv 仅换容器封装成 mp4，不重编码"
+mind exec "把 /path/to/demo.mkv 仅换容器封装成 mp4，不重编码"
 ```
 
 ### 去音轨
 ```text
-mind exec --mode fast "把 /path/to/demo.mp4 去掉音轨并输出静音视频"
+mind exec "把 /path/to/demo.mp4 去掉音轨并输出静音视频"
 ```
 
 ### 视频信息探测
 ```text
-mind exec --mode fast "探测 /path/to/demo.mp4 的视频信息，并返回时长与原始探测结果"
+mind exec "探测 /path/to/demo.mp4 的视频信息，并返回时长与原始探测结果"
 ```
 
 ### 音轨抽取
 ```text
-mind exec --mode fast "从 /path/to/demo.mp4 提取音轨为 mp3，并返回输出文件"
+mind exec "从 /path/to/demo.mp4 提取音轨为 mp3，并返回输出文件"
 ```
 
 ### 替换音轨
 ```text
-mind exec --mode fast "用 /path/to/new_audio.m4a 替换 /path/to/demo.mp4 的音轨，并输出 mp4"
+mind exec "用 /path/to/new_audio.m4a 替换 /path/to/demo.mp4 的音轨，并输出 mp4"
 ```
 
 ### 音频格式转换
 ```text
-mind exec --mode fast "把 /path/to/demo.wav 转成 16000Hz 单声道 mp3，并返回结果"
+mind exec "把 /path/to/demo.wav 转成 16000Hz 单声道 mp3，并返回结果"
 ```
 
 ### 音频试听
 ```text
-mind exec --mode fast "播放 /path/to/demo.mp3，音量 0.8"
+mind exec "播放 /path/to/demo.mp3，音量 0.8"
 ```
 
 ## 组合链路
 
 ### 录屏问题片段精简回放
 ```text
-mind exec --mode fast "先探测 /path/to/demo.mp4，再把第 15 秒到第 28 秒裁出来，然后从裁剪结果中提取关键帧，最多保留 6 张"
+mind exec "先探测 /path/to/demo.mp4，再把第 15 秒到第 28 秒裁出来，然后从裁剪结果中提取关键帧，最多保留 6 张"
 ```
 
 ### 视觉证据链预处理
 ```text
-mind exec --mode fast "把 /path/to/demo.mp4 先缩放到宽 720，再按场景变化抽帧，最多返回 10 张结果图"
+mind exec "把 /path/to/demo.mp4 先缩放到宽 720，再按场景变化抽帧，最多返回 10 张结果图"
 ```
 
 ### 音频分离与验证
 ```text
-mind exec --mode fast "从 /path/to/demo.mp4 提取音轨为 wav，再转成 16000Hz 单声道 mp3，最后播放结果文件"
+mind exec "从 /path/to/demo.mp4 提取音轨为 wav，再转成 16000Hz 单声道 mp3，最后播放结果文件"
 ```
 
 ## 最佳实践

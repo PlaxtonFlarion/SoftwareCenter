@@ -17,7 +17,7 @@
     <ul class="mind-mini-list">
       <li>命令行适合一次性任务和脚本执行</li>
       <li>交互式适合持续对话、边问边跑</li>
-      <li>外接模式适合数据库、浏览器、外部 MCP 服务和编码工具协作</li>
+      <li>外接工具适合数据库、浏览器、外部 MCP 服务和编码工具协作</li>
       <li>订阅适合本地等待远端下发任务</li>
     </ul>
   </div>
@@ -38,8 +38,8 @@
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">外接</span>
-    <h3>需要外部服务时走 Xtra</h3>
-    <p>任务依赖数据库、浏览器、外部 MCP 工具，或需要和编码工具放在同一轮协作时，直接走 <code>exec --mode xtra</code>。</p>
+    <h3>需要外部服务时直接接入工具</h3>
+    <p>任务依赖数据库、浏览器、外部 MCP 工具，或需要和编码工具放在同一轮协作时，直接使用 <code>exec</code>。</p>
   </div>
   <div class="mind-step-card">
     <span class="mind-step-index">下发</span>
@@ -62,8 +62,8 @@
     <p>适合持续对话、边问边跑，也适合反复试探能力边界。继续看 <a href="../generated/interactive-mode/">交互模式</a>。</p>
   </div>
   <div class="mind-step-card">
-    <span class="mind-step-index">XTRA</span>
-    <h3>外接模式</h3>
+    <span class="mind-step-index">MCP</span>
+    <h3>外接工具</h3>
     <p>适合外部 MCP 服务、通用工具和编码工具协作。继续看 <a href="../generated/overview/">外接 MCP 配置</a>和 <a href="../generated/playbook.nativecoding/">原生 coding</a>。</p>
   </div>
   <div class="mind-step-card">
@@ -83,8 +83,8 @@
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">误判二</span>
-    <h3>Xtra 只是 Fast 换名</h3>
-    <p>⚠️ 不对。Xtra 走独立 <code>mode=xtra</code> 后端链路，暴露外接 MCP 工具、通用工具和编码工具。</p>
+    <h3>外接 MCP 需要切换运行状态</h3>
+    <p>⚠️ 不对。已启用的外接 MCP 直接加入统一工具目录，无需切换应用运行状态。</p>
   </div>
   <div class="mind-panel">
     <span class="mind-kicker">误判三</span>

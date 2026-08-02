@@ -9,7 +9,6 @@
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `prompt` | `string` | 必填 | 本次任务内容。 |
-| `mode` | `chat \| fast \| xtra` | `xtra` | Mind 运行模式。 |
 | `sandbox_mode` | `read-only \| workspace-write \| danger-full-access \| null` | 配置值或 `read-only` | 沙箱边界。 |
 | `approval_policy` | `untrusted \| on-request \| never \| null` | 配置值或 `never` | 工具审批策略。 |
 | `working_directory` | `string \| null` | MCP 进程工作目录 | 可选的任务工作目录，必须已经存在。 |

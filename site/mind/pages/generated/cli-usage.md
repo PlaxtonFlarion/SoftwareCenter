@@ -77,11 +77,11 @@ mind e [OPTIONS] [PROMPT]
 常用示例：
 
 ```powershell
-# 非交互运行默认使用 xtra、read-only 和 never
+# 非交互运行默认使用 read-only 和 never
 mind exec "检查当前项目并给出结论"
 
-# 选择模式、沙箱、审批策略和本次模型
-mind exec --mode xtra -s workspace-write -a on-request -m gpt-5.5 "修复测试失败"
+# 选择沙箱、审批策略和本次模型
+mind exec -s workspace-write -a on-request -m gpt-5.5 "修复测试失败"
 
 # 输出 newline-delimited JSON 事件
 mind exec --json "检查当前项目"
@@ -94,7 +94,6 @@ mind exec --helix "检查设备状态"
 
 | 选项 | 说明 |
 |------|------|
-| `--mode <chat|fast|xtra>` | 选择执行模式，默认 `xtra` |
 | `--json` | 输出 JSONL 事件流 |
 | `--helix` | 启动或复用本地 Helix，并接入其 MCP 工具 |
 | `-i, --image <FILE>` | 添加图片附件 |

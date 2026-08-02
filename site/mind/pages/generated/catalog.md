@@ -18,7 +18,7 @@
 - [命令行使用参考](cli-usage.md)
   适合查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合规则。
 - [交互模式](interactive-mode.md)
-  适合看 REPL 指令、CHAT / FAST / XTRA 状态切换和输入约束。
+  适合看 REPL 指令、会话管理和输入约束。
 - [订阅模式](agent-mode.md)
   适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。
 

@@ -64,13 +64,13 @@ mind --help
 ### 需要 Helix MCP 时显式接入
 
 ```bash
-mind exec --mode chat "概述当前系统能力" --helix
+mind exec "概述当前系统能力" --helix
 ```
 
 ### 先跑一次 CLI 命令行模式
 
 ```bash
-mind exec --mode xtra "概述当前系统的核心能力、边界与典型使用场景"
+mind exec "概述当前系统的核心能力、边界与典型使用场景"
 ```
 
 ### 需要持续交互时进入 REPL
@@ -79,13 +79,13 @@ mind exec --mode xtra "概述当前系统的核心能力、边界与典型使用
 mind
 ```
 
-### 需要外接工具协作时用 `exec --mode xtra`
+### 需要外接工具协作时使用 `exec`
 
 ```bash
-mind exec --mode xtra "Open DBHub and query the users table"
+mind exec "Open DBHub and query the users table"
 ```
 
-外接 MCP 服务需提前可访问；同一模式也可使用原生 coding 编码链路。
+外接 MCP 服务需提前可访问；同一轮也可使用原生 coding 编码链路。
 
 ### 需要订阅监听时切到 `agent listen`
 

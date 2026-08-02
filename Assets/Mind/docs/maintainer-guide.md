@@ -4,7 +4,7 @@
 主 README 负责上手入口；这里负责解释维护时需要同时关注的代码、文档和同步链路。
 
 ## 维护范围
-- 模式边界：`chat / fast / xtra / agent`
+- 执行边界：主动模型轮次与 `agent` 订阅
 - 工具域边界：`device / bench / common / media / coding`
 - 接口执行面：协议执行能力
 - 文档拆分与同步：`README.md`、`docs/*.md`、`.github/workflows/sync-to-software-center.yml`
@@ -24,21 +24,18 @@ device / bench / common / media / coding
 - `docs/` 中的展开说明
 - 代码与 CLI 帮助中的真实行为
 
-## 模式边界
-- `chat`：开放式流式工具闭环，工具范围最宽
-- `fast`：裁剪工具集后的快速执行通道，适合接口、文本、媒体短链路
-- `chat`：先生成计划，再按步骤顺序执行，强调步骤稳定和可复盘
-- `xtra`：外接 MCP 工具、Mind native 工具与编码工具协作通道，走独立 `mode=xtra` 后端链路；Helix MCP 由 `--helix` 或 `/helix-link` 显式接入后追加
-- `agent`：订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
-- `chat / fast`：依赖 Helix MCP 服务；入口准入应在模式执行前完成，不要下沉到 `CompositeToolRuntime`
+## 执行边界
+- `exec` 和交互会话共用统一模型轮次、工具生命周期和请求协议
+- `agent` 是订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
+- Helix MCP 由 `--helix` 或 `/helix-link` 显式接入，不下沉到 `CompositeToolRuntime` 自动启动
+- 工具过滤策略保留独立过滤模式，调用来源确定前不得复用为应用运行模式
 
 维护要求：
-- 如果改了模式过滤逻辑，必须同步更新 README 的“运行模式”章节
+- 如果改了工具过滤逻辑，必须同步更新对应策略测试和工具说明
 - 如果改了 CLI 帮助或示例，也要确认 `README` 和 `docs/` 是否仍然对齐
 - 不要在文档里承诺未实现的 REPL 指令
 - 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
-- 不要把 `xtra` 写成 `fast` 别名；它有独立工具过滤和 `mode=xtra` transport
-- `xtra` 外接 MCP 口径保持为外部服务协作，同时允许原生 coding 工具链参与；不要写成由 Mind 托管外部进程
+- 不要在 CLI、TUI、请求协议或会话状态中重新引入 `chat / fast / xtra`
 
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
@@ -73,8 +70,6 @@ device / bench / common / media / coding
 ## 文档维护约定
 - 标题统一使用中文标题，不再在标题尾部追加英文副标题
 - README 和 `docs/` 内部链接统一使用仓库内相对路径
-- 命令行模式名称使用小写：`chat / fast / xtra`
-- REPL 内部状态名称使用大写：`CHAT / FAST / XTRA`
 - 术语一旦在 README 中定稿，`docs/` 中应保持同一写法，不要派生近义口径
 - 只要改了 `README.md`、`docs/*.md` 或 `LICENSE.md`，都应判断是否需要同步到 SoftwareCenter
 
