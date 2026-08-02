@@ -176,7 +176,8 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 `hookSpecificOutput.additionalContext`。结果替换仍通过应用扩展字段
 `replacementResult` 完成；上游保留字段 `updatedMCPToolOutput` 当前不执行替换，
 返回非空值会使 Hook 运行失败。`PostCompact` 只接受通用输出字段，不接受
-`hookSpecificOutput`。
+`hookSpecificOutput`。`PostToolUse` 只在工具成功完成时执行；工具返回失败、执行
+异常或取消时均不执行。
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
 `UserPromptSubmit` 或模型请求；同一批结果中的 `additionalContext` 会保留给
