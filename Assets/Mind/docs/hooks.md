@@ -172,12 +172,20 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 运行失败；`continue: false`、`stopReason` 和 `suppressOutput: true` 同样不受
 支持。
 
-`PostToolUse` 使用顶层 `decision: "block"`、`reason` 和嵌套的
-`hookSpecificOutput.additionalContext`。结果替换仍通过应用扩展字段
-`replacementResult` 完成；上游保留字段 `updatedMCPToolOutput` 当前不执行替换，
-返回非空值会使 Hook 运行失败。`PostCompact` 只接受通用输出字段，不接受
-`hookSpecificOutput`。`PostToolUse` 只在工具成功完成时执行；工具返回失败、执行
-异常或取消时均不执行。
+`PostToolUse` 只在工具成功完成时执行；工具返回失败、执行异常或取消时均不执行。
+它的控制和模型反馈语义彼此独立：
+
+- `continue: false` 把该 Hook 标记为停止；`reason` 优先作为模型反馈，没有有效
+  `reason` 时使用 `stopReason` 或固定反馈。它不回滚已经完成的工具执行。
+- 顶层 `decision: "block"` 拒绝工具结果而不是工具执行，并把必填的 `reason`
+  作为失败结果反馈给模型。
+- `hookSpecificOutput.additionalContext` 作为独立上下文注入，不承担结果替换。
+- 应用扩展字段 `replacementResult` 显式替换模型可见结果，不修改原始执行值；
+  `block` 优先于结果替换，没有 `block` 时显式替换优先于停止反馈。
+
+多个停止或阻断反馈按 Hook 顺序合并。上游保留字段 `updatedMCPToolOutput` 当前不
+执行替换，返回非空值会使 Hook 运行失败。`PostCompact` 只接受通用输出字段，
+不接受 `hookSpecificOutput`。
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
 `UserPromptSubmit` 或模型请求；同一批结果中的 `additionalContext` 会保留给
