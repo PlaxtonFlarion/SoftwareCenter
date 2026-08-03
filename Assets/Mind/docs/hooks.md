@@ -55,6 +55,9 @@ hooks = [
 | `async` | boolean | `false` | 当前不支持异步命令；非 `SessionEnd` 事件会跳过并警告，`SessionEnd` 仍同步执行 |
 | `additionalContextLimit` | integer | `2500` | 附加上下文近似 token 上限，`0` 不限制 |
 
+`additionalContextLimit` 同时用于 Stop 和 SubagentStop 的续跑提示。超过限制时保留
+头尾摘要和完整内容的临时文件路径，不会静默截断。
+
 MatcherGroup 使用 `matcher` 和 `hooks`，命令处理器使用上表字段。未知字段会被忽略
 并记录 discovery warning，不会使整个配置加载失败。
 
@@ -76,6 +79,17 @@ Matcher 规则与工具名称：
   `exec_command`、`write_stdin` 对应 `Bash`，`apply_patch` 对应 `Edit`、
   `Write`，`spawn_agent` 对应 `Agent`；同一处理器只执行一次。
 
+工具 Hook 的覆盖范围取决于工具执行位置：
+
+- 客户端执行的工具完整经过 PreToolUse、PermissionRequest 和 PostToolUse。
+- 需要服务端审批的工具会在审批阶段执行 PreToolUse 和 PermissionRequest，但参数
+  改写不改变服务端最终执行输入。
+- 不需要审批的服务端工具没有本地执行前事件；服务端回灌的工具结果不执行
+  PostToolUse。
+
+`/hooks` 使用 `client-full`、`server-approval-only`、`approval-events` 和
+`client-only` 标签显示这些边界。Hook 已启用不代表同名服务端工具受完整控制。
+
 命令从 stdin 接收一个符合事件 schema 的 JSON 对象。公共字段使用 Codex
 canonical 名称：`session_id`、`transcript_path`、`cwd`、`hook_event_name` 和
 `model`；按事件补充 `turn_id`、`permission_mode`、Agent 字段或工具字段。
@@ -85,6 +99,9 @@ canonical 名称：`session_id`、`transcript_path`、`cwd`、`hook_event_name` 
 Hook 返回的 `updatedInput.command` 会转换回本地 `patch` 参数。
 `transcript_path` 指向当前执行实际写入的会话记录；子执行主体使用独立记录文件，
 `SubagentStop.agent_transcript_path` 指向同一子执行记录。
+
+POSIX 平台通过当前 `$SHELL -lc` 执行命令，未设置 `$SHELL` 时回退到
+`/bin/sh`；Windows 通过 `COMSPEC /C` 执行，并优先使用 `commandWindows`。
 
 会话记录位于应用主目录下的
 `sessions/YYYY/MM/DD/session-<session_id>.jsonl`。日期取自会话标识中的创建时间；
