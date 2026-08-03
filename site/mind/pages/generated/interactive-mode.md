@@ -35,6 +35,9 @@
 配置在下次启动时生效：
 
 ```toml
+[tui]
+scrollback_reflow_line_limit = 10000
+
 [tui.keymap.global]
 open_transcript = "f12"
 
@@ -49,7 +52,8 @@ close = ["q", "ctrl-c"]
 值可以是单个按键字符串或字符串数组；空数组表示显式解绑。支持普通字符、
 `ctrl-<字符>`、`alt-<键>`、`shift-<字母/Tab>`、`f1` 到 `f24`，以及
 方向键、Home/End、PageUp/PageDown 等命名键。同一上下文中的重复按键会导致配置校验失败。
-项目级配置不能覆盖 TUI 按键。
+`scrollback_reflow_line_limit` 限制终端尺寸变化时从稳定记录中重新输出的逻辑行数，
+默认是 `10000`，值必须是正整数。项目级配置不能覆盖 TUI 配置。
 
 空输入时连续按两次 `Esc` 可以直接选择最近的用户消息；在完整记录中使用
 `Esc/Left` 向前选择、`Right` 向后选择，按 `Enter` 从选中消息前创建分支并恢复输入。
