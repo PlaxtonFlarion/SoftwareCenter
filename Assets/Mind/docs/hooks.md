@@ -6,9 +6,10 @@ Hooks；不读取 `hooks.json`。
 
 ## 信任与启用状态
 
-只有 managed 配置提供的 Hook 自动可信并始终启用。user、profile、project、CLI
-和 plugin 等普通来源的 Hook 默认状态都是 `untrusted`，不会执行；项目配置被加载
-不等于其中的 Hook 自动可信。普通 Hook 必须先审核并信任当前内容。
+当前配置层接入 user、profile、project 和 CLI Hook，这些普通来源默认状态都是
+`untrusted`，不会执行；项目配置被加载不等于其中的 Hook 自动可信。普通 Hook
+必须先审核并信任当前内容。managed 和 plugin 是预留来源，当前配置解析层不负责
+发现或加载这两类 Hook；未来由受控入口注入的 managed Hook 自动可信并始终启用。
 
 信任和启用状态保存在用户 `config.toml`，不使用独立的 `hook-trust.json`：
 
@@ -19,13 +20,13 @@ trusted_hash = "sha256:<64 hex>"
 ```
 
 `trusted_hash` 由 Hook 管理界面写入。用户配置和当前进程的 CLI override 可以提供
-Hook state；profile、project 或 plugin 配置中的 state 不能为自身授权。`enabled`
+Hook state；profile 或 project 配置中的 state 不能为自身授权。`enabled`
 与信任相互独立，因此受信任的 Hook 可以单独禁用，内容改变后重新信任也会保留
 原有禁用状态。
 
 信任状态有四种：
 
-- `managed`：由 managed 配置提供，始终启用并执行，用户不能修改其状态。
+- `managed`：预留给受控入口注入的配置，始终启用并执行，用户不能修改其状态。
 - `trusted`：当前内容摘要与 `trusted_hash` 相同；仅在 `enabled=true` 时执行。
 - `modified`：保存过信任摘要，但当前内容已经变化，不执行。
 - `untrusted`：没有保存当前 Hook 的信任摘要，不执行。
@@ -189,7 +190,9 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
 `UserPromptSubmit` 或模型请求；同一批结果中的 `additionalContext` 会保留给
-下一轮。`UserPromptSubmit` 阻断当前轮次时也会保留同批结果中的
+下一轮。压缩成功后会立即分发一次 `SessionStart(source="compact")`，其中的
+`additionalContext` 排入压缩后的下一轮，`continue: false` 会把压缩后的继续
+状态标记为已阻止。`UserPromptSubmit` 阻断当前轮次时也会保留同批结果中的
 `additionalContext`。多个 `Stop` Hook 中任意一个返回
 `continue: false` 时停止结果优先；只有没有停止结果时，才会聚合
 `decision: "block"` 的原因并创建续跑 Prompt。
