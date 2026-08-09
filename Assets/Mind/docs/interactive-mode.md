@@ -70,6 +70,12 @@ close = ["q", "ctrl-c"]
 - `/diff`：查看本轮补丁净差异
 - `/copy`：复制最近一次助手回复原文到剪贴板
 - `/ps`：查看运行中的命令
+- `/listen`：打开带当前状态的远端请求监听器启动/停止菜单
+- `/listen start|stop|status`：直接启动、停止或输出监听器状态
+- `/mailbox`：查看远端请求摘要，运行、删除、展开消息或切换当前会话的 Auto-run
+
+`/listen start` 最多等待 30 秒进入 ready；超时会停止本次监听并输出失败状态。
+断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
 - `/mcp`：管理外部 MCP 服务
 - `/helix-link`：启动或复用 Helix 服务，并将 MCP 接入当前会话
 - `/helix-mode`：在已连接 Helix 的会话中选择 `app / api` 工具过滤器
