@@ -1,8 +1,32 @@
 # Hooks 配置
 
-Hooks 统一写入配置层的 `config.toml`。用户配置位于
-`~/.mind/config.toml`，可信项目也可以在 `.mind/config.toml` 中追加项目级
-Hooks；不读取 `hooks.json`。
+Hooks 可以写入配置层的 `config.toml`，也可以放在同目录的独立
+`hooks.json`。用户层对应 `~/.mind/config.toml` 和 `~/.mind/hooks.json`；可信
+项目对应 `.mind/config.toml` 和 `.mind/hooks.json`。同一层同时使用两种表示时会
+全部加载并产生 discovery warning，通常应只保留一种。
+
+独立文件只接受 `description` 和 `hooks` 两个根字段，事件结构与 TOML 配置一致：
+
+```json
+{
+  "description": "Repository hooks",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "shell_command|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/check_tool.py",
+            "statusMessage": "Checking tool call",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
 ## 信任与启用状态
 
