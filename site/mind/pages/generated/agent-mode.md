@@ -121,6 +121,7 @@ mind.received
 - `message` 必须是非空字符串
 - 意图摘要可以为空
 - 本地会先完成内存入箱，再发送 `mind.received`，避免确认后未能保存消息
+- `mind.received.payload.disposition` 为 `queued` 或 `auto_run`；前者让调用方立即得到已入箱结果，后者让调用方继续等待任务启动和报告链接
 - 收件箱只在当前进程内有效，退出或重新打开应用后不恢复
 - Auto-run 只在当前 TUI 会话有效，不写入配置；退出后恢复为关闭
 - Auto-run 只在监听器 ready 时工作，并通过 TUI 主循环一次执行一条，不在 WS 回调中并发模型轮次
