@@ -100,17 +100,33 @@ close = ["q", "ctrl-c"]
 - 菜单中使用 `↑/↓` 滚动，`PgUp/PgDn` 跳转，`Enter` 选择，`q` 取消
 - 适合重启 REPL 后接回某一段对话；如果要开启新上下文，继续使用 `/new`
 
-## `/model` 与 `/preferences`
-- `/model <model-id>`：只更新主模型 ID，适合临时切换模型后继续留在 REPL 里验证
-- 不带模型 ID 时会把主模型 ID 清空
-- 写入目标是本地 `config.toml` 的顶层 `model`
+## `/provider`、`/model` 与 `/preferences`
+- `/provider`：打开二级选单，动态加载本地 `config.toml` 中的 Provider Profile
+- Provider 选择写入本地 `config.toml` 的顶层 `model_provider`
+- `/model <model-id>`：更新当前 Provider Profile 的模型 ID
+- 模型写入目标是 `model_providers.<profile-id>.model`
 - 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新模型
 - 正在进行中的一轮不会中途切换模型；需要等下一轮输入
-- `/preferences`：打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名
+- `/preferences`：打开本地配置页面，通过短卡片和编辑弹窗维护多个 Provider Profile
+
+`config.toml` 使用独立 Profile 配置：
+
+```toml
+model_provider = "openai-main"
+
+[model_providers.openai-main]
+name = "openai-main"
+kind = "openai"
+model = "gpt-5.2"
+route = "responses"
+reasoning_effort = "high"
+api_key = "..."
+base_url = ""
+```
 
 ## `/effort`
 - `/effort`：打开二级菜单设置推理强度，可选 `low / medium / high / xhigh`
-- 写入目标是本地 `config.toml` 的顶层 `model_reasoning_effort`
+- 写入目标是当前 `model_providers.<profile-id>.reasoning_effort`
 - 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新的推理强度
 - 当前正在进行中的一轮不会中途切换推理强度；需要等下一轮输入
 

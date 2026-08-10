@@ -35,7 +35,7 @@ mind [OPTIONS] <COMMAND> [ARGS]
 ```powershell
 mind -p work exec "检查当前项目"
 mind exec "检查当前项目" -p work
-mind exec "检查当前项目" -c 'model_reasoning_effort="high"'
+mind exec "检查当前项目" -c 'model_providers.openai-main.reasoning_effort="high"'
 ```
 
 | 选项 | 说明 |
