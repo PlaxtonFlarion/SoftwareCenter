@@ -189,7 +189,7 @@ mind agent listen
 **Mind** 使用一条统一的主动执行链路：单次任务使用 `mind exec`，持续交互使用 `mind`。
 远程任务订阅使用独立入口 `mind agent listen`，不改变主动执行链路的状态。
 
-工具范围由本地 runtime、已启用的外接 MCP 和会话是否接入 Helix 决定。CLI 可用 `--helix [app|api]` 在启动时接入 Helix；只写 `--helix` 时默认选择 `app`，不传时不连接。交互会话可用 `/helix-link` 接入、用 `/helix-mode` 选择过滤器，或用 `/helix-unlink` 移除连接。外接服务配置见 [外接 MCP 配置](#外接-mcp-配置单格式)，订阅协议见 [订阅模式](docs/agent-mode.md)。
+工具范围由本地 runtime、已启用的外接 MCP 和会话是否接入 Helix 决定。CLI 可用 `-H, --helix [app|api]` 在启动时接入 Helix；只写 `-H` 或 `--helix` 时默认选择 `app`，不传时不连接。交互会话可用 `/helix-link` 接入、用 `/helix-mode` 选择过滤器，或用 `/helix-unlink` 移除连接。外接服务配置见 [外接 MCP 配置](#外接-mcp-配置单格式)，订阅协议见 [订阅模式](docs/agent-mode.md)。
 
 ---
 
@@ -197,8 +197,8 @@ mind agent listen
 ## ⭐️ 命令行参数
 Mind 使用子命令区分运行入口，再通过命令选项调整输出、模型和工具权限。
 
-- **子命令**：`exec`、`resume`、`agent listen`、`helix upgrade`、`doctor`、`mcp`、`mcp-server`、`completion`
-- **常用选项**：`--sandbox`、`--ask-for-approval`、`--helix`、`--json`、`--image`、`--model`
+- **子命令**：`exec`、`resume`、`agent listen`、`upgrade helix`、`doctor`、`mcp`、`mcp-server`、`completion`
+- **常用选项**：`--sandbox`、`--ask-for-approval`、`-H/--helix`、`--json`、`--image`、`--model`
 - **默认入口**：不带子命令的 `mind` 进入交互模式
 
 > 心智模型：**先选要执行的命令，再为该命令添加运行选项。**
@@ -210,7 +210,7 @@ Mind 使用子命令区分运行入口，再通过命令选项调整输出、模
 - 图片使用 `-i/--image`，模型使用 `-m/--model`；两者都可以放在根命令或 `exec`/`resume` 子命令
 - prompt 可以与管道输入组合，例如 `git diff | mind exec "审查这些改动"`
 - 远端任务订阅使用 `mind agent listen`
-- Helix 运行组件升级使用 `mind helix upgrade`
+- Helix 运行组件升级使用 `mind upgrade helix`
 - 本地环境诊断使用 `mind doctor`
 - 向 MCP host 暴露 Mind agent 使用 `mind mcp-server`
 
@@ -232,7 +232,7 @@ Mind 使用子命令区分运行入口，再通过命令选项调整输出、模
 外接工具可以通过命令行 `mind exec "..."` 或交互会话使用，服务定义见 [外接 MCP 配置](#外接-mcp-配置单格式)。
 
 ### Helix 接入选项
-`--helix [app|api]`
+`-H, --helix [app|api]`
 
 用于在本次运行前接入本地 Helix 服务，并把 Helix MCP 工具挂入工具运行时：
 - 不传 `--helix`：使用 native tools 和已连接的外部 MCP tools
@@ -255,18 +255,18 @@ mind --helix api
 ```
 
 ### Helix 升级命令
-`mind helix upgrade`
+`mind upgrade helix`
 
 用于更新本地 **MCP 服务/运行组件** 到最新版本形态（拉取 → 校验 → 覆盖 → 切换）。
 
 - 适用于：需要同步更新底层 MCP 能力集时
 - 不参与模型执行链路：它是一个“单一动作入口”（执行完即退出）
-- 命令：`mind helix upgrade`
+- 命令：`mind upgrade helix`
 
 示例：
 ```
 # 更新 MCP 服务到最新版本
-mind helix upgrade
+mind upgrade helix
 ```
 
 ### 环境诊断命令

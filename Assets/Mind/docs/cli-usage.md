@@ -22,7 +22,7 @@ mind [OPTIONS] <COMMAND> [ARGS]
 | `mind exec` / `mind e` | 执行一次非交互任务 |
 | `mind resume` | 恢复已有交互会话 |
 | `mind agent listen` | 监听远端下发任务 |
-| `mind helix upgrade` | 下载或更新 Helix 运行组件 |
+| `mind upgrade helix` | 下载或更新 Helix 运行组件 |
 | `mind doctor` | 只读诊断本地运行环境 |
 | `mind mcp ...` | 管理外部 MCP 服务注册 |
 | `mind mcp-server` | 通过 stdio 暴露 MCP 服务 |
@@ -56,7 +56,7 @@ mind
 mind "先检查当前项目结构"
 mind -m gpt-5.5 "先检查当前项目结构"
 mind -i .\screen.png "分析这张截图"
-mind --helix api "检查接口"
+mind -H api "检查接口"
 ```
 
 根命令支持：
@@ -65,7 +65,7 @@ mind --helix api "检查接口"
 |------|------|
 | `-m, --model <MODEL>` | 为本次运行覆盖主模型 |
 | `-i, --image <FILE>` | 添加初始图片；可重复，也可用逗号分隔多个路径 |
-| `--helix [PROFILE]` | 接入 Helix；省略 profile 时使用 `app`，也可选择 `api` |
+| `-H, --helix [PROFILE]` | 接入 Helix；省略 profile 时使用 `app`，也可选择 `api` |
 
 `-m` 是本次运行的临时覆盖，不会写入持久配置。需要在交互会话中持久修改模型时，使用 `/model` 或 `/preferences`。
 
@@ -100,7 +100,7 @@ mind exec --helix api "检查接口状态"
 | 选项 | 说明 |
 |------|------|
 | `--json` | 输出 JSONL 事件流 |
-| `--helix [PROFILE]` | 启动或复用本地 Helix；profile 可选 `app` 或 `api`，默认 `app` |
+| `-H, --helix [PROFILE]` | 启动或复用本地 Helix；profile 可选 `app` 或 `api`，默认 `app` |
 | `-i, --image <FILE>` | 添加图片附件 |
 | `-m, --model <MODEL>` | 临时覆盖本次请求使用的主模型 |
 
@@ -176,7 +176,7 @@ mind resume --helix api
 | `--include-non-interactive` | 同时显示由非交互命令创建的会话 |
 | `-i, --image <FILE>` | 为恢复后的首条消息添加图片 |
 | `-m, --model <MODEL>` | 临时覆盖恢复会话使用的主模型 |
-| `--helix [PROFILE]` | 恢复时接入 Helix；省略 profile 时使用 `app` |
+| `-H, --helix [PROFILE]` | 恢复时接入 Helix；省略 profile 时使用 `app` |
 
 根命令上的 `-i/--image` 和 `-m/--model` 同样会传播给 `resume`；子命令模型优先，图片按顺序合并。
 
@@ -238,7 +238,7 @@ mind agent listen --helix
 mind agent listen --helix api
 
 # 更新 Helix 运行组件
-mind helix upgrade
+mind upgrade helix
 
 # 通过 stdio 向 MCP host 暴露服务
 mind mcp-server
