@@ -49,6 +49,19 @@ mind exec "检查当前项目" -c 'model_providers.openai-main.reasoning_effort=
 
 `-c` 只覆盖本次进程。包含数组、字符串或特殊字符的值应按当前 shell 的规则加引号。
 
+本地 JavaScript REPL 和子 Agent 能力由 `config.toml` 的启动期开关控制：
+
+```toml
+[features]
+js_repl = true
+subagents = true
+```
+
+关闭 `js_repl` 会同时移除 `js_repl` 和 `js_repl_reset`；关闭 `subagents`
+会停止注册全部 Agent 协作工具，并禁止创建或控制子 Agent。`[agents]` 仅保留
+`max_concurrent_threads_per_session`、`max_depth`、`default_fork_turns` 和
+`max_fork_context_chars` 等运行参数。修改这些能力开关后需要重新启动进程。
+
 ## 交互模式
 
 ```powershell

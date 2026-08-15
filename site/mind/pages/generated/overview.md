@@ -318,6 +318,27 @@ codex mcp get mind --json
 
 配置写入 `~/.mind/config.toml`，并参与用户、Profile、可信项目和 CLI 覆盖的统一解析：
 
+本地能力开关在启动时读取，修改后需要重新启动进程：
+
+```toml
+[features]
+js_repl = true
+subagents = true
+
+[agents]
+max_concurrent_threads_per_session = 4
+max_depth = 1
+default_fork_turns = 5
+max_fork_context_chars = 40000
+```
+
+- `features.js_repl` 同时控制 `js_repl` 和 `js_repl_reset`
+- `features.subagents` 同时控制子 Agent runtime 和 Agent 协作工具
+- `[agents]` 只配置子 Agent 的并发、深度和上下文参数
+- 能力开关不改变 `sandbox_mode` 或 `approval_policy`
+
+外接 MCP 使用独立的服务配置：
+
 ```toml
 [mcp_servers.playwright]
 command = "npx"
