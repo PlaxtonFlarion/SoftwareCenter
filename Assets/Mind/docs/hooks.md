@@ -145,8 +145,8 @@ POSIX 平台通过当前 `$SHELL -lc` 执行命令，未设置 `$SHELL` 时回�
 }
 ```
 
-固定字段为 `timestamp`、`event`、`session_id`、`turn_id`、`actor` 和 `payload`，
-不包含 `version` 或 `schema_version`。当前事件包括 `session.started`、
+每个事件只使用 `timestamp`、`event`、`session_id`、`turn_id`、`actor` 和
+`payload` 这些固定顶层字段。当前事件包括 `session.started`、
 `session.ended`、`turn.started`、`turn.completed`、`turn.failed`、
 `turn.interrupted`、`message.created`、`message.updated`、`tool.started`、
 `tool.completed`、`tool.failed`、`context.compacted` 和
