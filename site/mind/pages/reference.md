@@ -105,7 +105,7 @@
   <a class="mind-panel mind-panel-link" href="../generated/cli-usage/">
     <span class="mind-kicker">命令参考</span>
     <h3>我想确认选项怎么组合</h3>
-    <p>查看 exec、resume、图片、模型、stdin、MCP 和补全命令的完整组合。</p>
+    <p>查看 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助和补全命令的完整组合。</p>
   </a>
   <a class="mind-panel mind-panel-link" href="../getting-started/">
     <span class="mind-kicker">目的一</span>

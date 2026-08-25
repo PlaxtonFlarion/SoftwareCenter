@@ -6,15 +6,19 @@
 适合补齐交互入口、REPL 切换、订阅和输入约束。
 
 - [命令行使用参考](cli-usage.md)
-  适合查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合规则。
+  适合查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合规则。
 - [交互模式](interactive-mode.md)
-  适合看 REPL 指令、会话管理和输入约束。
+  适合看完整 slash 命令、会话管理和输入约束。
 - [订阅模式](agent-mode.md)
   适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。
 
 ### 编排与协议
 适合处理协议校验、模板层和批量执行结构。
 
+- [Hooks 配置](hooks.md)
+  适合看生命周期 Hook 的发现、信任、启用和执行边界。
+- [MCP Server](mcp-server.md)
+  适合看 stdio MCP 服务的 host 配置、工具协议和生命周期。
 - [接口实战](playbook.api.md)
   适合看协议边界、提取、断言和批量请求。
 - [模板能力](playbook.template.md)

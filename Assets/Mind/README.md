@@ -197,7 +197,7 @@ mind agent listen
 ## ⭐️ 命令行参数
 Mind 使用子命令区分运行入口，再通过命令选项调整输出、模型和工具权限。
 
-- **子命令**：`exec`、`resume`、`agent listen`、`upgrade helix`、`doctor`、`mcp`、`mcp-server`、`completion`
+- **子命令**：`exec`、`resume`、`archive`、`unarchive`、`agent listen`、`upgrade helix`、`doctor`、`mcp`、`mcp-server`、`completion`、`help`
 - **常用选项**：`--sandbox`、`--ask-for-approval`、`-H/--helix`、`--json`、`--image`、`--model`
 - **默认入口**：不带子命令的 `mind` 进入交互模式
 
@@ -224,10 +224,12 @@ Mind 使用子命令区分运行入口，再通过命令选项调整输出、模
 | 单次主动任务 | `mind exec "..."` | 探索、接口、媒体、编码或外接工具协作 |
 | 订阅监听 | `mind agent listen` | 等待服务端下发任务、维持长链路 |
 | 进入交互模式 | `mind` | 在同一会话内连续处理多个目标 |
+| 会话归档 | `mind archive` / `mind unarchive` | 按会话 ID 或标题归档、恢复历史会话 |
 | 启用 Helix MCP | `mind exec "..." --helix` | 本次运行需要 Helix MCP 工具 |
 | 调整工具准入 | `mind exec "..." -s workspace-write -a on-request` | 本次运行允许工作区写入，越界前请求审批 |
 | 环境诊断 | `mind doctor` | 只读检查配置、MCP、Helix 和本地 coding 工具 |
 | MCP 服务 | `mind mcp-server` | 通过 stdio 向 Codex 等 MCP host 暴露 `mind_exec` |
+| 查看命令帮助 | `mind help [COMMAND...]` | 查看根命令或多级子命令参数 |
 
 外接工具可以通过命令行 `mind exec "..."` 或交互会话使用，服务定义见 [外接 MCP 配置](#外接-mcp-配置单格式)。
 
@@ -474,23 +476,32 @@ README 这里只保留入口层信息。
 ### 常用指令
 - `/new`
 - `/resume`
+- `/archive`
+- `/fork`
 - `/permissions`
 - `/model <model-id>`
+- `/provider`
 - `/effort`
 - `/preferences`
 - `/compact`
 - `/tools`
+- `/hooks`
+- `/agent`
+- `/listen [start|stop|status]`
+- `/mailbox`
 - `/diff`
 - `/copy`
 - `/ps`
+- `/stop`
 - `/mcp`
 - `/helix-link`
 - `/helix-mode`
 - `/helix-unlink`
 - `/helix-home`
 - `/helix-stop`
+- `/skills`
 - `/shutdown`
-- `/quit`
+- `/quit`、`/q`、`quit`、`exit`
 
 ### 输入约束
 - REPL 当前支持单行和多行输入

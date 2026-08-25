@@ -7,7 +7,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /permissions /model /effort /preferences /compact /tools /diff /copy /ps /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /agent /listen /mailbox /diff /copy /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -59,36 +59,43 @@ close = ["q", "ctrl-c"]
 `Esc/Left` 向前选择、`Right` 向后选择，按 `Enter` 从选中消息前创建分支并恢复输入。
 
 ## 指令索引
-- `/new`：开始新对话，重置 `cid / sid`，保留模型和本地配置
+- `/new [title]`：开始新对话，重置 `cid / sid`，可选保存会话标题，保留模型和本地配置
 - `/resume`：从最近 24 小时内的本地会话游标中恢复对话
+- `/archive`：归档当前会话并退出前台；执行前会请求确认
+- `/fork`：复制当前对话上下文并切换到新的会话分支
 - `/permissions`：在 `Read Only`、`Auto`、`Full Access` 三个权限预设间切换；分别对应 `read-only + on-request`、`workspace-write + on-request`、`danger-full-access + never`
-- `/model <model-id>`：持久化主模型 ID；写入本地 `config.toml`，下一轮模型请求生效
+- `/model <model-id>`：持久化主模型 ID；写入当前 Provider Profile，下一轮模型请求生效
+- `/provider`：切换当前使用的模型 Provider Profile
 - `/effort`：设置主模型推理强度
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
-- `/diff`：查看本轮补丁净差异
-- `/copy`：复制最近一次助手回复原文到剪贴板
-- `/ps`：查看运行中的命令
-- `/listen`：打开带当前状态的远端请求监听器启动/停止菜单
-- `/listen start|stop|status`：直接启动、停止或输出监听器状态
+- `/hooks`：查看、信任和启停生命周期 Hooks
+- `/agent`：查看和管理当前会话的子 Agent 线程
+- `/listen [start|stop|status]`：管理远端请求监听器；省略动作时打开操作菜单
 - `/mailbox`：查看远端请求摘要，运行、删除、展开消息或切换当前会话的 Auto-run
+- `/diff`：查看本轮补丁净差异
+- `/copy`：复制最近一次助手回复原文
+- `/ps`：查看运行中的后台终端
+- `/stop`：停止全部后台终端
+- `/mcp [start|force|stop|restart|status]`：管理外部 MCP 服务
 
-`/listen start` 最多等待 30 秒进入 ready；超时会停止本次监听并输出失败状态。
-断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
-- `/mcp`：管理外部 MCP 服务
 - `/helix-link`：启动或复用 Helix 服务，并将 MCP 接入当前会话
 - `/helix-mode`：在已连接 Helix 的会话中选择 `app / api` 工具过滤器
 - `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
 - `/helix-home`：在已连接 Helix 的会话中打开首页
 - `/helix-stop`：停止本地 Helix 服务
+- `/skills`：打开 Skills 列表，可查看并启用或禁用当前可用 Skill
 - `/shutdown`：退出前台并停止本地运行时
-- `/quit, /q, quit, exit`：安全退出
+- `/quit`、`/q`、`quit`、`exit`：安全退出
+
+`/listen start` 最多等待 30 秒进入 ready；超时会停止本次监听并输出失败状态。
+断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
 
 原生 coding 专项用法见 [原生 coding 链路](playbook.nativecoding.md)。
 
 ## `/new` 指令
-- `/new`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`
+- `/new` 或 `/new <title>`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`；提供标题时保存为当前会话标题
 - 该指令不会发送给模型，也不会重启本地后台服务
 - 当前偏好配置会保留
 - 适合在同一个 REPL 里结束上一段上下文、开启独立问题时使用
@@ -99,6 +106,11 @@ close = ["q", "ctrl-c"]
 - 本地只保存恢复所需的 `cid / sid`、标题、工作区和过期时间；完整对话内容仍以服务端历史为准
 - 菜单中使用 `↑/↓` 滚动，`PgUp/PgDn` 跳转，`Enter` 选择，`q` 取消
 - 适合重启 REPL 后接回某一段对话；如果要开启新上下文，继续使用 `/new`
+
+## `/archive` 与 `/fork` 指令
+- `/archive`：归档当前会话。确认后会写入归档状态并退出前台；没有已建立的会话时会提示失败。
+- `/fork`：请求服务端复制当前对话上下文，成功后切换到新的 `cid / sid`；当前输入和已保存的配置不会被清空。
+- 在 Resume picker 中归档其他会话不需要退出；当前会话必须回到 REPL 使用 `/archive`。
 
 ## `/provider`、`/model` 与 `/preferences`
 - `/provider`：打开二级选单，动态加载本地 `config.toml` 中的 Provider Profile
@@ -129,6 +141,25 @@ base_url = ""
 - 写入目标是当前 `model_providers.<profile-id>.reasoning_effort`
 - 写入成功后会刷新当前进程中的偏好缓存；REPL 每轮请求前也会重新读取配置，所以下一轮模型请求会使用新的推理强度
 - 当前正在进行中的一轮不会中途切换推理强度；需要等下一轮输入
+
+## `/permissions`
+- `/permissions`：打开权限预设菜单，在 `Read Only`、`Auto`、`Full Access` 间切换。
+- 预设分别对应 `read-only + on-request`、`workspace-write + on-request`、
+  `danger-full-access + never`；选择结果同时更新当前会话的执行上下文。
+
+## `/hooks`、`/agent` 与 `/skills`
+- `/hooks`：打开生命周期 Hook 管理界面，可查看发现结果、审核当前内容、切换启用状态。
+  Hook 的来源、信任摘要和事件边界见 [Hooks 配置](hooks.md)。
+- `/agent`：打开当前根会话的子 Agent 列表。选中线程后可查看快照、打断运行中的线程、
+  恢复已关闭线程，或关闭线程及其后代。
+- `/skills`：打开 Skills 菜单。可以先查看本地 Skills，再把选中的 Skill token 写入输入框。
+
+## `/listen` 与 `/mailbox`
+- `/listen`：打开监听器菜单；`/listen start` 启动并等待 ready，`/listen stop` 停止传输，
+  `/listen status` 只显示连接状态和待处理消息数。
+- `/listen start` 最多等待 30 秒进入 ready；超时会停止本次监听并输出失败状态。
+- `/mailbox`：打开远端请求收件箱。每条消息可选择立即运行、删除或查看详情；摘要菜单还可以切换当前会话的 Auto-run。
+- 断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
 
 ## `/copy`
 - `/copy`：复制最近一次成功完成的 assistant 输出原文到系统剪贴板
@@ -163,6 +194,10 @@ base_url = ""
 - Helix 未启动时，仍会显示 Mind native coding tools 和已连接 external MCP tools
 - Helix 启动后，会追加 Helix MCP tools
 - 该指令只做诊断，不会调用任何工具，也不会发送给模型
+
+## `/ps` 与 `/stop`
+- `/ps`：打开后台终端列表，查看正在运行的命令及其输出。
+- `/stop`：停止全部后台终端；不会退出当前会话，也不会停止本地 Mind runtime。
 
 ## `/diff`
 - `/diff`：展示当前轮 `apply_patch` 累积后的净 unified diff

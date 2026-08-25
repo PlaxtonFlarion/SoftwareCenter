@@ -21,12 +21,18 @@ mind [OPTIONS] <COMMAND> [ARGS]
 | `mind` | 进入交互模式 |
 | `mind exec` / `mind e` | 执行一次非交互任务 |
 | `mind resume` | 恢复已有交互会话 |
+| `mind archive` | 按会话 ID 或标题归档会话 |
+| `mind unarchive` | 按会话 ID 或标题恢复归档会话 |
+| `mind agent` | 远端任务订阅命令组（当前子命令为 `listen`） |
 | `mind agent listen` | 监听远端下发任务 |
+| `mind upgrade` | 运行组件升级命令组（当前子命令为 `helix`） |
 | `mind upgrade helix` | 下载或更新 Helix 运行组件 |
 | `mind doctor` | 只读诊断本地运行环境 |
-| `mind mcp ...` | 管理外部 MCP 服务注册 |
+| `mind mcp` | 外部 MCP 服务命令组 |
+| `mind mcp list/get/add/remove/enable/disable/help` | 管理外部 MCP 服务注册 |
 | `mind mcp-server` | 通过 stdio 暴露 MCP 服务 |
 | `mind completion` | 生成 shell 补全脚本 |
+| `mind help [COMMAND...]` | 查看根命令或多级子命令帮助 |
 
 ## 进程级选项
 
@@ -113,6 +119,7 @@ mind exec --helix api "检查接口状态"
 | 选项 | 说明 |
 |------|------|
 | `--json` | 输出 JSONL 事件流 |
+| `--dangerously-bypass-hook-trust` | 本次执行跳过已启用 Hook 的当前内容信任检查 |
 | `-H, --helix [PROFILE]` | 启动或复用本地 Helix；profile 可选 `app` 或 `api`，默认 `app` |
 | `-i, --image <FILE>` | 添加图片附件 |
 | `-m, --model <MODEL>` | 临时覆盖本次请求使用的主模型 |
@@ -193,6 +200,16 @@ mind resume --helix api
 
 根命令上的 `-i/--image` 和 `-m/--model` 同样会传播给 `resume`；子命令模型优先，图片按顺序合并。
 
+## 会话归档
+
+```powershell
+mind archive <SESSION_ID_OR_TITLE>
+mind unarchive <SESSION_ID_OR_TITLE>
+```
+
+`archive` 将匹配到的会话标记为 archived，`unarchive` 将其恢复为 active。目标可以是会话 ID，
+也可以是精确的历史标题；两个命令都只执行一次状态变更后退出，不启动交互会话。
+
 ## 外部 MCP 管理
 
 ### 查询和启停
@@ -205,6 +222,8 @@ mind mcp get playwright --json
 mind mcp enable playwright
 mind mcp disable playwright
 mind mcp remove playwright
+mind mcp help
+mind mcp help add
 ```
 
 ### 添加远端服务
@@ -218,6 +237,22 @@ mind mcp add dbhub --url https://example.com/mcp `
 ```
 
 远端服务可以重复使用 `--header`、`--env-http-header`、`--allow` 和 `--deny`。`--startup-timeout-sec` 控制启动和工具发现超时，`--tool-timeout-sec` 控制工具调用超时。
+
+`mcp add` 的选项边界如下：
+
+| 选项 | 适用服务 | 说明 |
+|------|----------|------|
+| `--url <URL>` | 远端 | 注册 streamable HTTP MCP 服务 |
+| `--bearer-token-env-var <ENV_VAR>` | 远端 | 从环境变量读取 bearer token |
+| `--header <KEY=VALUE>` | 远端 | 添加 HTTP header，可重复 |
+| `--env-http-header <HEADER=ENV_VAR>` | 远端 | 从环境变量读取 HTTP header，可重复 |
+| `--env <KEY=VALUE>` | stdio | 设置子进程环境变量，可重复 |
+| `--cwd <DIR>` | stdio | 设置子进程工作目录 |
+| `--disabled` | 两者 | 注册但不在启动时启用 |
+| `--required` | 两者 | 初始化失败时让启动失败 |
+| `--allow/--deny <PATTERN>` | 两者 | 按工具名或 glob 过滤，可重复 |
+| `--startup-timeout-sec <SECONDS>` | 两者 | 启动和工具发现超时 |
+| `--tool-timeout-sec <SECONDS>` | 两者 | 工具请求超时 |
 
 ### 添加 stdio 服务
 
@@ -262,6 +297,10 @@ mind completion bash
 mind completion zsh
 mind completion fish
 mind completion elvish
+
+# 查看根命令或多级子命令帮助
+mind help
+mind help mcp add
 ```
 
 `mind mcp-server` 的 host 配置和生命周期见 [MCP Server](mcp-server.md)，`agent listen` 的恢复链路见[订阅模式](agent-mode.md)。

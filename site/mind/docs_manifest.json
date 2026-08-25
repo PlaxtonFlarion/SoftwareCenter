@@ -17,7 +17,28 @@
       "target": "cli-usage.md",
       "label": "命令行使用参考",
       "category": "入门与入口",
-      "summary": "适合查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合规则。"
+      "summary": "适合查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合规则。"
+    },
+    {
+      "source": "docs/interactive-mode.md",
+      "target": "interactive-mode.md",
+      "label": "交互模式",
+      "category": "入门与入口",
+      "summary": "适合看完整 slash 命令、会话管理和输入约束。"
+    },
+    {
+      "source": "docs/hooks.md",
+      "target": "hooks.md",
+      "label": "Hooks 配置",
+      "category": "编排与协议",
+      "summary": "适合看生命周期 Hook 的发现、信任、启用和执行边界。"
+    },
+    {
+      "source": "docs/mcp-server.md",
+      "target": "mcp-server.md",
+      "label": "MCP Server",
+      "category": "编排与协议",
+      "summary": "适合看 stdio MCP 服务的 host 配置、工具协议和生命周期。"
     },
     {
       "source": "docs/playbook.api.md",
@@ -67,13 +88,6 @@
       "label": "Monkey 扰动",
       "category": "执行与取证",
       "summary": "适合看随机扰动的全部参数、执行流程和返回结构。"
-    },
-    {
-      "source": "docs/interactive-mode.md",
-      "target": "interactive-mode.md",
-      "label": "交互模式",
-      "category": "入门与入口",
-      "summary": "适合看 REPL 指令、会话管理和输入约束。"
     },
     {
       "source": "docs/agent-mode.md",

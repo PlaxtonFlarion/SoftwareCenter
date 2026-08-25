@@ -75,16 +75,21 @@ mind --helix api
 
 只写 `--helix` 时默认选择 `app` 工具过滤器；可显式传入 `api`。不传 `--helix` 时不连接 Helix。
 
-进入 REPL 后可以继续使用：
+进入 REPL 后可以使用全部 slash 命令。下面是入口速查，完整行为说明见[交互模式](../generated/interactive-mode/)：
 
-- `/model <model-id>`：只更新主模型 ID，写入本地 `config.toml`，下一轮请求生效
-- `/effort`：打开推理强度选择菜单，写入主模型槽位
-- `/preferences`：打开本地配置页面，维护模型、密钥、Base URL、route 和服务域名
-- `/helix-link`：启动或复用 Helix 服务，并将 MCP 接入当前会话
-- `/helix-mode`：在已连接 Helix 的会话中选择 `app / api` 工具过滤器
-- `/helix-unlink`：从当前会话移除 Helix MCP，不停止本地 Helix 服务
-- `/helix-home`：在已连接 Helix 的会话中打开首页
-- `/helix-stop`：停止本地 Helix 服务
+| 命令 | 作用 |
+|------|------|
+| `/new [title]`、`/resume` | 新建会话或恢复最近会话 |
+| `/archive`、`/fork` | 归档当前会话并退出，或复制当前上下文为新分支 |
+| `/permissions` | 切换 `Read Only`、`Auto`、`Full Access` 权限预设 |
+| `/provider`、`/model <model-id>`、`/effort`、`/preferences` | 选择 Provider、模型、推理强度和本地配置 |
+| `/compact`、`/tools`、`/diff`、`/copy` | 压缩上下文、查看工具、查看补丁或复制回复 |
+| `/hooks`、`/agent`、`/skills` | 管理生命周期 Hooks、子 Agent 和 Skills |
+| `/listen [start, stop, status]`、`/mailbox` | 管理远端监听器和待处理消息 |
+| `/ps`、`/stop` | 查看或停止后台终端 |
+| `/mcp [start, force, stop, restart, status]` | 管理外部 MCP 连接 |
+| `/helix-link`、`/helix-mode`、`/helix-unlink`、`/helix-home`、`/helix-stop` | 接入、筛选、移除或停止 Helix |
+| `/shutdown`、`/quit`、`/q`、`quit`、`exit` | 停止本地 runtime 并退出，或仅退出前台 |
 
 `/helix-mode` 和 `/helix-home` 发现 Helix runtime asset 缺失时会先显示确认菜单；确认后只下载，完成后需要重新打开应用，再通过 `--helix` 或 `/helix-link` 接入，不会在当前命令中启动服务。
 
@@ -132,6 +137,25 @@ Windows：
 
 $env:Path += ";C:\Program Files\Mind\MindEngine"
 ```
+
+## CLI 命令速查
+
+| 命令 | 作用 |
+|------|------|
+| `mind` | 进入交互模式 |
+| `mind exec` / `mind e` | 执行一次非交互任务 |
+| `mind resume` | 恢复交互会话 |
+| `mind archive` / `mind unarchive` | 归档或恢复会话 |
+| `mind agent` / `mind agent listen` | 远端订阅命令组和监听入口 |
+| `mind upgrade` / `mind upgrade helix` | 运行组件升级命令组和 Helix 更新入口 |
+| `mind doctor` | 只读诊断本地环境 |
+| `mind mcp` | 外部 MCP 服务命令组 |
+| `mind mcp list/get/add/remove/enable/disable/help` | 管理外部 MCP 注册 |
+| `mind mcp-server` | 通过 stdio 暴露 MCP 服务 |
+| `mind completion` | 生成 shell 补全脚本 |
+| `mind help [COMMAND...]` | 查看命令帮助 |
+
+进程级 `-c/--config`、`-p/--profile`、`-s/--sandbox`、`-a/--ask-for-approval` 可以放在根命令或子命令层级；完整选项组合见[命令行使用参考](../generated/cli-usage/)。
 
 ## 最小命令
 
@@ -218,7 +242,7 @@ mind
   <a class="mind-route-card" href="../generated/cli-usage/">
     <span class="mind-route-meta">Next</span>
     <h3>命令行使用参考</h3>
-    <p>继续查 exec、resume、图片、模型、stdin、MCP 与补全命令的组合方式。</p>
+    <p>继续查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合方式。</p>
     <span class="mind-card-arrow">查看命令 →</span>
   </a>
   <a class="mind-route-card" href="../capabilities/">
