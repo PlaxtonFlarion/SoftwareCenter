@@ -76,7 +76,7 @@ close = ["q", "ctrl-c"]
 - `/agent`：查看和管理当前会话的子 Agent 线程
 - `/listen [start|stop|status]`：管理远端请求监听器；省略动作时打开操作菜单
 - `/mailbox`：查看远端请求摘要，运行、删除、展开消息或切换当前会话的 Auto-run
-- `/diff`：查看本轮补丁净差异
+- `/diff`：查看当前 Git 工作区差异（包含未跟踪且未被忽略的文件）
 - `/copy`：复制最近一次助手回复原文
 - `/ps`：查看运行中的后台终端
 - `/stop`：停止全部后台终端
@@ -202,9 +202,11 @@ base_url = ""
 - `/stop`：停止全部后台终端；不会退出当前会话，也不会停止本地 Mind runtime。
 
 ## `/diff`
-- `/diff`：展示当前轮 `apply_patch` 累积后的净 unified diff
-- 该指令只读取 Mind native coding 记录的精确 delta，不调用模型，也不主动运行 `git diff`
-- 如果当前轮没有成功的 `apply_patch`，会提示没有可展示的 diff；超长内容会按展示上限截断
+- `/diff`：异步计算当前工作目录的 Git 工作区差异，并在全屏 `D I F F` pager 中展示
+- 包含未 staged 的 tracked 修改和未跟踪且未被忽略的文件；不包含 staged-only 修改
+- 不调用模型；Git helper、hook、filter、textconv 和 external diff 会按受控命令策略隔离
+- 空 diff 在 pager 中显示 `No changes detected.`；非 Git 目录和 Git 执行失败分别展示明确状态
+- 退出 pager 后恢复原输入和主 TUI；当前轮 `apply_patch` 的精确净差异仍由内部 tracker 独立维护
 
 ## `/mcp`
 - `/mcp`：管理外部 MCP 服务
