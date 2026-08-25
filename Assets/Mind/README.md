@@ -474,34 +474,14 @@ README 这里只保留入口层信息。
 - 已实现会话恢复、权限切换、工具状态查看和 Helix 服务控制
 
 ### 常用指令
-- `/new`
-- `/resume`
-- `/archive`
-- `/fork`
-- `/permissions`
-- `/model <model-id>`
-- `/provider`
-- `/effort`
-- `/preferences`
-- `/compact`
-- `/tools`
-- `/hooks`
-- `/agent`
-- `/listen [start|stop|status]`
-- `/mailbox`
-- `/diff`
-- `/copy`
-- `/ps`
-- `/stop`
-- `/mcp`
-- `/helix-link`
-- `/helix-mode`
-- `/helix-unlink`
-- `/helix-home`
-- `/helix-stop`
-- `/skills`
-- `/shutdown`
-- `/quit`、`/q`、`quit`、`exit`
+完整 slash 命令清单、参数和行为说明统一维护在[交互模式文档](docs/interactive-mode.md)。
+这里只保留最常用的入口分组：
+
+- 会话：`/new`、`/resume`、`/archive`、`/fork`
+- 配置与权限：`/permissions`、`/provider`、`/model`、`/effort`、`/preferences`
+- 运行管理：`/listen`、`/mailbox`、`/ps`、`/stop`、`/shutdown`
+- 工具与连接：`/tools`、`/hooks`、`/agent`、`/skills`、`/mcp`、`/helix-link`
+- 退出：`/quit`、`/q`、`quit`、`exit`
 
 ### 输入约束
 - REPL 当前支持单行和多行输入

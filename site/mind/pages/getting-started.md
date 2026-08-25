@@ -75,21 +75,12 @@ mind --helix api
 
 只写 `--helix` 时默认选择 `app` 工具过滤器；可显式传入 `api`。不传 `--helix` 时不连接 Helix。
 
-进入 REPL 后可以使用全部 slash 命令。下面是入口速查，完整行为说明见[交互模式](../generated/interactive-mode/)：
+进入 REPL 后可以使用全部 slash 命令；完整清单、参数和行为说明统一见[交互模式](../generated/interactive-mode/)。
 
-| 命令 | 作用 |
-|------|------|
-| `/new [title]`、`/resume` | 新建会话或恢复最近会话 |
-| `/archive`、`/fork` | 归档当前会话并退出，或复制当前上下文为新分支 |
-| `/permissions` | 切换 `Read Only`、`Auto`、`Full Access` 权限预设 |
-| `/provider`、`/model <model-id>`、`/effort`、`/preferences` | 选择 Provider、模型、推理强度和本地配置 |
-| `/compact`、`/tools`、`/diff`、`/copy` | 压缩上下文、查看工具、查看补丁或复制回复 |
-| `/hooks`、`/agent`、`/skills` | 管理生命周期 Hooks、子 Agent 和 Skills |
-| `/listen [start, stop, status]`、`/mailbox` | 管理远端监听器和待处理消息 |
-| `/ps`、`/stop` | 查看或停止后台终端 |
-| `/mcp [start, force, stop, restart, status]` | 管理外部 MCP 连接 |
-| `/helix-link`、`/helix-mode`、`/helix-unlink`、`/helix-home`、`/helix-stop` | 接入、筛选、移除或停止 Helix |
-| `/shutdown`、`/quit`、`/q`、`quit`、`exit` | 停止本地 runtime 并退出，或仅退出前台 |
+常用入口按任务分组：会话管理使用 `/new`、`/resume`、`/archive`、`/fork`；配置与权限使用
+`/permissions`、`/provider`、`/model`、`/effort`、`/preferences`；运行管理使用 `/listen`、
+`/mailbox`、`/ps`、`/stop`；工具连接使用 `/tools`、`/hooks`、`/agent`、`/skills`、`/mcp` 和
+`/helix-link`。
 
 `/helix-mode` 和 `/helix-home` 发现 Helix runtime asset 缺失时会先显示确认菜单；确认后只下载，完成后需要重新打开应用，再通过 `--helix` 或 `/helix-link` 接入，不会在当前命令中启动服务。
 
@@ -138,24 +129,10 @@ Windows：
 $env:Path += ";C:\Program Files\Mind\MindEngine"
 ```
 
-## CLI 命令速查
+## CLI 命令入口
 
-| 命令 | 作用 |
-|------|------|
-| `mind` | 进入交互模式 |
-| `mind exec` / `mind e` | 执行一次非交互任务 |
-| `mind resume` | 恢复交互会话 |
-| `mind archive` / `mind unarchive` | 归档或恢复会话 |
-| `mind agent` / `mind agent listen` | 远端订阅命令组和监听入口 |
-| `mind upgrade` / `mind upgrade helix` | 运行组件升级命令组和 Helix 更新入口 |
-| `mind doctor` | 只读诊断本地环境 |
-| `mind mcp` | 外部 MCP 服务命令组 |
-| `mind mcp list/get/add/remove/enable/disable/help` | 管理外部 MCP 注册 |
-| `mind mcp-server` | 通过 stdio 暴露 MCP 服务 |
-| `mind completion` | 生成 shell 补全脚本 |
-| `mind help [COMMAND...]` | 查看命令帮助 |
-
-进程级 `-c/--config`、`-p/--profile`、`-s/--sandbox`、`-a/--ask-for-approval` 可以放在根命令或子命令层级；完整选项组合见[命令行使用参考](../generated/cli-usage/)。
+CLI 命令、参数、子命令和组合规则统一见[命令行使用参考](../generated/cli-usage/)。
+最常用的三条路径是 `mind exec`（单次任务）、`mind`（持续交互）和 `mind agent listen`（远端订阅）。
 
 ## 最小命令
 
@@ -212,7 +189,7 @@ mind
 
 - 输入 `/model <model-id>` 可以只修改主模型 ID，例如 `/model gpt-5-codex`。
 - 输入 `/effort` 可以用二级菜单选择推理强度：`low / medium / high / xhigh`。
-- `/model <model-id>` 会写入本地 `config.toml` 的顶层 `model`；`/effort` 会写入顶层 `model_reasoning_effort`；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。
+- `/model` 和 `/effort` 会写入当前 Provider Profile 的模型与推理强度；当前正在进行的一轮不会中途切换，下一轮请求会读取新配置。字段和配置示例见[交互模式](../generated/interactive-mode/)。
 - 输入 `/preferences` 打开本地配置页面，适合同时维护模型名、API key、Base URL、route 和服务域名。
 
 ## 常见问题

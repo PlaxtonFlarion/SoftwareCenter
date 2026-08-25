@@ -55,17 +55,20 @@ device / bench / common / media / coding
 - `docs/playbook.load.md`：云端压测、异步任务与结果收束边界
 - `docs/playbook.media.md`：媒体命令与链路
 - `docs/playbook.performance.md`：性能案例与典型跑法
-- `docs/interactive-mode.md`：REPL 说明
+- `docs/interactive-mode.md`：全部 REPL slash 命令、会话管理和输入约束的权威参考
+- `docs/cli-usage.md`：全部 CLI 命令、选项和组合规则的权威参考
 - `docs/agent-mode.md`：订阅模式说明
 - `docs/architecture.md`：背景、云端架构、推理集群
 - `website/mind/pages/`：官网展示壳与站点入口页
 - `website/mind/docs_manifest.json`：官网生成层的正文清单与专题摘要
+- `website/mind/scripts/check_docs.py`：命令覆盖、manifest 和生成页链接校验
 - `website/mind/CLOUDFLARE.md`：Cloudflare Pages 部署说明
 
 维护原则：
 - 用户入口变重时，优先下沉到 `docs/`
 - 维护者说明不要反向塞回 README
 - `website/mind/pages/generated/` 只当生成产物看，不要手改
+- slash 命令只在 `docs/interactive-mode.md` 维护完整说明，CLI 命令只在 `docs/cli-usage.md` 维护完整说明；README 和官网入口页只保留摘要
 
 ## 文档维护约定
 - 标题统一使用中文标题，不再在标题尾部追加英文副标题
@@ -127,6 +130,14 @@ SoftwareCenter/site/mind/
   └── pages/
 ```
 
+命令或文档变更后的本地校验顺序：
+
+```bash
+python website/mind/scripts/check_docs.py
+python website/mind/scripts/sync_docs.py
+python website/mind/scripts/check_docs.py --generated
+```
+
 维护要求：
 - README 和 `docs/README.md` 必须使用仓库内相对路径，不要写本机绝对路径
 - 如果新增 `docs/*.md`，要确认：
@@ -136,7 +147,7 @@ SoftwareCenter/site/mind/
   - 同步后相对路径仍可达
 - 如果改了 `website/mind/`，要确认同步后仍映射到 `SoftwareCenter/site/mind/`
 - 如果改了正文文档结构，记得同步检查 `website/mind/docs_manifest.json`
-- 同步 workflow 会先运行 `website/mind/scripts/sync_docs.py`，再复制官网壳到公共仓库
+- 同步 workflow 会先校验命令文档，再运行 `website/mind/scripts/sync_docs.py`，最后校验生成页并复制官网壳到公共仓库
 
 ## 变更检查清单
 每次涉及模式、文档或同步链路的改动，至少检查下面这些点：
