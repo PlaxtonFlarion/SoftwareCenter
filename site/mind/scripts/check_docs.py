@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """校验命令文档、官网清单和生成页之间的契约。"""
 
-from __future__ import annotations
-
 import argparse
 import ast
 import sys
