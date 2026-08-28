@@ -61,9 +61,11 @@ mind exec "检查当前项目" -c 'model_providers.openai-main.reasoning_effort=
 
 ```toml
 [features]
-js_repl = true
-subagents = true
+js_repl = false
+subagents = false
 ```
+
+将对应值改为 `true` 才会启用能力。
 
 关闭 `js_repl` 会同时移除 `js_repl` 和 `js_repl_reset`；关闭 `subagents`
 会停止注册全部 Agent 协作工具，并禁止创建或控制子 Agent。`[agents]` 仅保留

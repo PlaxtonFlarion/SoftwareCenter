@@ -324,8 +324,8 @@ codex mcp get mind --json
 
 ```toml
 [features]
-js_repl = true
-subagents = true
+js_repl = false
+subagents = false
 
 [agents]
 max_concurrent_threads_per_session = 4
@@ -336,6 +336,7 @@ max_fork_context_chars = 40000
 
 - `features.js_repl` 同时控制 `js_repl` 和 `js_repl_reset`
 - `features.subagents` 同时控制子 Agent runtime 和 Agent 协作工具
+- 两项能力默认关闭，改为 `true` 后需要重新启动进程才能启用
 - `[agents]` 只配置子 Agent 的并发、深度和上下文参数
 - 能力开关不改变 `sandbox_mode` 或 `approval_policy`
 
