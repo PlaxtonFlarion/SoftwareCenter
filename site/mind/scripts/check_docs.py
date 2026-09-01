@@ -23,8 +23,8 @@ from sync_docs import (  # noqa: E402
 
 SLASH_DOC = "docs/interactive-mode.md"
 CLI_DOC = "docs/cli-usage.md"
-SLASH_SOURCE = "mind_app/tui/prompting/commands.py"
-CLI_SOURCE = "mind_app/cli/arguments.py"
+SLASH_SOURCE = "frontends/tui/prompting/commands.py"
+CLI_SOURCE = "frontends/cli/arguments.py"
 
 
 def _literal_string(node: ast.AST) -> str | None:
