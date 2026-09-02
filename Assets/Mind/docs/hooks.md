@@ -71,13 +71,16 @@ hooks = [
 
 | 字段 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `type` | string | 必填 | 当前仅支持 `command` |
+| `type` | string | 必填 | `command` 或 `mcp_tool` |
 | `command` | string | 必填 | 默认平台执行的 shell 命令 |
 | `commandWindows` | string | 无 | Windows 上覆盖 `command`；也接受 `command_windows` |
 | `statusMessage` | string | 无 | 命令执行期间显示的临时状态 |
 | `timeout` | integer | `600` | 超时秒数；`SessionEnd` 默认 `1`，超过 `3` 时钳制为 `3` 并警告 |
-| `async` | boolean | `false` | 当前不支持异步命令；非 `SessionEnd` 事件会跳过并警告，`SessionEnd` 仍同步执行 |
+| `async` | boolean | `false` | 仅 command 支持后台执行；异步 Hook 不阻塞主流程且不产生控制效果，`SessionEnd` 强制同步 |
 | `additionalContextLimit` | integer | `2500` | 附加上下文近似 token 上限，`0` 不限制 |
+
+`mcp_tool` 使用 `server`、`tool` 和可选的 JSON object `input` 字段，调用现有 MCP
+runtime 中已经注册的 server/tool；MCP Hook 始终同步执行。
 
 `additionalContextLimit` 同时用于 Stop 和 SubagentStop 的续跑提示。超过限制时保留
 头尾摘要和完整内容的临时文件路径，不会静默截断。
@@ -86,10 +89,10 @@ MatcherGroup 使用 `matcher` 和 `hooks`，命令处理器使用上表字段。
 并记录 discovery warning，不会使整个配置加载失败。
 
 Hook discovery 按匹配组和处理器分别容错：非法 matcher 只跳过当前匹配组；空命令、
-字段类型错误、不支持的 handler type 或非 `SessionEnd` 的异步处理器只跳过当前
-处理器，其他合法 Hook 继续加载。`type = "prompt"` 和 `type = "agent"` 可以被
-解析，但当前不执行，并产生明确的“不支持” warning。warning 会写入 Hook 观察
-日志，并显示在 `/hooks` 汇总界面。
+字段类型错误或不支持的 handler type 只跳过当前处理器，其他合法 Hook 继续加载。
+`type = "prompt"` 和 `type = "agent"` 只在 discovery 边界产生“不支持” warning，
+不会进入 installed、trust、catalog 或 runtime。warning 会写入 Hook 观察日志，并
+显示在 `/hooks` 汇总界面。
 
 Matcher 规则与工具名称：
 
@@ -222,11 +225,11 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 - 顶层 `decision: "block"` 拒绝工具结果而不是工具执行，并把必填的 `reason`
   作为失败结果反馈给模型。
 - `hookSpecificOutput.additionalContext` 作为独立上下文注入，不承担结果替换。
-- 应用扩展字段 `replacementResult` 显式替换模型可见结果，不修改原始执行值；
-  `block` 优先于结果替换，没有 `block` 时显式替换优先于停止反馈。
+- Hook 不拥有工具结果写权限；原始工具结果只能由工具执行 owner 生成，Hook 只能
+  返回阻断、停止反馈或 additionalContext。
 
-多个停止或阻断反馈按 Hook 顺序合并。上游保留字段 `updatedMCPToolOutput` 当前不
-执行替换，返回非空值会使 Hook 运行失败。`PostCompact` 只接受通用输出字段，
+多个停止或阻断反馈按 Hook 顺序合并。未声明字段（包括结果替换字段）会使当前 Hook
+运行失败。`PostCompact` 只接受通用输出字段，
 不接受 `hookSpecificOutput`。
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
