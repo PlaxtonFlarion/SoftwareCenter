@@ -255,6 +255,7 @@ mind mcp add dbhub --url https://example.com/mcp `
 | `--disabled` | 两者 | 注册但不在启动时启用 |
 | `--required` | 两者 | 初始化失败时让启动失败 |
 | `--allow/--deny <PATTERN>` | 两者 | 按工具名或 glob 过滤，可重复 |
+| `--approval-mode <MODE>` | 两者 | 设置 `auto`、`prompt`、`writes` 或 `approve` 工具审批模式 |
 | `--startup-timeout-sec <SECONDS>` | 两者 | 启动和工具发现超时 |
 | `--tool-timeout-sec <SECONDS>` | 两者 | 工具请求超时 |
 
@@ -274,6 +275,17 @@ mind mcp add demo -- server --model child-model
 ```
 
 远端 URL 与 stdio 命令不能同时使用。`--env` 和 `--cwd` 只用于 stdio 服务；HTTP header 和 bearer token 选项只用于远端服务。
+
+### 外部工具审批与传输边界
+
+外部 MCP 的 `approval-mode` 只控制模型发起的工具效果：`prompt` 每次询问，`writes` 对不是明确
+只读的工具询问，`auto` 根据 MCP annotations 判断且在信息不足时询问，`approve` 明确跳过逐次
+询问。全局 `approval_policy=never` 遇到仍需询问的 MCP 工具时直接拒绝，不会静默执行。
+
+连接用户配置的 STDIO、SSE 或 Streamable HTTP 服务属于显式配置的传输信任边界，建立连接不会
+生成网络审批卡，也不会把 MCP tool grant 当成网络 grant。HTTP client 不读取环境代理配置；
+远端 bearer token 和动态 header 应优先通过 `--bearer-token-env-var` / `--env-http-header` 注入。
+列表、状态和传输错误会隐藏凭据，运行时关闭时会终止连接 owner 并清空工具与会话引用。
 
 ## 其他命令
 
