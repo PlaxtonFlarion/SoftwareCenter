@@ -14,7 +14,7 @@
 
 - 第一次使用：先看 [快速开始](#quick-start) → [模型配置](#model-config) → [执行入口](#execution)
 - 接入外部工具：看 [工具来源](#tool-sources) 和 [外接 MCP](#external-mcp)
-- 开发或维护项目：看 [项目架构](#architecture) 和 [正文目录](docs/README.md)
+- 开发或维护项目：先看[系统架构](ARCHITECTURE_SYSTEM.md)，再看[客户端架构](ARCHITECTURE.md)和[正文目录](docs/README.md)
 
 **专题跳转**
 
@@ -186,7 +186,12 @@ mind.py
 - `infrastructure` 实现配置、平台、MCP、持久化和可选服务
 - `frontends` 负责 CLI、TUI、stdio MCP、Subscription 和终端展示
 
-依赖方向、状态所有权和生命周期以 [ARCHITECTURE.md](ARCHITECTURE.md) 为准；产品背景与生态能力见[背景与架构](docs/architecture.md)。
+架构文档按以下顺序阅读：
+
+- [系统架构](ARCHITECTURE_SYSTEM.md)：Mind、AppServer 与 Fabric 的职责、Authority 和跨仓生命周期
+- [客户端架构](ARCHITECTURE.md)：Mind 内部包边界、依赖方向、状态所有权和生命周期
+- [架构评分卡](ARCHITECTURE_SCORECARD.md)：阶段性架构评审和成熟度记录，不定义架构事实
+- [产品背景与能力生态](docs/architecture.md)：产品定位、使用场景和可选能力，不定义架构事实
 
 <a id="build-release"></a>
 ## ⭐️ 构建与发布
@@ -197,4 +202,5 @@ mind.py
 
 仓库授权文本见 [LICENSE.md](LICENSE.md)。技术合作与部署支持请联系 `AceKeppel@outlook.com`。
 
-提交代码前请先阅读 [AGENTS.md](AGENTS.md)、[ARCHITECTURE.md](ARCHITECTURE.md) 和[维护者指南](docs/maintainer-guide.md)，并根据影响范围运行定向测试和文档校验。
+提交代码前请先阅读 [AGENTS.md](AGENTS.md)、[系统架构](ARCHITECTURE_SYSTEM.md)、
+[客户端架构](ARCHITECTURE.md)和[维护者指南](docs/maintainer-guide.md)，并根据影响范围运行定向测试和文档校验。

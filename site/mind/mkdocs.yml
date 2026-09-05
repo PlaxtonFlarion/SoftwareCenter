@@ -53,5 +53,9 @@ nav:
       - Hooks 配置: generated/hooks.md
       - MCP Server: generated/mcp-server.md
       - 项目总览: generated/overview.md
+      - 系统架构: generated/system-architecture.md
+      - 客户端架构: generated/client-architecture.md
+      - 架构评分卡: generated/architecture-scorecard.md
+      - 产品背景与能力生态: generated/architecture.md
       - 文档索引: generated/docs-index.md
       - 专题目录: generated/catalog.md

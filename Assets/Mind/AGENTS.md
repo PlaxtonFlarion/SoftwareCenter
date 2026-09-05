@@ -1,9 +1,11 @@
 # Agents
 
-本文件只规定编码代理的工作方式、代码质量和验证流程。系统职责、依赖方向、状态所有权、
-生命周期和稳定架构决策只以 `ARCHITECTURE.md` 为准；线上字段、端点、事件和错误只以服务端
-正式契约及 `protocol/schema/`、`protocol/client/` 为准。对应目录中的局部 `AGENTS.md` 可以
-补充本文件，但不能放宽更高层契约。
+本文件只规定编码代理的工作方式、代码质量和验证流程。ProxyMind 客户端内部职责、依赖方向、
+状态所有权和生命周期以 `ARCHITECTURE.md` 为准；Mind、AppServer 与 Fabric 的跨系统职责、
+Authority 和集成边界以 `ARCHITECTURE_SYSTEM.md` 为准；线上字段、端点、事件和错误只以服务端
+正式契约及 `protocol/schema/`、`protocol/client/` 为准。`ARCHITECTURE_SCORECARD.md` 只记录
+阶段性评审与成熟度，不定义架构事实。对应目录中的局部 `AGENTS.md` 可以补充本文件，但不能
+放宽更高层契约。
 
 ## 开始工作
 

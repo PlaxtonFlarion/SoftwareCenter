@@ -7,9 +7,22 @@
       "summary": "第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。"
     },
     {
+      "source": "ARCHITECTURE_SYSTEM.md",
+      "target": "system-architecture.md",
+      "label": "系统架构",
+      "summary": "Mind、AppServer 与 Fabric 的跨系统职责、Authority、生命周期和集成边界。"
+    },
+    {
       "source": "ARCHITECTURE.md",
-      "target": "repository-architecture.md",
-      "label": "仓库架构契约"
+      "target": "client-architecture.md",
+      "label": "客户端架构",
+      "summary": "ProxyMind 客户端内部包边界、依赖方向、状态所有权和生命周期。"
+    },
+    {
+      "source": "ARCHITECTURE_SCORECARD.md",
+      "target": "architecture-scorecard.md",
+      "label": "架构评分卡",
+      "summary": "阶段性架构评审、成熟度评分与后续验证重点，不定义架构事实。"
     },
     {
       "source": "LICENSE.md",
@@ -128,9 +141,9 @@
     {
       "source": "docs/architecture.md",
       "target": "architecture.md",
-      "label": "背景与架构",
+      "label": "产品背景与能力生态",
       "category": "结构与维护",
-      "summary": "适合看系统分层、工具域、云端增强和推理集群。"
+      "summary": "适合了解产品定位、使用入口、可选能力和生态组件，不定义架构事实。"
     },
     {
       "source": "docs/maintainer-guide.md",

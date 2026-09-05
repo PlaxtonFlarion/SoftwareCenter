@@ -6,28 +6,29 @@
 ## 维护范围
 - 执行边界：主动模型轮次与 `agent` 订阅
 - 工具域边界：`device / bench / common / media / coding`
-- 接口执行面：协议执行能力
+- 接口工具：协议请求、提取、校验和批量执行能力
 - 文档拆分与同步：`README.md`、`docs/*.md`、`.github/workflows/sync-to-software-center.yml`
 
 ## 系统骨架
-当前文档与实现采用同一套高层心智模型：
+架构与实现按以下权威链维护：
 
 ```text
-Mind (CLI / control plane)
-  ↓
-Helix (MCP / execution plane)
-device / bench / common / media / coding
+ARCHITECTURE_SYSTEM.md
+  -> Mind / AppServer / Fabric 跨系统架构
+  -> constrains ARCHITECTURE.md
+  -> constrains implementation
+
+Server contract + protocol/schema + protocol/client
+  -> 线上 wire 契约
 ```
 
-维护时需要保证三层同时一致：
-- README 中的用户口径
-- `docs/` 中的展开说明
-- 代码与 CLI 帮助中的真实行为
+`README.md` 和 `docs/` 只负责入口、解释与教学，不得反向定义 Architecture Truth。
+维护时需要保证系统架构、客户端架构、正式协议、实现与用户文档一致。
 
 ## 执行边界
 - `exec` 和交互会话共用统一模型轮次、工具生命周期和请求协议
 - `agent` 是订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
-- Helix MCP 由启动参数 `--helix` 或 `/helix-link` 显式接入，不下沉到 `CompositeToolRuntime` 自动启动；`/helix-mode` 只选择工具过滤器
+- Helix 是可选能力提供者，由 `--helix` 或 `/helix-link` 显式接入，不下沉到 `CompositeToolRuntime` 自动启动；`/helix-mode` 只选择工具过滤器
 - 工具过滤策略保留独立过滤模式，调用来源确定前不得复用为应用运行模式
 
 维护要求：
@@ -39,17 +40,20 @@ device / bench / common / media / coding
 
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
-- `bench`：性能、稳定性与接口执行面
+- `bench`：性能、稳定性与接口执行能力
 - `common`：环境与基础能力
 - `media`：截图、录屏、音视频处理与帧级流水线
 - `coding`：原生 coding 工具、shell/git 受控执行
 
 关键约束：
 - 接口能力不是独立 `api` 域，而是归在协议执行这一侧
-- 如果工具注册名、域名或能力归属变更，README 和 `docs/architecture.md`、`docs/playbook.api.md` 都要一起改
+- 如果工具注册名、域名或能力归属变更，README、对应 playbook 和产品背景说明要一起改；只有状态所有权或系统边界变化时才修改架构权威文档
 
 ## 文档分层规则
 - `README.md`：入口页，只保留最小上手、边界、速查和跳转
+- `ARCHITECTURE_SYSTEM.md`：Mind、AppServer 与 Fabric 的系统级唯一架构权威
+- `ARCHITECTURE.md`：ProxyMind 客户端内部唯一架构权威，受系统架构约束
+- `ARCHITECTURE_SCORECARD.md`：阶段性架构评审与成熟度记录，不定义架构事实
 - `docs/README.md`：长文档索引，由 `website/mind/docs_manifest.json` 生成
 - `docs/playbook.api.md`：接口约定与协议说明
 - `docs/playbook.load.md`：云端压测、异步任务与结果收束边界
@@ -58,7 +62,7 @@ device / bench / common / media / coding
 - `docs/interactive-mode.md`：全部 REPL slash 命令、会话管理和输入约束的权威参考
 - `docs/cli-usage.md`：全部 CLI 命令、选项和组合规则的权威参考
 - `docs/agent-mode.md`：订阅模式说明
-- `docs/architecture.md`：背景、云端架构、推理集群
+- `docs/architecture.md`：产品背景、使用入口、可选能力和生态介绍，不定义架构事实
 - `website/mind/pages/`：官网展示壳与站点入口页
 - `website/mind/docs_manifest.json`：官网生成层的正文清单与专题摘要
 - `website/mind/scripts/check_docs.py`：命令覆盖、manifest 和生成页链接校验
@@ -120,6 +124,10 @@ device / bench / common / media / coding
 ```text
 SoftwareCenter/Assets/Mind/
   ├── README.md
+  ├── ARCHITECTURE_SYSTEM.md
+  ├── ARCHITECTURE.md
+  ├── ARCHITECTURE_SCORECARD.md
+  ├── AGENTS.md
   ├── LICENSE.md
   └── docs/
 
@@ -153,10 +161,11 @@ python website/mind/scripts/check_docs.py --generated
 每次涉及模式、文档或同步链路的改动，至少检查下面这些点：
 
 1. README 的能力边界是否仍与实现一致
-2. `docs/` 中对应长文档是否同步更新
-3. 是否引入了绝对路径或失效相对链接
-4. `sync-to-software-center.yml` 是否仍会把新增文档同步出去
-5. `Docs 索引` 是否补到了新文档入口
+2. 系统级与客户端内部 Architecture Truth 是否仍由对应权威文档唯一维护
+3. `docs/` 中对应说明是否只解释权威事实而未重新定义
+4. 是否引入了绝对路径或失效相对链接
+5. `sync-to-software-center.yml` 是否仍会把新增文档同步出去
+6. `Docs 索引` 是否补到了新文档入口
 
 ## 适合新增深技术文档的场景
 只有在下面几类情况，才值得继续加更深的技术文档：

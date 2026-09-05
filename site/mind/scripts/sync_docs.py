@@ -82,21 +82,24 @@ def build_target_map(entries: list[DocEntry]) -> dict[str, str]:
 def build_link_map(source_rel: str, entries: list[DocEntry]) -> dict[str, str]:
     target_map = build_target_map(entries)
 
-    if source_rel == "README.md":
+    if not source_rel.startswith("docs/"):
         return {
             source: target
             for source, target in target_map.items()
             if source != source_rel
         }
 
-    if source_rel.startswith("docs/"):
-        return {
-            Path(source).name: target
-            for source, target in target_map.items()
-            if source.startswith("docs/")
-        }
-
-    return {}
+    links = {
+        Path(source).name: target
+        for source, target in target_map.items()
+        if source.startswith("docs/")
+    }
+    links.update({
+        f"../{source}": target
+        for source, target in target_map.items()
+        if not source.startswith("docs/") and source != "README.md"
+    })
+    return links
 
 
 def rewrite_links(text: str, link_map: dict[str, str]) -> str:
