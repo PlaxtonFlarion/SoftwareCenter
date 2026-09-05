@@ -289,6 +289,9 @@ mind mcp add demo -- server --model child-model
 
 ## 其他命令
 
+`doctor` 会检查全部内置命令行工具；在 macOS 上还会报告缺失执行位或仍携带
+`com.apple.quarantine` 的工具，但不会实际启动这些程序。
+
 ```powershell
 # 只读诊断；JSON 形式适合脚本消费
 mind doctor

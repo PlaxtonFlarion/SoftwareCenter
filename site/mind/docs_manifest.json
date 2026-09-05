@@ -7,6 +7,21 @@
       "summary": "第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。"
     },
     {
+      "source": "ARCHITECTURE.md",
+      "target": "repository-architecture.md",
+      "label": "仓库架构契约"
+    },
+    {
+      "source": "LICENSE.md",
+      "target": "license.md",
+      "label": "仓库授权"
+    },
+    {
+      "source": "AGENTS.md",
+      "target": "agents.md",
+      "label": "编码代理约定"
+    },
+    {
       "source": "docs/README.md",
       "target": "docs-index.md",
       "label": "文档索引",

@@ -86,7 +86,7 @@ def build_link_map(source_rel: str, entries: list[DocEntry]) -> dict[str, str]:
         return {
             source: target
             for source, target in target_map.items()
-            if source.startswith("docs/")
+            if source != source_rel
         }
 
     if source_rel.startswith("docs/"):
