@@ -356,6 +356,11 @@ protocol / harness fact
 先在局部状态中完整归约批次，全部事实合法后才替换正式状态，并且只为最终状态生成一次前景投影。
 工具活动释放并把前景所有权交给 model wait 属于此类交接，不得产生中间 hidden 帧。
 
+`TurnSurfaceState.lifecycle` 是 Turn 是否仍运行的事实，`status_requested` 是明确活动是否仍请求状态行的
+独立事实；正文、审批和 replay 可以临时隐藏投影，但不得借此结束 Turn。工具开始必须立即请求状态行，
+工具完成只释放工具 lease，不撤销既有状态行请求。终端可见内容未变化时，Coordinator 只推进 reducer
+revision，不得重建状态组件、重置 elapsed time 或重复提交相同帧。
+
 正文只有在渲染器确认至少一行实际进入活动画布时才产生 `AssistantVisible`。该事件在同一个
 `visual_update()` 中撤下活动提示并提交正文，避免等待动画、空白帧和 assistant 正文同时出现；
 实际撤下活动提示时，在支持的终端上还必须把下一次绘制作为同步输出帧提交，使旧提示清除和
