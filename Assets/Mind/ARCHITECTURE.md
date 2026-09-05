@@ -32,19 +32,19 @@ mind.py
   -> frontends
 ```
 
-| 边界 | 职责 | 不得拥有 |
-| --- | --- | --- |
-| `mind.py` | 稳定进程入口和具体工厂选择 | 领域规则、前端状态、隐式服务定位 |
-| `composition.py` | 组装应用宿主、运行资源和公开能力 | 业务分支、协议解析、UI 逻辑 |
-| `agent/` | 本地代理的领域、用例、编排、端口和持久事实 | 具体 UI、配置路径、HTTP 实现 |
-| `protocol/` | 可供多前端复用的 `mind.chat` wire SDK | 本地运行生命周期、UI 和配置策略 |
-| `frontends/` | CLI、TUI、stdio MCP、Subscription 和终端适配 | Run/Effect 权威状态、具体能力组装 |
-| `infrastructure/` | 配置、平台、持久化、服务、工作区和外部实现 | 前端状态、线上 Turn 权威状态 |
-| `sidecars/` | 随客户端发布的隔离子进程入口和固化资产 | 运行编排、审批决定、线上协议语义 |
-| `observability/` | 结构化日志、报告和异常观测 | 业务状态机、用户交互策略 |
-| `metadata/` | 产品名称、版本、编码和展示元数据 | 配置读取、运行状态 |
-| `npm/` | npm launcher、平台包和发布流程 | Python 运行时、本地执行状态 |
-| `backend/` | 独立打包服务 | 对客户端包的反向依赖 |
+| 边界              | 职责                                         | 不得拥有                          |
+|-------------------|----------------------------------------------|-----------------------------------|
+| `mind.py`         | 稳定进程入口和具体工厂选择                   | 领域规则、前端状态、隐式服务定位  |
+| `composition.py`  | 组装应用宿主、运行资源和公开能力             | 业务分支、协议解析、UI 逻辑       |
+| `agent/`          | 本地代理的领域、用例、编排、端口和持久事实   | 具体 UI、配置路径、HTTP 实现      |
+| `protocol/`       | 可供多前端复用的 `mind.chat` wire SDK        | 本地运行生命周期、UI 和配置策略   |
+| `frontends/`      | CLI、TUI、stdio MCP、Subscription 和终端适配 | Run/Effect 权威状态、具体能力组装 |
+| `infrastructure/` | 配置、平台、持久化、服务、工作区和外部实现   | 前端状态、线上 Turn 权威状态      |
+| `sidecars/`       | 随客户端发布的隔离子进程入口和固化资产       | 运行编排、审批决定、线上协议语义  |
+| `observability/`  | 结构化日志、报告和异常观测                   | 业务状态机、用户交互策略          |
+| `metadata/`       | 产品名称、版本、编码和展示元数据             | 配置读取、运行状态                |
+| `npm/`            | npm launcher、平台包和发布流程               | Python 运行时、本地执行状态       |
+| `backend/`        | 独立打包服务                                 | 对客户端包的反向依赖              |
 
 ## `agent` 分层
 
@@ -124,11 +124,11 @@ stores / capabilities / adapters / infrastructure / frontends
 
 ### 身份与入口
 
-| 范围 | 稳定身份 | 序号或幂等键 |
-| --- | --- | --- |
-| 本地运行时 | `session_id`、`run_id` | `command_id`、`idempotency_key`、Run `sequence` |
-| 线上协议 | `cid`、`sid`、`turn_id`、`attempt`、`item_id` | `request_id`、`client_message_id`、`event_seq` |
-| Subscription | 订阅 `session_id`、任务 `call_id` | `message_id`、`seq`、`last_acked_seq` |
+| 范围         | 稳定身份                                      | 序号或幂等键                                    |
+|--------------|-----------------------------------------------|-------------------------------------------------|
+| 本地运行时   | `session_id`、`run_id`                        | `command_id`、`idempotency_key`、Run `sequence` |
+| 线上协议     | `cid`、`sid`、`turn_id`、`attempt`、`item_id` | `request_id`、`client_message_id`、`event_seq`  |
+| Subscription | 订阅 `session_id`、任务 `call_id`             | `message_id`、`seq`、`last_acked_seq`           |
 
 这些身份和序号不得互相赋值或比较。Adapter 显式保存映射，不依赖字符串碰巧相等。
 
@@ -228,6 +228,8 @@ Turn 表面遵循以下不变量：
 - 同一因果交接以原子批次归约，只提交最终投影，不产生中间空帧；
 - 终端可见内容未变化时只推进 revision，不重建组件或重置 elapsed time；
 - 正文实际进入画布后才产生 `AssistantVisible`，状态行撤下与正文提交属于同一视觉事务；
+- commentary 正文完成后只在正文流已经 idle 且 Turn 仍运行时恢复状态行；final answer 和
+  phase 未声明的正文不自行恢复，后续状态只能由明确活动事实请求；
 - transport retry 可以暂时覆盖已显示正文，但不释放、替换或重复提交正文；
 - retry、supersede 和 replay 的迟到旧事件不得重新取得画面；
 - 只有唯一 Turn 终态可以清空 timer、retry、工具和审批 lease 并释放输入边界。
@@ -279,15 +281,15 @@ model intent
 
 ## 持久化与恢复
 
-| 事实 | 所有者 | 恢复原则 |
-| --- | --- | --- |
-| Run、Command、Event | `agent.stores.runs` | 幂等写入、单调事件、终态不可离开 |
-| Remote Turn request | `agent.stores.runs` | 网络前冻结，按原坐标 attach/replay |
-| Agent graph、mailbox | `agent.stores.agents` | 活动投递可恢复，消息身份稳定 |
-| Session cursor | `agent.stores.sessions` | 只保存本地会话索引和分支事实 |
-| Transcript | `agent.domain.transcripts` + `infrastructure.persistence` | 值契约与 IO 分离，损坏可观测 |
-| Approval | `agent.stores.approvals` | 首个决定权威，重复请求幂等 |
-| Effect | `agent.stores.effects` | prepared、committed、unknown 等事实可对账 |
+| 事实                 | 所有者                                                    | 恢复原则                                  |
+|----------------------|-----------------------------------------------------------|-------------------------------------------|
+| Run、Command、Event  | `agent.stores.runs`                                       | 幂等写入、单调事件、终态不可离开          |
+| Remote Turn request  | `agent.stores.runs`                                       | 网络前冻结，按原坐标 attach/replay        |
+| Agent graph、mailbox | `agent.stores.agents`                                     | 活动投递可恢复，消息身份稳定              |
+| Session cursor       | `agent.stores.sessions`                                   | 只保存本地会话索引和分支事实              |
+| Transcript           | `agent.domain.transcripts` + `infrastructure.persistence` | 值契约与 IO 分离，损坏可观测              |
+| Approval             | `agent.stores.approvals`                                  | 首个决定权威，重复请求幂等                |
+| Effect               | `agent.stores.effects`                                    | prepared、committed、unknown 等事实可对账 |
 
 恢复只从持久事实和安全点开始。Redis、当前连接、前端缓存和日志都不是 authority。已提交事件
 不得丢失，未确认效果不得重复执行，无法确定的结果必须显式对账。
