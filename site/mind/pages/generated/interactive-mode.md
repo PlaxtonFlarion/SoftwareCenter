@@ -82,10 +82,12 @@ decline = ["esc", "n"]
 
 启动校验会拒绝同一或重叠上下文中的重复绑定、chord 前缀遮蔽、固定取消/退出键覆盖、
 可能成为 AltGr 文本输入的 `Ctrl+Alt+字符`，以及会吞掉普通输入的 printable key。
-旧式终端字节流无法区分 `Ctrl+M/Enter`、`Ctrl+I/Tab`、`Ctrl+H/Backspace`、
-`Ctrl+[/Esc` 和 `Ctrl+@/NUL`，这些写法当前会给出明确配置错误，而不是静默绑定到另一按键。
-同理，旧式解码器中的 chord 第二键暂不接受 `Alt` 修饰，因为它的 `Esc` 前缀会与 chord 取消
-产生歧义。
+TUI 在 raw mode 生命周期内按 Codex 的策略启用增强键盘协议，使 `Ctrl+M/Enter`、
+`Ctrl+I/Tab`、`Ctrl+H/Backspace`、Shift 修饰键和 chord 第二键的 Alt 修饰保持独立；
+退出或临时进入 cooked mode 时会成对恢复终端状态。iTerm2、Ghostty 和 tmux xterm 使用不报告
+Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS Code 终端默认禁用，
+可用 `MIND_TUI_DISABLE_KEYBOARD_ENHANCEMENT=false` 显式覆盖。其他不支持增强协议的终端继续
+使用可区分的旧式按键，增强协议专属别名不会错误触发其他动作。
 菜单、审批、排队提示、footer 和帮助页均从同一运行时映射生成快捷键标签。
 
 各上下文可配置的动作名如下：
@@ -111,7 +113,7 @@ decline = ["esc", "n"]
 
 空输入时连续按两次 `Esc` 可以直接选择最近的用户消息；在完整记录中使用
 `Esc/Left` 向前选择、`Right` 向后选择，按 `Enter` 从选中消息前创建分支并恢复输入。
-主输入框使用 `Ctrl+J` 插入换行，并保留终端支持时的 `Alt+Enter` 兼容键；
+主输入框使用 `Ctrl+J`、`Ctrl+M`、`Shift+Enter` 或 `Alt+Enter` 插入换行；
 `Ctrl+O` 直接复制最近一次完整 assistant 回复，不修改当前草稿。
 
 ## 指令索引
@@ -229,8 +231,8 @@ base_url = ""
 
 ## `/copy`
 - `/copy`：打开复制选择器；第一项为整体回复，其后按源码顺序列出围栏代码和顶层引用
-- `Ctrl+O`：不打开选择器，直接复制整体回复；原有 `Ctrl+O` 换行改为与 Codex
-  默认降级键一致的 `Ctrl+J`，终端支持时也可用 `Alt+Enter`
+- `Ctrl+O`：不打开选择器，直接复制整体回复；换行键与 Codex 一致，为
+  `Ctrl+J`、`Ctrl+M`、`Shift+Enter` 和 `Alt+Enter`
 - 一轮中如果先输出 assistant 文本、再调用工具、再继续输出 assistant 文本，复制内容只取最后一次 assistant 输出
 - commentary 和 Thinking 不成为复制快照；只有已完成的 `final_answer` 或未声明 phase
   的兼容文本 Item 会替换最近回复，恢复会话后从 Transcript 重建同一快照
