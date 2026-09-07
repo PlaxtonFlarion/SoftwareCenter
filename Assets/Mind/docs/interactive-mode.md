@@ -43,17 +43,69 @@ scrollback_reflow_line_limit = 10000
 [tui.keymap.global]
 open_transcript = "f12"
 
+[tui.keymap.chat]
+interrupt_turn = "esc"
+edit_queued_message = ["alt-up", "shift-left"]
+
+[tui.keymap.composer]
+submit = "enter"
+queue = "tab"
+toggle_shortcuts = "?"
+
+[tui.keymap.editor]
+insert_newline = ["ctrl-j", "alt-enter"]
+move_word_left = ["alt-b", "ctrl-left"]
+
 [tui.keymap.pager]
 scroll_down = ["down", "n"]
 page_down = ["page-down", "space"]
 close = ["q", "ctrl-c"]
+
+[tui.keymap.list]
+accept = "enter"
+cancel = "esc"
+
+[tui.keymap.approval]
+accept_once = "y"
+decline = ["esc", "n"]
 ```
 
-`pager` 还支持 `scroll_up`、`page_up`、`half_page_up`、
-`half_page_down`、`jump_top`、`jump_bottom` 和 `close_transcript`。
-值可以是单个按键字符串或字符串数组；空数组表示显式解绑。支持普通字符、
-`ctrl-<字符>`、`alt-<键>`、`shift-<字母/Tab>`、`f1` 到 `f24`，以及
-方向键、Home/End、PageUp/PageDown 等命名键。同一上下文中的重复按键会导致配置校验失败。
+可配置上下文为 `global`、`chat`、`composer`、`editor`、`pager`、`list` 和
+`approval`。`?` 打开的只读 Keyboard shortcuts 页面显示当前进程实际使用的完整映射；
+运行时映射是启动快照，修改用户配置或 Profile 后在下一次启动生效。
+
+值可以是单个按键字符串或字符串数组；数组中的项目是同一动作的替代键，空数组表示显式解绑。
+两键 chord 写在同一个字符串中，例如 `"ctrl-x ctrl-t"`；等待窗口为 1 秒，期间按 `Esc`
+取消。支持组合修饰键、`f1` 到 `f24`，以及方向键、Home/End、PageUp/PageDown 等命名键。
+上下文配置优先于合法的 `global` 回退，之后才使用内置默认值；Profile 按动作合并，显式空数组
+不会被用户层默认值补回。
+
+启动校验会拒绝同一或重叠上下文中的重复绑定、chord 前缀遮蔽、固定取消/退出键覆盖、
+可能成为 AltGr 文本输入的 `Ctrl+Alt+字符`，以及会吞掉普通输入的 printable key。
+旧式终端字节流无法区分 `Ctrl+M/Enter`、`Ctrl+I/Tab`、`Ctrl+H/Backspace`、
+`Ctrl+[/Esc` 和 `Ctrl+@/NUL`，这些写法当前会给出明确配置错误，而不是静默绑定到另一按键。
+同理，旧式解码器中的 chord 第二键暂不接受 `Alt` 修饰，因为它的 `Esc` 前缀会与 chord 取消
+产生歧义。
+菜单、审批、排队提示、footer 和帮助页均从同一运行时映射生成快捷键标签。
+
+各上下文可配置的动作名如下：
+
+- `global`：`open_transcript`、`copy_last_response`、`clear_terminal`、
+  `transcript_page_up`、`transcript_page_down`，以及供 `composer` 使用的
+  `submit`、`queue`、`toggle_shortcuts` 回退。
+- `chat`：`interrupt_turn`、`edit_queued_message`。
+- `composer`：`submit`、`queue`、`enter_shell_mode`、`previous_completion`、
+  `toggle_shortcuts`、`history_search_previous`、`history_search_next`。
+- `editor`：`delete_line`、`delete_backward`、`delete_forward`、
+  `delete_word_backward`、`undo`、四向移动、`insert_newline`、补全前后选择、
+  行首/行尾、单词左右移动、`delete_word_forward`、`delete_to_line_end`、`yank`。
+- `pager`：上下滚动、整页/半页滚动、首尾跳转、raw、搜索、导出与关闭动作。
+- `list`：确认、toggle、alternate、上下/左右/翻页/首尾移动、查询删除与取消动作。
+- `approval`：详情展开、当前项确认、上下移动及各类正式审批 decision 动作。
+
+`Ctrl+C`、`Ctrl+D`、补全取消、Shell 模式取消和菜单中断等安全生命周期入口固定，不提供
+配置字段；它们仍显示在只读快捷键页中。
+
 `scrollback_reflow_line_limit` 限制终端尺寸变化时从稳定记录中重新输出的逻辑行数，
 默认是 `10000`，值必须是正整数。项目级配置不能覆盖 TUI 配置。
 
