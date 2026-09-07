@@ -9,7 +9,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /agent /listen /mailbox /queue /diff /copy /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /agent /listen /mailbox /queue /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -38,10 +38,12 @@
 
 ```toml
 [tui]
+raw_output_mode = false
 scrollback_reflow_line_limit = 10000
 
 [tui.keymap.global]
 open_transcript = "f12"
+toggle_raw_output = "alt-r"
 
 [tui.keymap.chat]
 interrupt_turn = "esc"
@@ -92,7 +94,7 @@ Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS
 
 各上下文可配置的动作名如下：
 
-- `global`：`open_transcript`、`copy_last_response`、`clear_terminal`、
+- `global`：`open_transcript`、`copy_last_response`、`toggle_raw_output`、`clear_terminal`、
   `transcript_page_up`、`transcript_page_down`，以及供 `composer` 使用的
   `submit`、`queue`、`toggle_shortcuts` 回退。
 - `chat`：`interrupt_turn`、`edit_queued_message`。
@@ -101,7 +103,7 @@ Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS
 - `editor`：`delete_line`、`delete_backward`、`delete_forward`、
   `delete_word_backward`、`undo`、四向移动、`insert_newline`、
   行首/行尾、单词左右移动、`delete_word_forward`、`delete_to_line_end`、`yank`。
-- `pager`：上下滚动、整页/半页滚动、首尾跳转、raw、搜索、导出与关闭动作。
+- `pager`：上下滚动、整页/半页滚动、首尾跳转与关闭动作。
 - `list`：确认、toggle、alternate、上下/左右/翻页/首尾移动、查询删除与取消动作。
 - `approval`：详情展开、当前项确认、上下移动及各类正式审批 decision 动作。
 
@@ -113,6 +115,9 @@ Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS
 
 `scrollback_reflow_line_limit` 限制终端尺寸变化时从稳定记录中重新输出的逻辑行数，
 默认是 `10000`，值必须是正整数。项目级配置不能覆盖 TUI 配置。
+`raw_output_mode` 决定启动时主 transcript 使用 rich 还是 raw 投影；默认关闭。主界面按
+`Alt+R` 可临时切换且不插入提示，`/raw [on|off]` 会切换并显示结果。完整记录页只负责阅读和
+历史回溯，不维护第二套 raw、搜索或导出状态。
 
 空输入时连续按两次 `Esc` 可以直接选择最近的用户消息；在完整记录中使用
 `Esc/Left` 向前选择、`Right` 向后选择，按 `Enter` 从选中消息前创建分支并恢复输入。
@@ -138,6 +143,8 @@ Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS
 - `/queue [list|add <message>|retry <id>|delete <id>|move <id> <position>|start [id]]`：管理当前会话的持久消息队列
 - `/diff`：查看当前 Git 工作区差异（包含未跟踪且未被忽略的文件）
 - `/copy`：从最近一次助手回复中选择整体、围栏代码或引用并复制
+- `/export [path]`：把完整本地会话记录导出为 Markdown；省略路径时选择复制到剪贴板或编辑文件名，已存在文件不会被覆盖
+- `/raw [on|off]`：切换主 transcript 的 raw/rich 投影；省略参数时反转当前模式
 - `/ps`：查看运行中的后台终端
 - `/stop`：停止全部后台终端
 - `/mcp [start|force|stop|restart|status]`：管理外部 MCP 服务
