@@ -59,6 +59,8 @@ close = ["q", "ctrl-c"]
 
 空输入时连续按两次 `Esc` 可以直接选择最近的用户消息；在完整记录中使用
 `Esc/Left` 向前选择、`Right` 向后选择，按 `Enter` 从选中消息前创建分支并恢复输入。
+主输入框使用 `Ctrl+J` 插入换行，并保留终端支持时的 `Alt+Enter` 兼容键；
+`Ctrl+O` 直接复制最近一次完整 assistant 回复，不修改当前草稿。
 
 ## 指令索引
 - `/new [title]`：开始新对话，重置 `cid / sid`，可选保存会话标题，保留模型和本地配置
@@ -78,7 +80,7 @@ close = ["q", "ctrl-c"]
 - `/mailbox`：查看远端请求摘要，运行、删除、展开消息或切换当前会话的 Auto-run
 - `/queue [list|add <message>|retry <id>|delete <id>|move <id> <position>|start [id]]`：管理当前会话的持久消息队列
 - `/diff`：查看当前 Git 工作区差异（包含未跟踪且未被忽略的文件）
-- `/copy`：复制最近一次助手回复原文
+- `/copy`：从最近一次助手回复中选择整体、围栏代码或引用并复制
 - `/ps`：查看运行中的后台终端
 - `/stop`：停止全部后台终端
 - `/mcp [start|force|stop|restart|status]`：管理外部 MCP 服务
@@ -174,10 +176,16 @@ base_url = ""
 - `start` 不能在另一个 Turn 活动期间执行；冷启动发现已启动但尚未完成观察的项目时，会继续恢复该 Turn。
 
 ## `/copy`
-- `/copy`：复制最近一次成功完成的 assistant 输出原文到系统剪贴板
+- `/copy`：打开复制选择器；第一项为整体回复，其后按源码顺序列出围栏代码和顶层引用
+- `Ctrl+O`：不打开选择器，直接复制整体回复；原有 `Ctrl+O` 换行改为与 Codex
+  默认降级键一致的 `Ctrl+J`，终端支持时也可用 `Alt+Enter`
 - 一轮中如果先输出 assistant 文本、再调用工具、再继续输出 assistant 文本，复制内容只取最后一次 assistant 输出
-- 复制内容是模型返回的 Markdown 原文，不包含终端颜色、打字机动画、工具输出、Sources footer 或耗时 footer
-- 如果还没有可复制回复，会提示没有 assistant message
+- commentary 和 Thinking 不成为复制快照；只有已完成的 `final_answer` 或未声明 phase
+  的兼容文本 Item 会替换最近回复，恢复会话后从 Transcript 重建同一快照
+- 代码块和引用保留可复制 Markdown 源内容；整体回复按 Codex 的可见 Markdown
+  规则统一换行并移除行尾空白，不包含终端颜色、工具输出、Sources footer 或耗时 footer
+- 流式期间打开选择器会冻结当时的回复快照；选择器关闭前，后续输入继续留在输入屏障后
+- 如果还没有可复制回复，会提示 `No agent response to copy`
 - 该指令不会发送给模型，也不会修改对话上下文
 
 ## Helix 指令
