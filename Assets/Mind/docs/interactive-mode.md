@@ -101,7 +101,7 @@ Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS
 - `composer`：`submit`、`queue`、`enter_shell_mode`、`previous_completion`、
   `toggle_shortcuts`、`history_search_previous`、`history_search_next`。
 - `editor`：`delete_line`、`delete_backward`、`delete_forward`、
-  `delete_word_backward`、`undo`、四向移动、`insert_newline`、
+  `delete_word_backward`、四向移动、`insert_newline`、
   行首/行尾、单词左右移动、`delete_word_forward`、`delete_to_line_end`、`yank`。
 - `pager`：上下滚动、整页/半页滚动、首尾跳转与关闭动作。
 - `list`：确认、toggle、alternate、上下/左右/翻页/首尾移动、查询删除与取消动作。
@@ -109,6 +109,9 @@ Release 的兼容模式，tmux csi-u 同时启用 modifyOtherKeys 2；WSL 的 VS
 
 `Ctrl+C`、`Ctrl+D`、补全取消、Shell 模式取消和菜单中断等安全生命周期入口固定，不提供
 配置字段；它们仍显示在只读快捷键页中。
+
+Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派前接管，挂起当前进程组并在
+`fg` 后恢复 raw mode 与画面；不支持 POSIX job control 的平台会消费该按键而不修改草稿。
 
 空草稿首次按 `Ctrl+C` 会开启两秒退出确认；只有紧接着再次按 `Ctrl+C` 才退出。任意其他
 按键、提交动作或确认超时都会撤销该状态。
