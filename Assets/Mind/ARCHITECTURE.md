@@ -311,6 +311,10 @@ model intent
 - `services/`：服务 owner、健康、Helix、Turn 环境和配置宿主；
 - `skills/`、`hooks/`、`sidecars/`、`update/`：对应外部资源的适配与生命周期。
 
+本地进程输出以字节进入 `infrastructure.platform` 的统一解码生命周期；stdout 与 stderr
+分别持有增量状态，系统读取块不构成字符边界。只有完整字符或 EOF 收束后的文本才能进入
+workspace 和 frontend，展示层不得再次猜测进程输出编码。
+
 `MIND_HOME` 是配置根，拥有 `config.toml`、用户规则和 Hook 配置。`MIND_STATE_HOME` 是运行
 状态根，拥有 history、sessions、reports、Helix 和本地 SQLite；未设置时才默认使用
 `MIND_HOME`。配置文件只要求可读，状态根必须可创建、可写并支持 SQLite 文件锁。显式状态根
