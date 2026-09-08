@@ -151,6 +151,11 @@ frontend adapter
 Command 入队前必须冻结完整语义和 `exec_env`。重试与安全 redispatch 复用原快照；相同幂等键
 和相同语义返回既有结果，不同语义产生冲突。
 
+Review 使用独立 `SubmitReviewCommand`，在本地 Run 入账前冻结 target、Git workspace、execution、
+environment、`request_id` 和远端 Turn 坐标。确认登记后只观察既有 Turn；冷恢复对已登记项执行
+attach/replay，对尚未开始网络操作的 queued Review 以原 Command 安全 redispatch，不把它恢复
+成普通 message 或重新打开旧菜单。
+
 ### 单写者与终态
 
 每个 Session 只有一个状态写入者。调用方提交 Command，不直接修改 Session、Run、计划、工具
@@ -182,7 +187,7 @@ Durable Queue 与 TUI 当前 Turn 的普通 pending input 是两个入口：
 ```text
 protocol/schema     # 严格字段、判别联合、身份和值约束
 protocol/transport  # 认证、端点、可靠请求、SSE 和报告传输
-protocol/client     # chat、turn control、tool、effect、fork、compact 等用例
+protocol/client     # chat、review、turn control、tool、effect、fork、compact 等用例
 ```
 
 前端可以复用协议 SDK，但不要求共享 Python UI。协议层不拥有本地 Session、Run、工具执行器、
@@ -198,7 +203,7 @@ cancelled；服务端内部存储标志不得成为第二个公开终态。
 
 - active 视图只包含未被 retry 或 `presentation.superseded` 替代的 revision；
 - audit 视图保留所有展示 attempt；
-- 最终正文只从 active text item 派生；
+- 普通 assistant 正文只从 active text item 派生；结构化 Review 正文只从 active review item 的严格 `output` 派生；
 - approval snapshot 只裁决旧审批，不推进确认游标；
 - gap 等控制信号不创建展示 item。
 

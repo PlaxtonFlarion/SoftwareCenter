@@ -164,6 +164,12 @@ HTTP Ack != Terminal
 新 Turn 先 submit，确认身份后 observe。已存在 Turn 只能 attach/replay，不得为了保险再次调用
 创建接口。`turn.completed` 或服务端正式定义的同构 terminal snapshot 是唯一远端终态来源。
 
+Review 是独立的类型化 Command，不是普通聊天文本。Mind 拥有用户选择的 Review target，并在
+首次网络操作前冻结本地 Git 工作区和本地 Run 事实；AppServer 原子登记远端 Session、Turn、
+Review Item 和执行门。首次 `/review` 可以创建此前不存在的源 Session；已登记 Review 的恢复
+只能 status 后 attach/replay，未知提交结果不得生成新身份重投。`review.completed` 只终结
+Review Item，仍须由匹配的 `turn.completed` 释放远端和本地执行门。
+
 ## 8. 输入、中断与队列
 
 中断命令只是意图，不是终态：

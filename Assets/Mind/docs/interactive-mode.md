@@ -9,7 +9,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /agent /listen /mailbox /queue /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /queue /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -140,6 +140,7 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/hooks`：查看、信任和启停生命周期 Hooks
+- `/review [instructions]`：审查当前 Git 工作区、相对基础分支的改动或指定提交
 - `/agent`：查看和管理当前会话的子 Agent 线程
 - `/listen [start|stop|status]`：管理远端请求监听器；省略动作时打开操作菜单
 - `/mailbox`：查看远端请求摘要，运行、删除、展开消息或切换当前会话的 Auto-run
@@ -225,6 +226,14 @@ base_url = ""
 - `/agent`：打开当前根会话的子 Agent 列表。选中线程后可查看快照、打断运行中的线程、
   恢复已关闭线程，或关闭线程及其后代。
 - `/skills`：打开 Skills 菜单。可以先查看本地 Skills，再把选中的 Skill token 写入输入框。
+
+## `/review`
+- 裸 `/review` 打开 `Select a review preset` 菜单，可选择相对基础分支、未提交改动、指定提交或自定义审查指令。
+- 基础分支和提交使用可搜索子菜单；`Esc` 返回上一级，选择成功后关闭整组 Review 菜单。
+- `/review <instructions>` 直接使用去除首尾空白后的自定义指令，不打开预设菜单；自定义菜单支持多行输入，空白内容不会提交。
+- 目标选定后会先冻结 Git 目标和工作区快照，再持久化本地 Review Command；快照无效、目标消失、内容超限或缺少必要代码上下文时不会创建远端 Turn。
+- Review 运行期间普通输入属于下一轮，不作为 steer 注入审查；中断后仍等待服务端 `turn.completed` 权威终态。
+- 进程恢复只 attach/replay 已登记的 Review；若退出发生在首次网络操作前，则以原请求身份和冻结快照安全重派。
 
 ## `/listen` 与 `/mailbox`
 - `/listen`：打开监听器菜单；`/listen start` 启动并等待 ready，`/listen stop` 停止传输，

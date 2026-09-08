@@ -165,7 +165,7 @@ codex mcp add mind -- mind mcp-server
 <a id="interactive-mode"></a>
 ## ⭐️ 交互模式
 
-启动 `mind` 进入交互模式。常用入口包括 `/new`、`/resume`、`/permissions`、`/preferences`、`/tools`、`/mcp`、`/helix-link` 和 `/quit`；完整 slash 命令及运行中行为见[交互模式文档](docs/interactive-mode.md)。
+启动 `mind` 进入交互模式。常用入口包括 `/new`、`/resume`、`/review`、`/permissions`、`/preferences`、`/tools`、`/mcp`、`/helix-link` 和 `/quit`；完整 slash 命令及运行中行为见[交互模式文档](docs/interactive-mode.md)。
 
 <a id="architecture"></a>
 ## ⭐️ 项目架构
