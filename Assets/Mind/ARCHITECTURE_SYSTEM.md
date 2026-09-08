@@ -249,6 +249,13 @@ AppServer event
   -> frontend
 ```
 
+自动上下文压缩属于 AppServer 的远端运行时状态机，并作为同一 `turn_id` 中的
+`context.compaction.started/completed/failed` Canonical Item 生命周期交付。Mind 只按
+`item_id + event_seq` 归约、记录无摘要的完成标记并建立展示边界；收到这些事件不得再次调用
+Turn 创建或压缩端点，也不得运行能够阻断云端压缩的本地 Hook。`completed` 不是 Turn 终态，
+后续 assistant 内容继续归属于原 Turn。TUI 只在该 Turn 已发生实际工具或命令工作时，于完成
+提示后的下一段 assistant 内容前展示分隔线。
+
 Thinking 消失、正文上屏和连接 EOF 都不等于 Turn completed。只有权威 terminal 才能释放运行
 资源和下一 Turn 执行门。
 
