@@ -53,7 +53,7 @@ Authority 和集成边界以 `ARCHITECTURE_SYSTEM.md` 为准；线上字段、�
 
   ```shell
   python -m pytest <targets> -q
-  python -m pytest tests/test_package_architecture.py -q
+  python -m pytest tests/test_package_architecture.py tests/architecture -q
   python -m compileall agent protocol frontends infrastructure observability metadata
   git diff --check
   ```

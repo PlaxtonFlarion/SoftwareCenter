@@ -106,7 +106,8 @@ stores / capabilities / adapters / infrastructure / frontends
 8. `backend` 只依赖自身、标准库和第三方库；客户端代码不导入 backend。
 9. `sidecars` 不导入 Python 业务包；只有 `infrastructure.sidecars` 可以驱动其私有 IPC。
 
-`tests/test_package_architecture.py` 持续审计这些边界。
+`tests/test_package_architecture.py` 与 `tests/architecture/` 中的专题审计持续检查这些边界；根文件
+保持稳定入口，专题审计共享单一源码清单与 AST 缓存。
 
 ## 组合与生命周期
 
