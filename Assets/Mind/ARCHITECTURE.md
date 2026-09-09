@@ -156,6 +156,9 @@ environment、`request_id` 和远端 Turn 坐标。确认登记后只观察既�
 attach/replay，对尚未开始网络操作的 queued Review 以原 Command 安全 redispatch，不把它恢复
 成普通 message 或重新打开旧菜单。
 
+Review 复用工作区的 `exec_command` 和 `write_stdin`，按需读取 diff、仓库指令和相关文件；
+工具目录在提交时冻结，命令执行使用 `read-only` 沙箱和 `never` 审批策略。
+
 ### 单写者与终态
 
 每个 Session 只有一个状态写入者。调用方提交 Command，不直接修改 Session、Run、计划、工具
