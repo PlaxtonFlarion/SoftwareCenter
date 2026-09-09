@@ -163,6 +163,8 @@ HTTP Ack != Terminal
 
 新 Turn 先 submit，确认身份后 observe。已存在 Turn 只能 attach/replay，不得为了保险再次调用
 创建接口。`turn.completed` 或服务端正式定义的同构 terminal snapshot 是唯一远端终态来源。
+正式状态查询、审批快照与持久事件均可确认 Turn 已存在，即使尚未收到流事件或水位仍为零。
+确认后若权威查询返回不存在，客户端停止观察并报告错误，不重新提交原请求；快照不推进事件确认游标。
 
 Mind 在冻结提交时明确选择创建或续用会话；AppServer 判断既有对话是否存在，包含已保存
 transcript 的会话。续用缺失会话或观察游标超前时明确失败，Mind 不改写意图、不重置游标来
