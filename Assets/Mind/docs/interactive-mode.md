@@ -205,9 +205,21 @@ kind = "openai"
 model = "gpt-5.2"
 route = "responses"
 reasoning_effort = "high"
+model_context_window = 128000
+model_auto_compact_token_limit = 90000
 api_key = "..."
 base_url = ""
 ```
+
+`model_context_window` 和 `model_auto_compact_token_limit` 的单位是 token；上面的数字是配置示例，
+应按实际模型与接入服务的容量填写，也可在 `/preferences` 的 Provider 编辑页设置。配置随每次
+聊天、Review、队列任务和手动压缩请求发送；已提交 Turn 使用提交时解析的窗口和阈值。
+
+窗口留空时，服务端只能使用同一 Provider、模型和 Base URL 的已配置容量；没有匹配容量时
+请求会报错，需补填窗口。服务端已知容量会限制客户端声明的窗口。阈值留空时优先使用匹配模型
+的服务端阈值，否则取有效窗口的 90% 与扣除最大输出预算后的输入容量中较小值；显式阈值超过
+可用输入容量会被拒绝。自动压缩由服务端根据当前请求的 token 预算执行，固定轮数和条目数
+不再触发压缩。
 
 ## `/effort`
 - `/effort`：打开二级菜单设置推理强度，可选 `low / medium / high / xhigh`
