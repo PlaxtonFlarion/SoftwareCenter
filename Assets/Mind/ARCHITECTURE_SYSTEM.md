@@ -56,11 +56,11 @@ Fabric 不是每个 Turn 的必经层。只有 Sandbox、GPU、Embedding、Visio
 
 ## 3. Runtime 职责
 
-| 系统 | 定位 | 拥有 | 不拥有 |
-| --- | --- | --- | --- |
-| Mind | Agent Runtime | Intent、本地 Session/Run、本地执行证据、交互和协议客户端 | Remote Turn truth |
-| AppServer | Durable Lifecycle Runtime | 远端 Session、Turn、Queue、Event、执行门、Worker lease、终态 | UI、本地运行时、计算资源 |
-| Fabric | Cloud Compute Runtime | Sandbox、Compute Run、模型与视觉计算资源 | Agent Session、Turn、Queue、Terminal |
+| 系统      | 定位                      | 拥有                                                         | 不拥有                               |
+|-----------|---------------------------|--------------------------------------------------------------|--------------------------------------|
+| Mind      | Agent Runtime             | Intent、本地 Session/Run、本地执行证据、交互和协议客户端     | Remote Turn truth                    |
+| AppServer | Durable Lifecycle Runtime | 远端 Session、Turn、Queue、Event、执行门、Worker lease、终态 | UI、本地运行时、计算资源             |
+| Fabric    | Cloud Compute Runtime     | Sandbox、Compute Run、模型与视觉计算资源                     | Agent Session、Turn、Queue、Terminal |
 
 三个 Runtime 分别回答：
 
@@ -78,19 +78,19 @@ Fabric     -> 云端计算如何执行和恢复
 
 > One fact, one authoritative owner.
 
-| 事实 | Authority |
-| --- | --- |
-| User input、Intent | Mind |
-| Local Session、Run、Command | Mind |
-| Local Tool、Approval、Effect evidence | Mind |
-| TUI、Presentation | Mind |
-| `cid`、`sid`、`turn_id`、`event_seq` | AppServer |
+| 事实                                          | Authority |
+|-----------------------------------------------|-----------|
+| User input、Intent                            | Mind      |
+| Local Session、Run、Command                   | Mind      |
+| Local Tool、Approval、Effect evidence         | Mind      |
+| TUI、Presentation                             | Mind      |
+| `cid`、`sid`、`turn_id`、`event_seq`          | AppServer |
 | Remote Turn lifecycle、Session execution gate | AppServer |
-| Durable Queue、Terminal fact | AppServer |
-| Worker lease、fencing | AppServer |
-| Remote Tool、Approval、Effect lifecycle | AppServer |
-| Fabric Sandbox、Compute Run | Fabric |
-| GPU、Model、Vision compute resource | Fabric |
+| Durable Queue、Terminal fact                  | AppServer |
+| Worker lease、fencing                         | AppServer |
+| Remote Tool、Approval、Effect lifecycle       | AppServer |
+| Fabric Sandbox、Compute Run                   | Fabric    |
+| GPU、Model、Vision compute resource           | Fabric    |
 
 本地证据可以支持恢复和对账，但不能覆盖远端生命周期。远端工具事实也不能替代 Mind 对本地
 进程、权限交互和执行证据的所有权。Fabric 完成计算不代表它取得 Agent 生命周期所有权。
@@ -123,11 +123,11 @@ Mind 的系统级职责包括：
 
 ## 6. 身份模型
 
-| 范围 | 身份 |
-| --- | --- |
-| Mind local runtime | `session_id`、`run_id`、`command_id`、`sequence`、`idempotency_key` |
+| 范围                      | 身份                                                                                          |
+|---------------------------|-----------------------------------------------------------------------------------------------|
+| Mind local runtime        | `session_id`、`run_id`、`command_id`、`sequence`、`idempotency_key`                           |
 | AppServer durable runtime | `cid`、`sid`、`turn_id`、`attempt`、`item_id`、`request_id`、`client_message_id`、`event_seq` |
-| Fabric compute runtime | `sandbox_id`、`fabric_run_id`、compute/task identity |
+| Fabric compute runtime    | `sandbox_id`、`fabric_run_id`、compute/task identity                                          |
 
 ```text
 Mind run_id != AppServer turn_id != Fabric run_id
@@ -169,6 +169,8 @@ Review 是独立的类型化 Command，不是普通聊天文本。Mind 拥有用
 Review Item 和执行门。首次 `/review` 可以创建此前不存在的源 Session；已登记 Review 的恢复
 只能 status 后 attach/replay，未知提交结果不得生成新身份重投。`review.completed` 只终结
 Review Item，仍须由匹配的 `turn.completed` 释放远端和本地执行门。
+控制命令后的终态查询只确认远端结果；已知还有未交付事件时，Mind 必须从已确认水位 attach
+补齐事件，不能用 Turn 快照跳过 Review Item 终态。已结算 Turn 的回放不依赖活动审批快照。
 
 ## 8. 输入、中断与队列
 
@@ -237,6 +239,8 @@ Mind or AppServer application
 
 AppServer 是线上 Agent Event 的 Authority。持久事件日志是事实来源；Redis、消息通知和进程内
 EventHub 只承担加速与唤醒，不能覆盖持久事实。
+Mind 本地的协议校验失败和观察不确定性只产生本地错误投影与诊断，不经 `/events-ingest` 写成
+远端 `turn.reconciliation_required` 或 Turn 失败事实。
 
 `event_seq` 属于 `cid + sid` 范围，不是 Turn 内局部序号。Mind 观察单个 Turn 时可能看不到同一
 Session 中属于其他事实的序号，因此不能仅凭可见序号不连续推断 gap。真正的 gap 由完整 Session
@@ -269,11 +273,11 @@ Thinking 消失、正文上屏和连接 EOF 都不等于 Turn completed。只有
 
 恢复分为三类：
 
-| 恢复类型 | 所有者 | 典型链路 |
-| --- | --- | --- |
-| Observation recovery | Mind + AppServer | reconnect -> attach -> replay -> observe |
-| Execution recovery | AppServer | lease expiry -> claim -> checkpoint -> continue/finalize |
-| Compute recovery | Fabric | query -> retry/reconcile -> compute result |
+| 恢复类型             | 所有者           | 典型链路                                                 |
+|----------------------|------------------|----------------------------------------------------------|
+| Observation recovery | Mind + AppServer | reconnect -> attach -> replay -> observe                 |
+| Execution recovery   | AppServer        | lease expiry -> claim -> checkpoint -> continue/finalize |
+| Compute recovery     | Fabric           | query -> retry/reconcile -> compute result               |
 
 三者不得合并为全局 `RecoveryManager`。每个 Runtime 可以独立失败：
 
@@ -286,11 +290,11 @@ Thinking 消失、正文上屏和连接 EOF 都不等于 Turn completed。只有
 
 ## 13. Persistence 与 Observability
 
-| 系统 | 持久事实 |
-| --- | --- |
-| Mind | Local Command/Run、冻结请求、Transcript、审批与 Effect evidence、本地恢复状态 |
+| 系统      | 持久事实                                                                                                  |
+|-----------|-----------------------------------------------------------------------------------------------------------|
+| Mind      | Local Command/Run、冻结请求、Transcript、审批与 Effect evidence、本地恢复状态                             |
 | AppServer | Session、Turn、Queue、Command receipt、Event、Checkpoint、Terminal、Worker fencing、远端 Effect lifecycle |
-| Fabric | Sandbox、Compute Run、Compute result、临时计算状态 |
+| Fabric    | Sandbox、Compute Run、Compute result、临时计算状态                                                        |
 
 事实存放位置服从 Authority，而不是服从访问便利性。
 
