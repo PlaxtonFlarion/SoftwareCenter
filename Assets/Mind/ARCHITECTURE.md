@@ -148,11 +148,12 @@ frontend adapter
   -> frontend adapter
 ```
 
-Command 入队前必须冻结完整语义和 `exec_env`。重试与安全 redispatch 复用原快照；相同幂等键
+Command 入队前必须冻结完整语义、会话创建或续用意图和 `exec_env`。重试与安全 redispatch 复用原快照；相同幂等键
 和相同语义返回既有结果，不同语义产生冲突。
 
 Review 使用独立 `SubmitReviewCommand`，在本地 Run 入账前冻结 target、Git workspace、execution、
-environment、`request_id` 和远端 Turn 坐标。确认登记后只观察既有 Turn；冷恢复对已登记项执行
+environment、`session_mode`、`request_id` 和远端 Turn 坐标。执行与恢复上下文均使用冻结的
+`session_mode`。确认登记后只观察既有 Turn；冷恢复对已登记项执行
 attach/replay，对尚未开始网络操作的 queued Review 以原 Command 安全 redispatch，不把它恢复
 成普通 message 或重新打开旧菜单。
 
@@ -236,7 +237,7 @@ Reducer 是纯状态转换；Coordinator 独占 timer、lease、replay 抑制和
 Turn 表面遵循以下不变量：
 
 - `lifecycle` 表示 Turn 是否运行，`status_requested` 表示是否请求状态行，两者相互独立；
-- 正文、审批和 replay 可以临时隐藏状态行，但不能结束 Turn；
+- 正文和审批可以临时隐藏状态行；replay 抑制历史活动动画并显示当前恢复状态，不能结束 Turn；
 - 工具开始立即请求状态行，工具完成只释放工具 lease；
 - 同一因果交接以原子批次归约，只提交最终投影，不产生中间空帧；
 - 终端可见内容未变化时只推进 revision，不重建组件或重置 elapsed time；
@@ -259,7 +260,7 @@ Turn 表面遵循以下不变量：
   排队文本只在出队后解析 slash 或 Shell 语义；
 - 本地存在冻结请求时，冷恢复必须 attach 到目标水位并补写正文和终态后再解除执行门。
 
-attach/replay 只归约历史事实，不启动瞬时 timer。退出 replay 前必须按 `call_id` 对账客户端工具：
+attach/replay 只归约历史事实，不启动历史工具的瞬时 timer。退出 replay 前必须按 `call_id` 对账客户端工具：
 已收到结果的调用只收束投影，仅仍等待结果的调用可由当前进程接管；不确定状态保持 recovery
 gate，不得重放副作用。
 
@@ -267,6 +268,11 @@ gate，不得重放副作用。
 另一项。无活动画面的前端使用明确的被动实现，不创建伪状态。
 
 ## 工具、审批与 Effect
+
+单个 Turn 的工具分派器拥有顺序执行任务和完成 mailbox；事件消费所有者在等待工具期间继续
+处理输入确认、控制和远端终态，并归约工具异常。工具批次完整性、调用去重和 Effect 对账仍
+经过原有账本。权威终态或观察结束时回收执行任务，完成本地清理后才交还输入调度。
+空终端轮询的等待活动由 Harness 从实际执行开始配对释放，直接调用与嵌套调用共用此路径。
 
 ```text
 model intent
@@ -322,6 +328,11 @@ model intent
 本地进程输出以字节进入 `infrastructure.platform` 的统一解码生命周期；stdout 与 stderr
 分别持有增量状态，系统读取块不构成字符边界。只有完整字符或 EOF 收束后的文本才能进入
 workspace 和 frontend，展示层不得再次猜测进程输出编码。
+
+进程管理器独立持有后台命令及原始 `cid/sid/turn_id/call_id`。进程退出并收束输出后发布只读
+完成快照；模型轮询消耗的增量缓冲与展示缓冲分离。完成事实按进程会话容量有界保留，已退出
+会话的资源移除不立即删除完成快照。TUI 按所属会话、进程身份提交一次命令完成记录，普通
+历史、transcript 和复制内容使用同一份保留输出；工具等待取消不等于后台进程退出。
 
 `MIND_HOME` 是配置根，拥有 `config.toml`、用户规则和 Hook 配置。`MIND_STATE_HOME` 是运行
 状态根，拥有 history、sessions、reports、Helix 和本地 SQLite；未设置时才默认使用

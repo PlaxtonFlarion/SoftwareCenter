@@ -164,6 +164,10 @@ HTTP Ack != Terminal
 新 Turn 先 submit，确认身份后 observe。已存在 Turn 只能 attach/replay，不得为了保险再次调用
 创建接口。`turn.completed` 或服务端正式定义的同构 terminal snapshot 是唯一远端终态来源。
 
+Mind 在冻结提交时明确选择创建或续用会话；AppServer 判断既有对话是否存在，包含已保存
+transcript 的会话。续用缺失会话或观察游标超前时明确失败，Mind 不改写意图、不重置游标来
+绕过权威错误。健康传输心跳与业务水位分别观察，长时间工具等待本身不代表连接失效。
+
 Review 是独立的类型化 Command，不是普通聊天文本。Mind 拥有用户选择的 Review target，并在
 首次网络操作前冻结本地 Git 工作区和本地 Run 事实；AppServer 原子登记远端 Session、Turn、
 Review Item 和执行门。首次 `/review` 可以创建此前不存在的源 Session；已登记 Review 的恢复
