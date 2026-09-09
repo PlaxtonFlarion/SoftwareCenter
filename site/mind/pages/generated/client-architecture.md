@@ -230,18 +230,23 @@ TUI 读取输入前创建一次不可变终端能力快照。终端身份、颜�
 - `PresentationSink`：稳定展示单元；
 - `OutputActivityPort`：等待、工具、审批、重试和恢复等活动事实。
 
-四者共享 scope，但不读取彼此状态或替代彼此生命周期。活动事实只通过
-`TurnActivityProjector -> reduce_turn_surface() -> TuiTurnSurfaceCoordinator` 形成一个前景投影。
+四者共享 scope，但不读取彼此状态或替代彼此生命周期。协议和工具活动由
+`TurnActivityProjector` 发布；人工审批批次由实际展示端发布 `ApprovalPresentationChanged`，
+其事实出口随 TUI OutputSession 打开时绑定、关闭时解除。所有活动通过
+`reduce_turn_surface() -> TuiTurnSurfaceCoordinator` 形成一个前景投影。
 Reducer 是纯状态转换；Coordinator 独占 timer、lease、replay 抑制和画面提交。
 
 Turn 表面遵循以下不变量：
 
 - `lifecycle` 表示 Turn 是否运行，`status_requested` 表示是否请求状态行，两者相互独立；
 - 正文和审批可以临时隐藏状态行；replay 抑制历史活动动画并显示当前恢复状态，不能结束 Turn；
+- 自动评审、策略决定和已有授权不取得人工审批表面；真实人工审批批次暂停等待及重试、恢复提示，连续换卡不恢复状态行；
 - 工具开始立即请求状态行，工具完成只释放工具 lease；
-- 同一因果交接以原子批次归约，只提交最终投影，不产生中间空帧；
-- 终端可见内容未变化时只推进 revision，不重建组件或重置 elapsed time；
+- 同一因果交接（包括同来源重试替换及重连到 replay 的转换）以原子批次归约，只提交最终投影，不产生中间空帧；
+- 终端可见内容未变化时只推进 revision，不重建组件、重置 elapsed time 或推迟待交接投影的截止时间；
+- 重试与恢复提示遵循本地最短可见时间；结束后恢复 Thinking 沿用生命周期延时，正文、人工审批和终态可以立即接管；
 - 正文实际进入画布后才产生 `AssistantVisible`，状态行撤下与正文提交属于同一视觉事务；
+- 旧正文、工具记录和完成分隔线先提交，再绑定新正文身份；恢复状态槽的首帧直接使用新标题和明细；
 - commentary 正文完成后只在正文流已经 idle 且 Turn 仍运行时恢复状态行；final answer 和
   phase 未声明的正文不自行恢复，后续状态只能由明确活动事实请求；
 - transport retry 可以暂时覆盖已显示正文，但不释放、替换或重复提交正文；
