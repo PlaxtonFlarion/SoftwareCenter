@@ -25,6 +25,12 @@ Server contract + protocol/schema + protocol/client
 `README.md` 和 `docs/` 只负责入口、解释与教学，不得反向定义 Architecture Truth。
 维护时需要保证系统架构、客户端架构、正式协议、实现与用户文档一致。
 
+审批与恢复的验证要覆盖实际交付边界：
+
+- 审批评审事件样本包含服务端持久事件信封，按正式字段集合校验，未声明字段仍须拒绝。
+- `command` 审批覆盖 `shell_command` 与 `exec_command` 两个正式执行入口；同一调用按命令动作匹配，命令、工作目录、shell、TTY 或权限变化仍须拒绝。
+- replay、gap 和传输重试期间正文上屏或关闭时补刷正文，保持恢复活动投影；追平后按当前正文状态交还活动区。
+
 ## 执行边界
 - `exec` 和交互会话共用统一模型轮次、工具生命周期和请求协议
 - `agent` 是订阅入口，负责 `/agents/open`、`/agents/ws`、恢复链路和远端任务映射
