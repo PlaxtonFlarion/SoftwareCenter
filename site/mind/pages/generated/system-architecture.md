@@ -194,13 +194,9 @@ Mind interrupt command
 第一次 `Ctrl+C` 必须保留本地执行门并等待权威终态。再次 `Ctrl+C` 可以退出 Mind 进程，但不能
 把本地退出解释为远端 Turn 已结束，也不能启动下一 Turn 或重投未知输入。
 
-Mind 的 pending input 与 AppServer Durable Queue 是两种事实：
-
-- pending input 属于 TUI 当前交互状态，中断后可以恢复编辑器；
-- Durable Queue 属于 AppServer，只有显式 `/queue` 命令可以修改；
-- 普通 pending input 不得自动转换为 Durable Queue；
-- Queue start 绑定服务端已经创建的 Turn，Mind 只能 attach/replay；
-- Queue 顺序、版本、成员和 start 结果以服务端 snapshot/receipt 为准。
+Mind 的 pending input 属于 TUI 当前交互状态，中断后可以恢复编辑器，不写入 AppServer
+Durable Queue。服务端 Queue 的顺序、版本、成员和 start 结果以服务端 snapshot/receipt 为准，
+协议 SDK 不拥有这些状态。
 
 活动 Turn 中 Enter、Tab、Esc 和 Ctrl+C 的具体交互语义由 `ARCHITECTURE.md` 约束，但不得改变
 上述 Authority 和终态规则。

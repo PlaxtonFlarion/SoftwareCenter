@@ -168,18 +168,11 @@ Review 复用工作区的 `exec_command` 和 `write_stdin`，按需读取 diff�
 Run 终态不可离开。连接关闭、展示完成、HTTP 回执、任务取消、SSE EOF 或异常文本都不能替代
 逻辑终态事实。
 
-### Durable Queue
+### 待发送输入与运行恢复
 
-Durable Queue 与 TUI 当前 Turn 的普通 pending input 是两个入口：
+pending input 由 TUI Session actor 持有，中断后恢复编辑器。
 
-- pending input 由 TUI Session actor 持有，中断后恢复编辑器；只有显式 `/queue` 才持久排队；
-- 服务端 snapshot/receipt 是队列成员、顺序、版本及 Queue 到 Turn 转换的唯一权威；
-- 客户端在网络操作前保存冻结命令、输入、工具、权限、环境和幂等身份，但不维护第二套队列；
-- add/start 结果未知时复用原 `request_id`；明确拒绝后才允许生成新的请求身份；
-- start 成功后只通过 attach/replay 观察已有 Turn，不得再次调用 `/mind-chat`；
-- 本地冻结快照缺失时可以展示队列项目，但不得按当前配置猜测并执行。
-
-直接提交的 Durable Run 也必须在首次网络操作前持久化完整模型请求。恢复时 status 只确定
+提交的 Durable Run 必须在首次网络操作前持久化完整模型请求。恢复时 status 只确定
 待观察 Turn 和 replay 水位；本地持有冻结请求时，必须完成 attach 并持久化缺失正文及唯一终态，
 才能解除执行门。历史残留若既无冻结请求也无远端 Turn 身份，只能记录失败的恢复决议并解除
 本地门禁，不得猜测远端结果或自动重投原输入。

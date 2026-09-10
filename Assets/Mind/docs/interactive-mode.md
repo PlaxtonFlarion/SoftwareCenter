@@ -9,7 +9,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /queue /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -144,7 +144,6 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - `/agent`：查看和管理当前会话的子 Agent 线程
 - `/listen [start|stop|status]`：管理远端请求监听器；省略动作时打开操作菜单
 - `/mailbox`：查看远端请求摘要，运行、删除、展开消息或切换当前会话的 Auto-run
-- `/queue [list|add <message>|retry <id>|delete <id>|move <id> <position>|start [id]]`：管理当前会话的持久消息队列
 - `/diff`：查看当前 Git 工作区差异（包含未跟踪且未被忽略的文件）
 - `/copy`：从最近一次助手回复中选择整体、围栏代码或引用并复制
 - `/export [path]`：把完整本地会话记录导出为 Markdown；省略路径时选择复制到剪贴板或编辑文件名，已存在文件不会被覆盖
@@ -258,15 +257,6 @@ base_url = ""
 - `/listen start` 最多等待 30 秒进入 ready；超时会停止本次监听并输出失败状态。
 - `/mailbox`：打开远端请求收件箱。每条消息可选择立即运行、删除或查看详情；摘要菜单还可以切换当前会话的 Auto-run。
 - 断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
-
-## `/queue`
-- `/queue` 或 `/queue list`：显示服务端权威队列顺序，以及本地仍待确认或待恢复观察的项目。
-- `/queue add <message>`：把消息和当前待发送附件加入持久队列；使用该命令前必须先建立当前对话。
-- `/queue retry <id>`：使用原请求标识重试一项结果未知的 Queue add，不创建新的队列项目。
-- `/queue delete <id>`：删除一项远端队列项目；`id` 可以使用列表中可唯一匹配的前缀。
-- `/queue move <id> <position>`：把项目移动到以 `1` 开始的目标位置。
-- `/queue start [id]`：显式启动指定项目；省略 `id` 时优先接回已启动或启动结果未知的项目，否则启动队首。
-- `start` 不能在另一个 Turn 活动期间执行；冷启动发现已启动但尚未完成观察的项目时，会继续恢复该 Turn。
 
 ## `/copy`
 - `/copy`：打开复制选择器；第一项为整体回复，其后按源码顺序列出围栏代码和顶层引用
