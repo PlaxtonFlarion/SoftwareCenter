@@ -42,6 +42,12 @@ shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
 
 当前执行环境的工作区根目录由 `exec_env.workspace.root` 提供。
 
+`shell_command` 和 `exec_command` 的 `sandbox_permissions` 省略或为 `use_default` 时，
+沿用当前会话权限。Full Access 对应 `danger-full-access + never`，默认命令直接使用宿主执行环境。
+`justification` 是可选的审批说明，可以与默认权限一起提供；它不申请提权，也不传给进程执行器。
+是否需要审批仍由命令规则和当前审批策略决定；显式禁止规则和附加权限校验继续生效。
+JavaScript 的 `host.tool(...)` 嵌套命令遵循相同规则。
+
 推荐搜索策略：
 
 - 先用文件名或关键词缩小范围，例如 `rg --files`、`rg`
