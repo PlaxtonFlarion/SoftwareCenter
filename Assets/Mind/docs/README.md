@@ -15,6 +15,8 @@
 ### 编排与协议
 适合处理协议校验、模板层和批量执行结构。
 
+- [上下文用量客户端契约](context-usage-protocol.md)
+  上下文用量事件、压缩与恢复，以及终端余量显示的权威数据口径。
 - [Hooks 配置](hooks.md)
   适合看生命周期 Hook 的发现、信任、启用和执行边界。
 - [MCP Server](mcp-server.md)

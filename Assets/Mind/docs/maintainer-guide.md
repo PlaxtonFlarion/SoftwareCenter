@@ -144,7 +144,7 @@ SoftwareCenter/site/mind/
   └── pages/
 ```
 
-命令或文档变更后的本地校验顺序：
+命令或文档变更后的本地校验顺序：默认检查覆盖命令、全部 `docs/` 正文的清单登记及本地文档链接；生成后检查确认实际发布页面可达。
 
 ```bash
 python website/mind/scripts/check_docs.py
@@ -161,7 +161,8 @@ python website/mind/scripts/check_docs.py --generated
   - 同步后相对路径仍可达
 - 如果改了 `website/mind/`，要确认同步后仍映射到 `SoftwareCenter/site/mind/`
 - 如果改了正文文档结构，记得同步检查 `website/mind/docs_manifest.json`
-- 同步 workflow 会先校验命令文档，再运行 `website/mind/scripts/sync_docs.py`，最后校验生成页并复制官网壳到公共仓库
+- 文档 PR 会运行发布契约回归测试和完整的生成前后校验；PR 校验不使用公共仓库凭据，也不执行同步
+- `main` 的同步 workflow 依赖文档校验成功，再生成并校验页面、复制官网壳到公共仓库；同步入口在清理旧产物前校验发布清单和源文档链接
 
 ## 变更检查清单
 每次涉及模式、文档或同步链路的改动，至少检查下面这些点：

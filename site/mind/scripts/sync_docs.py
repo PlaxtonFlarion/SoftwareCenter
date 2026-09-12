@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 # Notes: ==== Mind™ ====
 
-import re
 import json
-from pathlib import Path
+import re
 from dataclasses import dataclass
+from pathlib import Path
+from urllib.parse import (
+    unquote,
+    urlsplit,
+)
 
 MD_LINK_RE = re.compile(r"(]\()(?P<path>[^)#?\s]+\.md)(?P<suffix>(?:#[^)]+)?)\)")
 CATEGORY_ORDER = [
@@ -75,6 +79,44 @@ def validate_manifest(entries: list[DocEntry]) -> None:
         target_seen.add(entry.target)
 
 
+def local_markdown_links(text: str) -> tuple[str, ...]:
+    """提取正文中的本地 Markdown 链接，排除外部站点链接。"""
+    paths: list[str] = []
+    for match in MD_LINK_RE.finditer(text):
+        path = match.group("path")
+        url = urlsplit(path)
+        if not url.scheme and not url.netloc:
+            paths.append(unquote(url.path))
+    return tuple(paths)
+
+
+def validate_publication(source_root: Path, entries: list[DocEntry]) -> tuple[str, ...]:
+    """在生成前校验正文清单完整性及本地文档链接的发布目标。"""
+    errors: list[str] = []
+    sources = {(source_root / entry.source).resolve() for entry in entries}
+    for document in sorted((source_root / "docs").rglob("*.md")):
+        if document.is_file() and document.resolve() not in sources:
+            errors.append(
+                f"document missing from manifest: {document.relative_to(source_root).as_posix()}"
+            )
+
+    for entry in entries:
+        source = source_root / entry.source
+        if not source.is_file():
+            errors.append(f"manifest source missing: {entry.source}")
+            continue
+        # 文档索引由清单重建，旧索引不能阻止已下线文档从生成结果中移除。
+        if entry.source == "docs/README.md":
+            continue
+        for path in local_markdown_links(source.read_text(encoding="utf-8")):
+            destination = (source.parent / path).resolve()
+            if not destination.is_file():
+                errors.append(f"broken source link: {entry.source} -> {path}")
+            elif destination not in sources:
+                errors.append(f"linked document missing from manifest: {entry.source} -> {path}")
+    return tuple(errors)
+
+
 def build_target_map(entries: list[DocEntry]) -> dict[str, str]:
     return {entry.source: entry.target for entry in entries}
 
@@ -128,6 +170,12 @@ def strip_heading_suffix(text: str) -> str:
 
 
 def sync_reference_docs(source_root: Path, site_root: Path, entries: list[DocEntry]) -> None:
+    """校验发布文档后重建索引及官网镜像，校验失败时保留原有产物。"""
+    errors = validate_publication(source_root, entries)
+    if errors:
+        raise ValueError("\n".join(errors))
+
+    render_docs_readme(source_root, entries)
     target_root = site_root / "pages" / "generated"
     target_root.mkdir(parents=True, exist_ok=True)
 
@@ -271,9 +319,9 @@ def render_docs_readme(source_root: Path, entries: list[DocEntry]) -> None:
 
 
 def main() -> None:
+    """从发布清单校验并生成仓库索引和官网正文。"""
     source_root, site_root = resolve_roots()
     entries = load_manifest(site_root)
-    render_docs_readme(source_root, entries)
     sync_reference_docs(source_root, site_root, entries)
     print(f"synced docs from {source_root} -> {site_root / 'pages' / 'generated'}")
 

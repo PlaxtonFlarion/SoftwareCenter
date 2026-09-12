@@ -17,9 +17,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from sync_docs import (  # noqa: E402
-    MD_LINK_RE,
     load_manifest,
+    local_markdown_links,
     resolve_roots,
+    validate_publication,
 )
 
 
@@ -142,16 +143,9 @@ def _missing_tokens(document: Path, tokens: tuple[str, ...]) -> tuple[str, ...]:
 
 
 def _validate_manifest(source_root: Path, site_root: Path) -> list[str]:
-    """校验 manifest 的源文件和目标文件定义。"""
-    errors: list[str] = []
+    """校验发布清单完整性、源文件及正文链接目标。"""
     entries = load_manifest(site_root)
-
-    for entry in entries:
-        source = source_root / entry.source
-        if not source.exists():
-            errors.append(f"manifest source missing: {entry.source}")
-
-    return errors
+    return list(validate_publication(source_root, entries))
 
 
 def _validate_generated_pages(site_root: Path) -> list[str]:
@@ -170,8 +164,7 @@ def _validate_generated_pages(site_root: Path) -> list[str]:
 
     for page in target_root.glob("*.md"):
         text = page.read_text(encoding="utf-8")
-        for match in MD_LINK_RE.finditer(text):
-            path = match.group("path")
+        for path in local_markdown_links(text):
             target = page.parent / path
             if not target.exists():
                 errors.append(
@@ -218,7 +211,7 @@ def main() -> int:
         return 1
 
     suffix = " and generated pages" if arguments.generated else ""
-    print(f"documentation contract ok for commands{suffix}")
+    print(f"documentation contract ok for commands, manifest and source links{suffix}")
     return 0
 
 

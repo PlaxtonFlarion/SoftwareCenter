@@ -55,6 +55,13 @@
       "summary": "适合看完整 slash 命令、会话管理和输入约束。"
     },
     {
+      "source": "docs/context-usage-protocol.md",
+      "target": "context-usage-protocol.md",
+      "label": "上下文用量客户端契约",
+      "category": "编排与协议",
+      "summary": "上下文用量事件、压缩与恢复，以及终端余量显示的权威数据口径。"
+    },
+    {
       "source": "docs/hooks.md",
       "target": "hooks.md",
       "label": "Hooks 配置",

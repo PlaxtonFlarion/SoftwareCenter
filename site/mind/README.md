@@ -8,7 +8,7 @@
 - `ARCHITECTURE_SCORECARD.md` 是阶段性评审材料，不定义架构事实
 - `README.md` 与 `docs/*.md` 负责入口、解释与教学，不反向定义架构事实
 - 命令事实源固定为 `docs/cli-usage.md` 和 `docs/interactive-mode.md`；README 与官网入口页只保留摘要
-- `website/mind/docs_manifest.json` 负责定义哪些正文需要进入官网生成层，以及官网专题目录摘要
+- `website/mind/docs_manifest.json` 负责登记全部 `docs/` 正文的发布目标，以及官网专题目录摘要
 - `docs/README.md` 也由同一份文档清单生成，不再单独手写维护目录
 - `website/mind/pages/` 负责官网入口、导航与站点配置
 - 同步到 `SoftwareCenter` 后，预期映射到 `site/mind/`
@@ -35,7 +35,8 @@ mkdocs serve
 维护提示：
 - 如果改了两份架构权威、架构评分卡、`README.md` 或 `docs/*.md`，先把源文档改对，再运行 `python scripts/sync_docs.py`
 - 如果改了 CLI 或 TUI 命令注册，先更新对应权威命令文档，再运行 `python scripts/check_docs.py`
-- 如果新增或下线正文文档，先改 `website/mind/docs_manifest.json`
+- 如果新增或下线正文文档，同步更新 `website/mind/docs_manifest.json`；默认检查和同步入口都会拒绝遗漏的正文、缺失的源文件及未登记的本地文档链接
+- 文档 PR 会运行回归测试和完整的生成前后校验；合入 `main` 后，只有校验通过才会同步到公共仓库
 - 如果改了工具说明，尤其是 `backend/mcp_tools/automator/` 下的 doc block，记得同步检查官网生成页的描述是否仍然准确
 - 工具说明应按“做什么 / 不做什么 / 前置条件或限制”维护，避免官网和源码出现两套不同口径
 
