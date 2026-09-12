@@ -328,14 +328,20 @@ base_url = ""
 
 ## `/mcp`
 - `/mcp`：管理外部 MCP 服务
-- `start    enabled servers`：启动配置文件里 `enabled=true` 的外接 MCP 服务；如果当前已启动，则保持当前连接。
-- `force    all configured servers once`：本轮临时启动所有已配置的外接 MCP 服务，包括 `enabled=false` 的。不会修改配置文件，下次启动仍按配置来。
+- `start    enabled servers`：补启动配置文件里 `enabled=true` 且尚未连接的服务，保留已有连接，包括此前临时启动的禁用服务。
+- `force    all configured servers`：补启动所有尚未连接的配置服务，包括 `enabled=false` 的；不会重启已有连接或修改配置。临时启用持续到该连接停止、重建、切换工作区或退出。
 - `stop     all external MCP connections`：断开当前所有外接 MCP 连接。HTTP/SSE 只是断开连接；stdio 类型会随连接释放关闭对应子进程。
-- `restart  enabled servers`：先断开当前外接 MCP，再重新读取配置并启动 `enabled=true` 的服务。
+- `restart  enabled servers`：先读取并校验完整配置，再断开当前全部外接连接，仅重建 `enabled=true` 的服务。配置错误不拆除已有连接。
 - `status   show current external MCP status`：只查看状态，不启动、不停止。显示 configured、started、tools，以及已连接工具分组。
 
 连接成功不要求服务一定提供工具：未声明 tools 能力、返回空目录或全部工具被过滤，都可以保持有效连接。
 工具发现失败或已观察到的传输断线会撤下对应服务的工具，不再把失败当作零工具成功；外部工具调用不会因此自动重放。
+
+根 Turn、子代理、Subscription、Review 和 MCP Hook 在整个工具使用范围内持有连接引用。
+被占用时，交互 stop/restart 显示 `External MCP busy`；全量动作在拆除任何连接前检查全部目标。
+补启动可以与已有使用范围并存，新服务的工具只进入后续目录。退出和工作区切换会等待既有使用范围释放资源。
+新增 required 服务启动失败时，仅回收本批新建连接；全量 restart 已明确拆除旧连接，其重建批次失败不会恢复旧连接。
+启动进度继续使用既有活动展示，只有完成批次判定的连接才向后续消费者发布工具。
 
 ## 退出
 任意时刻输入以下任一指令即可退出：

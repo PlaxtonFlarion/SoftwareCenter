@@ -319,6 +319,8 @@ model intent
 - MCP 调用必须校验完整调用身份，并消费正式 Effect identity；缺失时不得本地合成权威事实。
 - 外接 MCP 控制以运行实例、工作区和原始配置键定位；连接及工具路由由 infrastructure 的逐服务 owner 维护，资源栈必须在进入它的任务中退出。
 - 配置启用、连接状态和工具数量是不同事实。已观察到断线时撤下该连接的工具；清理未确认时保留资源所有权，不建立重叠连接。
+- Harness 通过 MCP owner 的使用范围注入工具来源，根 Turn、子代理、Subscription、Review 与 Hook 共同持有冻结目录。runtime 原子记录逐服务引用并检查交互关闭；有引用时 stop/restart 返回 busy，补启动只进入后续目录。
+- 全量 start/force 保留既有连接；本批 required 判定完成后才发布新增目录，失败只回收本批。最终关闭及工作区移交禁止新引用和迟到发布，等待消费者释放；失败资源继续由 Harness owner 持有并重试。
 - Session grant 只在相同 Session、Environment、server、connector 和 tool 范围内复用。
 - 交互审批只拥有待决请求和选择；决定提交后即锁定，终态由结构化事实投影。
 - 外部效果成功但本地提交未知时进入 reconciliation，不伪装成失败或自动重放。
