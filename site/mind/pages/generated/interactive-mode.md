@@ -334,6 +334,9 @@ base_url = ""
 - `restart  enabled servers`：先断开当前外接 MCP，再重新读取配置并启动 `enabled=true` 的服务。
 - `status   show current external MCP status`：只查看状态，不启动、不停止。显示 configured、started、tools，以及已连接工具分组。
 
+连接成功不要求服务一定提供工具：未声明 tools 能力、返回空目录或全部工具被过滤，都可以保持有效连接。
+工具发现失败或已观察到的传输断线会撤下对应服务的工具，不再把失败当作零工具成功；外部工具调用不会因此自动重放。
+
 ## 退出
 任意时刻输入以下任一指令即可退出：
 ```text
