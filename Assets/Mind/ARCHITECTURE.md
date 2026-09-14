@@ -216,6 +216,11 @@ cancelled；服务端内部存储标志不得成为第二个公开终态。
 Application 只产出与 UI 工具包无关的展示值。前端负责交互、布局和渲染，不从原始 provider
 载荷、异常文本或日志重建业务语义。
 
+手动压缩的待核对身份属于 `RootConversationSession`，由持久 started 证据重建。恢复通过
+`CompactionRecovery` 读取既有 Session 回放，只写回匹配 Item 的远端终态；读取随会话结束取消，
+不推进聊天确认水位、重提压缩或重放 Hook。本地停止等待只记录观察结束，不能改写远端结果。
+用量与压缩的报告授权、分页校验和传输关闭共用协议层 Session 上下文读取路径。
+
 上下文用量是非 Item 的独立事实。`RootConversationSession` 持有应用层用量投影，按
 `cid + sid` 和线上 `event_seq` 替换完整快照；它跨越单个 OutputSession，既不取得活动表面，
 也不改变 Turn 终态。缓存只保存已确认的远端记录，随本地历史游标淘汰，不是第二个计数
