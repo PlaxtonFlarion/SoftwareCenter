@@ -309,6 +309,8 @@ base_url = ""
 - 手动压缩按 `context.compaction.started/completed/failed` 确认进度和结果；接口不返回摘要正文。连接结束但未收到终态时不会显示成功，也不会自动重提压缩请求。
 - PostCompact 或 SessionStart Hook 阻止后续执行时，压缩完成记录仍然保留，另行显示后续步骤被阻止的原因。
 - 服务端确认开始后显示两行 `Context compacting` / `Making room to continue.`，进行态计时从客户端观察到该 Item 开始。自动模式提示 `esc to interrupt`，手动模式提示 `esc to stop waiting`；手动关闭观察连接不会取消服务端压缩。
+- 完成记录原位接替活动标题，并撤下说明行；PostCompact Hook 尚未结束时也会先显示已经确认的完成事实，输入屏障仍由前台操作持有。只有行首使用粗点 `•`，耗时与附加状态使用小点 `·`。
+- 后台终端状态按真实数量显示，窄屏按整段省略 `/stop`、`/ps` 和终端信息；窗口恢复后重新显示。压缩失败显示服务端错误分类对应的原因，自动模式等待所属 Turn 的权威中断终态后显示 interrupted。
 - 适合长会话、工具调用较多或上下文体积变大后继续留在同一段会话里使用
 
 ## `/tools`
