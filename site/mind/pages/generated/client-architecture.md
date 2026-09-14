@@ -338,6 +338,13 @@ model intent
 - 外部效果成功但本地提交未知时进入 reconciliation，不伪装成失败或自动重放。
 - 不可重放效果不得由接管 actor 自动重试；可重试效果必须有明确幂等保证。
 - `/tool-result` 只发送正式协议字段，不携带工作区、Sidecar 或 UI 私有状态。
+- CLI JSON 输出使用 ASCII 转义保存完整 Unicode 值，避免 Windows 非 UTF-8 管道因 emoji
+  编码失败而中断工具交付；JSON 解码后还原原始文本，此规则独立于线上 NUL 投影。
+- 工具结果投递前在既有本地执行账本保存原始结果与冻结请求，普通读取工具也使用此路径。
+  取消必须等待已完成结果的落盘收敛。协议 SDK 统一投影可见 NUL，并保持参数和身份不变；
+  工具交付层拥有补交重试，明确的服务端 `retryable=false` 优先于 HTTP 状态。
+- 回放先查询远端：已收到或调用已终结则收束；仍等待且本地有确定结果则补交原请求，
+  不再次执行工具；未知效果按既有 reconciliation 处理。本地结果随执行账本保留，不能覆盖远端终态。
 
 ## 持久化与恢复
 
@@ -350,6 +357,7 @@ model intent
 | Transcript           | `agent.domain.transcripts` + `infrastructure.persistence` | 值契约与 IO 分离，损坏可观测              |
 | Approval             | `agent.stores.approvals`                                  | 首个决定权威，重复请求幂等                |
 | Effect               | `agent.stores.effects`                                    | prepared、committed、unknown 等事实可对账 |
+| 工具结果证据         | `agent.stores.effects` 的同一执行账本                     | 按 cid、sid、call_id 保存并补交原请求     |
 
 恢复只从持久事实和安全点开始。Redis、当前连接、前端缓存和日志都不是 authority。已提交事件
 不得丢失，未确认效果不得重复执行，无法确定的结果必须显式对账。
