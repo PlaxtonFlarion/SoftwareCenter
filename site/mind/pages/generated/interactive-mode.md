@@ -308,6 +308,7 @@ base_url = ""
 - 该指令不会作为聊天输入发送；它调用对话压缩接口，完成时与自动压缩及历史记录统一展示 `• Context compacted  · 1m26s`。耗时使用服务端的 `latency_ms`，向下取整到秒；历史缺少耗时时省略耗时，条目统计保留在结构化记录中。
 - 手动压缩按 `context.compaction.started/completed/failed` 确认进度和结果；接口不返回摘要正文。连接结束但未收到终态时不会显示成功，也不会自动重提压缩请求。
 - PostCompact 或 SessionStart Hook 阻止后续执行时，压缩完成记录仍然保留，另行显示后续步骤被阻止的原因。
+- 服务端确认开始后显示两行 `Context compacting` / `Making room to continue.`，进行态计时从客户端观察到该 Item 开始。自动模式提示 `esc to interrupt`，手动模式提示 `esc to stop waiting`；手动关闭观察连接不会取消服务端压缩。
 - 适合长会话、工具调用较多或上下文体积变大后继续留在同一段会话里使用
 
 ## `/tools`

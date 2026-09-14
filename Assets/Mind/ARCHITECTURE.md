@@ -256,6 +256,12 @@ TUI 读取输入前创建一次不可变终端能力快照。终端身份、颜�
 `reduce_turn_surface() -> TuiTurnSurfaceCoordinator` 形成一个前景投影。
 Reducer 是纯状态转换；Coordinator 独占 timer、lease、replay 抑制和画面提交。
 
+自动压缩以 `ContextCompactionChanged` 进入同一个活动通道，按 scope、Item、水位和代次
+归约。Coordinator 持有每个活动 Item 的本地观察时钟；审批和同进程恢复只抑制画面，
+不扣除远端继续执行的时间，冷恢复在追平后开始观察计时。压缩计时不重置整轮等待时钟。
+手动压缩属于前台操作屏障，使用具名 `CompactionActivitySnapshot` 和操作活动槽，
+不创建 OutputSession 或伪 Turn；fork/backtrack 使用通用操作槽。
+
 Turn 表面遵循以下不变量：
 
 - `lifecycle` 表示 Turn 是否运行，`status_requested` 表示是否请求状态行，两者相互独立；
