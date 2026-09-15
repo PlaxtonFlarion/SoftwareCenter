@@ -303,6 +303,15 @@ mind mcp add demo -- server --model child-model
 
 远端 URL 与 stdio 命令不能同时使用。`--env` 和 `--cwd` 只用于 stdio 服务；HTTP header 和 bearer token 选项只用于远端服务。
 
+stdio 服务必须使用非交互启动命令，例如 `npx -y @playwright/mcp`；`-y` 跳过 npm 安装确认，
+首次安装或升级下载仍可能超过默认的 30 秒启动时限。启动超时会提示在 `config.toml` 中调整
+对应服务的 `startup_timeout_sec`，并提供可复制的配置示例。预检超时则提示检查命令、工作目录
+或网络地址。
+
+子进程 stderr 按服务记录为 `external_mcp.stdio.stderr` 事件，写入本次运行的
+`mind.debug.log`，不直接输出到交互终端。诊断会隐藏 URL 凭据和常见 token/password 字段；
+超过 4096 字节的单行只记录省略标记。连接关闭时读取任务随 owner 回收，并记录剩余的有界尾部。
+
 ### 外部工具审批与传输边界
 
 外部 MCP 的 `approval-mode` 只控制模型发起的工具效果：`prompt` 每次询问，`writes` 对不是明确
