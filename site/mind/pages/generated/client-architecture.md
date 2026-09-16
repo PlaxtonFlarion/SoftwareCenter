@@ -374,6 +374,26 @@ model intent
 - `services/`：服务 owner、健康、Helix、Turn 环境和配置宿主；
 - `skills/`、`hooks/`、`sidecars/`、`update/`：对应外部资源的适配与生命周期。
 
+外接 MCP OAuth 的身份、凭据快照、绝对过期时间和无机密状态位于
+`agent.domain.mcp_oauth`，访问契约位于 `agent.ports.mcp_credentials`。
+`infrastructure.mcp.oauth_credentials` 拥有凭据版本、恢复和逐目标跨进程事务；
+`infrastructure.platform.credential_vault` 只适配系统凭据库，不持有 MCP 连接或发起授权。
+组合边界注入配置根与状态根，凭据命名空间绑定两者、原始配置键和完整服务 URL；恢复的
+快照还绑定 issuer、resource 和 client_id，认证适配器消费令牌前必须验证此绑定。
+
+机密只存于系统凭据库的独立不可变记录。状态根下 `mcp/oauth/` 的 SQLite 索引仅保存
+generation、片段位置、摘要和清理事实，另一个逐目标 SQLite 事务负责跨进程互斥。
+保存先持久登记待写记录，再写机密，最后原子切换活动版本；切换前失败保留旧记录，切换后
+清理失败保留恢复线索并报告失败。恢复时清理未提交及已退休记录，不能把缺片或损坏视为
+未登录。退出先提交递增版本的墓碑，再清除机密；清理完成才报告成功，迟到写入按旧版本拒绝。
+调用方不能在运行中删除锁文件或把索引当作可随意清除的缓存。
+
+凭据事务只允许进入上下文的任务使用，退出关闭锁；同步凭据 IO 在线程中完成后才释放锁，
+不遗弃仍会写入的后台线程。刷新用例负责网络期限及取消后的令牌轮换收束。
+前端只消费 `McpOAuthCredentialView`，持有快照不表示远端认证刚刚通过；令牌、client secret、
+授权码和原始后端异常不得进入日志、模型上下文或配置展示。首版仅保存公共客户端信息，
+不接受 client secret；系统后端不可用时明确失败，不选择插件或明文文件回退。
+
 本地进程输出以字节进入 `infrastructure.platform` 的统一解码生命周期；stdout 与 stderr
 分别持有增量状态，系统读取块不构成字符边界。只有完整字符或 EOF 收束后的文本才能进入
 workspace 和 frontend，展示层不得再次猜测进程输出编码。
