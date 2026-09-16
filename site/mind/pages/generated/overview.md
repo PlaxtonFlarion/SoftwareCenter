@@ -154,6 +154,12 @@ mind help mcp add
 mind mcp list
 ```
 
+支持 OAuth 的远程服务可通过 `mind mcp login <name>` 打开浏览器并保存本地凭据，
+`mind mcp logout <name>` 清除凭据。配置、范围和本地状态说明见
+[CLI OAuth 登录](cli-usage.md#oauth-浏览器登录)。运行时可恢复凭据并自动刷新，
+工具调用继续使用既有审批策略。支持范围和恢复方式见该说明；运行入口与真实服务的验证步骤见
+[OAuth 验收指南](mcp-oauth-acceptance.md)。
+
 需要把 Mind 自身提供给 Codex 等 MCP host 时使用：
 
 ```shell

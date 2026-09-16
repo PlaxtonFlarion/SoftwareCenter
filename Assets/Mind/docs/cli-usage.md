@@ -31,7 +31,7 @@ mind [OPTIONS] <COMMAND> [ARGS]
 | `mind upgrade helix` | 下载或更新 Helix 运行组件 |
 | `mind doctor` | 只读诊断本地运行环境 |
 | `mind mcp` | 外部 MCP 服务命令组 |
-| `mind mcp list/get/add/remove/enable/disable/help` | 管理外部 MCP 服务注册 |
+| `mind mcp list/get/add/remove/enable/disable/login/logout/help` | 管理外部 MCP 服务注册与本地 OAuth 凭据 |
 | `mind mcp-server` | 通过 stdio 暴露 MCP 服务 |
 | `mind completion` | 生成 shell 补全脚本 |
 | `mind help [COMMAND...]` | 查看根命令或多级子命令帮助 |
@@ -285,6 +285,83 @@ mind mcp add dbhub --url https://example.com/mcp `
 | `--approval-mode <MODE>` | 两者 | 设置 `auto`、`prompt`、`writes` 或 `approve` 工具审批模式 |
 | `--startup-timeout-sec <SECONDS>` | 两者 | 启动和工具发现超时 |
 | `--tool-timeout-sec <SECONDS>` | 两者 | 工具请求超时 |
+
+### OAuth 浏览器登录
+
+```powershell
+mind mcp add sentry --url "<SENTRY_MCP_URL>"
+mind mcp login sentry
+mind mcp login sentry --scopes "org:read,project:write" --timeout-sec 180
+mind mcp logout sentry
+```
+
+`login` 使用原始配置键，适用于支持 OAuth 的 Streamable HTTP 服务。配置了
+`bearer_token_env_var` 或任意大小写的 `Authorization` header 时，登录会报告配置冲突，
+即使对应环境变量尚未设置。登录不会改写服务注册。服务和授权端点要求 HTTPS；本机
+HTTP MCP 可使用本机 HTTP 授权端点。
+
+命令先显示授权地址，再打开系统浏览器；打开失败时可手动访问已显示的地址。
+回调只监听 `127.0.0.1`，默认使用系统分配的端口。凭据成功保存到系统凭据库后才报告
+登录成功；拒绝、超时、取消或保存失败均不报告成功，失败后可查询本地状态再重试。
+Windows 使用 Credential Manager，
+macOS 使用 Keychain，Linux 使用 Secret Service；不可用时显式失败，不回退明文文件。
+
+可选配置示例：
+
+```toml
+[mcp_servers.sentry.oauth]
+scopes = ["org:read", "project:write"]
+login_timeout_sec = 300
+# 预注册公共客户端需要同时提供固定回调端口：
+# client_id = "your-public-client-id"
+# callback_port = 12608
+# 或使用服务端支持的 HTTPS 客户端元数据文档，与 client_id 互斥：
+# client_metadata_url = "https://your-domain.example/oauth/client.json"
+```
+
+没有指定客户端身份时使用服务端声明的动态注册端点；只支持无需 client secret 的公共
+客户端。`--scopes` 使用逗号分隔；未指定时依次选择配置、Bearer challenge、资源元数据、
+授权服务器元数据中的范围。`scopes = []` 或 `--scopes ""` 明确请求空范围。显式范围不足
+或服务端返回不同范围会报错。`--timeout-sec` 覆盖配置，并限制发现、浏览器等待、交换和
+保存的总时长；HTTP 单次等待另有 20 秒上限。
+
+`mcp list/get` 的 `OAuth (local)` / JSON `oauth` 字段只读取本地凭据：`missing` 无记录、
+`registered` 仅有客户端注册记录、`stored` 已保存、`expired` 已到期、`unavailable` 存储不可用或记录损坏，
+`not_applicable` 为 stdio、SSE 或显式认证配置。查询不联网验证授权是否仍有效。
+`refresh_uncertain` 表示刷新可能已消费旧令牌但未确认提交，`reauthorization_required`
+表示远端拒绝或刷新授权失效；两者都需要重新运行 `mcp login`。
+`logout` 幂等删除当前目标的本地凭据，不移除配置，也不声称撤销服务端授权。
+退出码：成功为 `0`，登录或存储失败为 `1`，参数错误为 `2`，用户取消为 `130`。
+
+登录后启动或重启对应 MCP 服务，运行时会恢复凭据，过期时在发送请求前自动刷新。
+刷新使用登录时验证并保存的授权服务器端点；多个进程共享凭据锁，轮换成功后立即保存。
+单次刷新交换最多等待 5 秒；结果不确定时停止使用旧 refresh token，要求重新登录。
+运行时只使用已批准的范围，不覆盖 CLI 登录时的 `--scopes` 选择，也不自动扩大授权。
+
+每个新请求都会检查最新凭据版本。另一个进程重新登录后，活动连接采用新凭据；退出登录
+后，使用过旧凭据的连接在下一个请求边界停止使用它，已发出的远端请求继续按原生命周期
+收束。401、403 和认证重定向会使服务失败并撤下工具目录；不会自动重放工具调用或打开
+浏览器。`/mcp status` 展示独立的授权错误；重新登录后可通过 `/mcp` 菜单重启对应服务。
+工具审批仍按既有权限策略执行。
+
+首版支持 Streamable HTTP、授权码与 PKCE S256、公共客户端动态注册、客户端元数据文档和
+预注册公共客户端；是否可用取决于服务端声明的能力。不支持 stdio/SSE 的 OAuth、client
+secret、设备码登录，也不读取 Codex 或其他客户端保存的登录凭据。
+
+| 现象 | 处理方式 |
+| --- | --- |
+| `missing` / `registered` / `login_required` | 执行 `mind mcp login <name>`，然后重启对应 MCP 服务。匿名服务无需登录。 |
+| `expired` | 本地记录已到期；运行时有 refresh token 时自动刷新，无可用刷新授权时重新登录。 |
+| `insufficient_scope` / `reauthorization_required` / `refresh_uncertain` | 确认服务要求的范围，显式重新登录；成功后重启失败的服务。 |
+| `configuration_conflict` | 检查显式 Bearer/Header 与 OAuth 的选择，以及公共客户端和回调端口配置。 |
+| `storage_unavailable` / `unavailable` | 检查当前用户的系统凭据库及状态目录访问；Linux 还需可用的用户 D-Bus 会话和已解锁的 Secret Service。 |
+| `storage_busy` | 等待其他进程的登录、刷新或退出事务结束后重试。 |
+| `storage_corrupt` | 对原注册执行 logout 清理后重新登录；不要手工删除活动索引或锁文件。 |
+
+凭据按配置根、状态根、原始注册名和完整 URL 隔离；改变任一项都不会借用旧登录。
+更名、改 URL 或删除注册前，先对原注册执行 logout。浏览器回调要求运行 CLI 的机器能接收
+本机端口连接；远程终端不能把另一台机器的 `127.0.0.1` 当成本机回调。
+平台支持与实际验收结果分开记录，操作步骤和记录模板见 [OAuth 验收指南](mcp-oauth-acceptance.md)。
 
 ### 添加 stdio 服务
 

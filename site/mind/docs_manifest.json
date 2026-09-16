@@ -158,6 +158,13 @@
       "label": "维护者指南",
       "category": "结构与维护",
       "summary": "适合在维护文档、官网壳和同步链路时阅读。"
+    },
+    {
+      "source": "docs/mcp-oauth-acceptance.md",
+      "target": "mcp-oauth-acceptance.md",
+      "label": "外接 MCP OAuth 验收",
+      "category": "结构与维护",
+      "summary": "源码或安装入口、系统凭据库和真实服务的重复验收步骤及脱敏记录模板。"
     }
   ]
 }

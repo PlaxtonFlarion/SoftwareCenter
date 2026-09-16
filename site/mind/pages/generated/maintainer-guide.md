@@ -44,6 +44,10 @@ Server contract + protocol/schema + protocol/client
 - 不要把 `agent` 写成 REPL 内部状态；它是独立 CLI 入口
 - 不要在 CLI、TUI、请求协议或会话状态中重新引入 `chat / fast / xtra`
 
+外接 MCP OAuth 按 [OAuth 验收指南](mcp-oauth-acceptance.md) 验证选定运行入口及系统凭据库，
+再在对应平台执行真实服务验收；源码运行与安装产物的结果分别记录，Windows 检查不能
+替代其他平台的浏览器与凭据库结果。
+
 ## 工具域边界
 - `device`：应用与系统控制、UI 操作链
 - `bench`：性能、稳定性与接口执行能力
