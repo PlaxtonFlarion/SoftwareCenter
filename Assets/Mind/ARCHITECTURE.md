@@ -193,11 +193,15 @@ pending input 由 TUI Session actor 持有，中断后恢复编辑器。
 ```text
 protocol/schema     # 严格字段、判别联合、身份和值约束
 protocol/transport  # 认证、端点、可靠请求、SSE 和报告传输
-protocol/client     # chat、review、turn control、tool、effect、fork、compact 等用例
+protocol/client     # chat、review、turn control、tool、effect、fork、compact、session deletion 等用例
 ```
 
 前端可以复用协议 SDK，但不要求共享 Python UI。协议层不拥有本地 Session、Run、工具执行器、
 配置或前端生命周期；`agent.protocol` 的本地事件也不得暴露为远程 SDK。
+
+会话删除 SDK 只提交冻结的显式目标集合和校验远端回执；传输失败与非法回执保留未知语义，
+查询沿用原请求身份。代理树、关闭 Hook 和本地持久化仍由既有所有者负责，远端完成回执
+不表示本地清理完成。正式协议边界见 `docs/session-deletion-protocol.md`。
 
 线上 `event_seq` 在 `cid + sid` 范围内跨 Turn 单调。客户端只在完整处理后推进确认游标，并以
 `turn.completed` 作为唯一逻辑终态。其 `status` 区分 completed、interrupted、failed 和

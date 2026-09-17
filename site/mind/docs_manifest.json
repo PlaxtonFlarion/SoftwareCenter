@@ -62,6 +62,13 @@
       "summary": "上下文用量事件、压缩与恢复，以及终端余量显示的权威数据口径。"
     },
     {
+      "source": "docs/session-deletion-protocol.md",
+      "target": "session-deletion-protocol.md",
+      "label": "会话删除客户端契约",
+      "category": "编排与协议",
+      "summary": "正式删除请求、完成回执、未知结果恢复与本地资源所有权边界。"
+    },
+    {
       "source": "docs/hooks.md",
       "target": "hooks.md",
       "label": "Hooks 配置",
