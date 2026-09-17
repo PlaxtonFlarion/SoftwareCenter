@@ -325,11 +325,18 @@ login_timeout_sec = 300
 或服务端返回不同范围会报错。`--timeout-sec` 覆盖配置，并限制发现、浏览器等待、交换和
 保存的总时长；HTTP 单次等待另有 20 秒上限。
 
-`mcp list/get` 的 `OAuth (local)` / JSON `oauth` 字段只读取本地凭据：`missing` 无记录、
-`registered` 仅有客户端注册记录、`stored` 已保存、`expired` 已到期、`unavailable` 存储不可用或记录损坏，
-`not_applicable` 为 stdio、SSE 或显式认证配置。查询不联网验证授权是否仍有效。
-`refresh_uncertain` 表示刷新可能已消费旧令牌但未确认提交，`reauthorization_required`
-表示远端拒绝或刷新授权失效；两者都需要重新运行 `mcp login`。
+`mcp list/get`、`/mcp status` 和 `/tools` 使用同一认证状态契约；JSON 顶层字段为
+`authorization`，配置中的 `config.oauth` 仍是登录选项。`Auth` 区分 `unknown`、
+`unsupported`（stdio/SSE 的 OAuth）、`header`、`bearer`、`oauth`、`anonymous`、
+`not_logged_in`、`reauthorization_required` 和 `unavailable`。
+`Credentials (local)` 单独展示本地事实：`missing` 无记录、`registered` 仅注册客户端、
+`stored` 已保存、`expired` 已到期、`unavailable` 存储故障、`refresh_uncertain` 刷新提交不确定，
+或 `reauthorization_required` 需要重新授权。空记录本身不能证明匿名服务需要登录。
+`Last auth request` / JSON `verification` 的 `accepted`、`rejected` 只描述现有连接最后观察到的
+请求，不代表实时探测。CLI 只查本地，因此总是 `unverified`；凭据版本改变也会撤销旧认证结论。
+状态查询不联网、不刷新令牌、不打开浏览器；`/tools` 同样显示零工具和失败服务及恢复提示。
+需要登录时提示原始注册名称；显式 Header/Bearer 被拒绝时提示检查其配置，不引导 OAuth 登录。
+`refresh_uncertain` 和 `reauthorization_required` 需要重新运行 `mcp login`。
 `logout` 幂等删除当前目标的本地凭据，不移除配置，也不声称撤销服务端授权。
 退出码：成功为 `0`，登录或存储失败为 `1`，参数错误为 `2`，用户取消为 `130`。
 
