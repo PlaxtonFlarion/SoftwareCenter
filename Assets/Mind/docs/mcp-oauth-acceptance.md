@@ -132,6 +132,22 @@ python -m tests.manual.mcp_oauth_sentry --config-root "<CONFIG_ROOT>" --state-ro
 非零退出码。报告不包含工具结果正文、OAuth URL 或原始异常信息。终端取消时，应检查
 源码子进程的返回码；Windows 外层 Shell 的中断状态可能与子进程返回码不同。
 
+完成只读调用及恢复检查后，可以对本次新建的隔离授权执行 `--mode revoke`。
+该模式会真实撤销测试授权：先从已经登录的 issuer 读取正式撤销端点，要求与 issuer 同源，
+再发送本轮令牌并确认后续调用被拒绝、工具目录撤下。撤销响应为成功本身不算通过；
+必须观察实际认证失败，报告才记录 `server_revocation_observed=true`。
+不要对日常配置运行此模式；服务没有提供可用撤销端点时保留待验收。
+
+```powershell
+python -m tests.manual.mcp_oauth_sentry --config-root "<CONFIG_ROOT>" --state-root "<STATE_ROOT>" --server sentry --mode revoke --report "<STATE_ROOT>/reports/revocation.json"
+```
+
+传输故障的本机综合验收入口为
+`python -m tests.manual.mcp_transport_acceptance --directory "<NEW_ACCEPTANCE_ROOT>"`。
+它通过真实 stdio、Streamable HTTP、SSE 连接检查协议上限、初始化重试、截止时间、
+调用失败不重放、工具发现和关闭；每次使用新目录，不修改日常配置。
+截止时间用例检查有界耗时和实际重试次数，不要求受系统调度影响的次数恒定。
+
 ## 记录模板
 
 将下表复制为 `<STATE_ROOT>/reports/mcp-oauth-acceptance-<date>-<platform>.md`。
