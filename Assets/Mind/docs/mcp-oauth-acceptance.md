@@ -78,6 +78,44 @@ macOS/Linux 终端可用 `export MIND_HOME="<ACCEPTANCE_ROOT>/config"` 和
 支持刷新的 MCP 服务补验。Linux/macOS 的浏览器、系统凭据库和取消行为须在对应平台
 实际执行，不能用 Windows 通过结果代替。
 
+## Sentry 刷新和退出边界脚本
+
+已有隔离注册和真实浏览器登录后，可用以下源码脚本重复检查生产连接适配器。它固定调用
+`execute_sentry_tool` 中的 `find_releases`，需要目标服务提供该工具且账号可读取版本。
+脚本不启动模型、不修改配置或令牌时间，也不主动退出登录；TUI 审批仍按前述步骤单独验收。
+
+```powershell
+python -m tests.manual.mcp_oauth_sentry --config-root "<CONFIG_ROOT>" --state-root "<STATE_ROOT>" --mode call --report "<STATE_ROOT>/reports/call.json"
+python -m tests.manual.mcp_oauth_sentry --config-root "<CONFIG_ROOT>" --state-root "<STATE_ROOT>" --mode wait-expiry --report "<STATE_ROOT>/reports/refresh-a.json"
+```
+
+默认注册名为 `sentry-oauth-acceptance`；可通过 `--server` 指定专用注册。`wait-expiry` 等待
+当前凭据实际到期，默认最多等待 3600 秒，可通过 `--timeout` 调整。在到期前从两个终端
+同时启动该模式，第二份报告使用 `refresh-b.json`，两进程须共用同一配置根和状态根。
+完成后再从新进程执行 `call`，报告使用新文件名，确认刷新后的凭据可以恢复。
+
+刷新报告显式核对调用前确已过期、消费标记和提交引起的两次版本递增、令牌轮换及新的
+有效期；报告只保存判断结果、版本和绝对时间。两份报告还应核对最终版本一致。
+`entry_kind=source-runtime-adapter` 表示适配器证据；CLI 和交互 TUI 的验收分别记录。
+
+验证活动连接观察退出登录时，在第一个终端运行：
+
+```powershell
+python -m tests.manual.mcp_oauth_sentry --config-root "<CONFIG_ROOT>" --state-root "<STATE_ROOT>" --mode observe-logout --timeout 180 --report "<STATE_ROOT>/reports/logout-observer.json"
+```
+
+看到 `READY` 后，在配置了相同 `MIND_HOME`、`MIND_STATE_HOME` 的另一个终端运行源码
+`mcp logout sentry-oauth-acceptance`。观察进程会在凭据删除后发起下一次调用，检查
+`login_required`、目录撤下和连接关闭，再读取最终凭据状态。该检查证明请求边界生效；
+刷新正在交换时的退出竞争仍需单独记录。
+
+退出后以新进程运行 `--mode logged-out`，使用新的报告文件，验证生产连接明确报告
+`login_required` 且没有暴露工具。该模式会真正启动连接检查，不能用本地凭据为空替代。
+
+每次报告必须位于状态根的 `reports/` 下且使用新文件名；失败同样保存脱敏状态并返回
+非零退出码。报告不包含工具结果正文、OAuth URL 或原始异常信息。终端取消时，应检查
+源码子进程的返回码；Windows 外层 Shell 的中断状态可能与子进程返回码不同。
+
 ## 记录模板
 
 将下表复制为 `<STATE_ROOT>/reports/mcp-oauth-acceptance-<date>-<platform>.md`。
