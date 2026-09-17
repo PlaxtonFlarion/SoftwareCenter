@@ -203,6 +203,11 @@ protocol/client     # chat、review、turn control、tool、effect、fork、comp
 查询沿用原请求身份。代理树、关闭 Hook 和本地持久化仍由既有所有者负责，远端完成回执
 不表示本地清理完成。正式协议边界见 `docs/session-deletion-protocol.md`。
 
+本地删除事实归 `agent.stores.sessions.deletion`，在历史库持久保存固定目标、存储位置和
+完成事实，通过既有 Store 事务及 Transcript 文件适配器完成可恢复清理。各存储持有自己的
+永久身份停写标记，Transcript adapter 持有跨进程文件锁；运行资源的关闭仍归 Harness。
+工具 Effect 账本显式绑定线上会话坐标，与本地 Run outbox 身份独立，不能按相同字段名推断归属。
+
 线上 `event_seq` 在 `cid + sid` 范围内跨 Turn 单调。客户端只在完整处理后推进确认游标，并以
 `turn.completed` 作为唯一逻辑终态。其 `status` 区分 completed、interrupted、failed 和
 cancelled；服务端内部存储标志不得成为第二个公开终态。
