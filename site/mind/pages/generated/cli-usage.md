@@ -292,6 +292,7 @@ mind mcp add dbhub --url https://example.com/mcp `
 mind mcp add sentry --url "<SENTRY_MCP_URL>"
 mind mcp login sentry
 mind mcp login sentry --scopes "org:read,project:write" --timeout-sec 180
+mind mcp login sentry --manual
 mind mcp logout sentry
 ```
 
@@ -300,11 +301,22 @@ mind mcp logout sentry
 即使对应环境变量尚未设置。登录不会改写服务注册。服务和授权端点要求 HTTPS；本机
 HTTP MCP 可使用本机 HTTP 授权端点。
 
-命令先显示授权地址，再打开系统浏览器；打开失败时可手动访问已显示的地址。
+默认先显示授权地址，再打开系统浏览器；打开失败时可手动访问已显示的地址。
 回调只监听 `127.0.0.1`，默认使用系统分配的端口。凭据成功保存到系统凭据库后才报告
 登录成功；拒绝、超时、取消或保存失败均不报告成功，失败后可查询本地状态再重试。
 Windows 使用 Credential Manager，
 macOS 使用 Keychain，Linux 使用 Secret Service；不可用时显式失败，不回退明文文件。
+
+远程终端可使用 `--manual`：命令只显示授权链接，由你在浏览器中打开。授权完成后，
+把浏览器地址栏中的完整回调 URL 粘贴到该命令的隐藏输入处，按 Enter 提交；即使浏览器
+显示本机回调页无法连接，也可以复制地址。输入要求交互终端，不回显、不保存历史，
+也不会访问粘贴的地址；请勿将包含授权码的回调 URL 发到聊天或日志中。
+若浏览器能直接送达本次回调，命令也会自动结束隐藏输入并继续登录。
+两种入口使用同一地址、state、issuer 校验和一次性消费规则。
+
+手动输入最多 64 KiB（UTF-8），支持退格及 Ctrl+U 清空；Ctrl+C 取消，Ctrl+D 或 Ctrl+Z
+结束输入。未完成的粘贴也有长度限制；成功、失败、取消或超时后都会清理输入并恢复终端。
+`--timeout-sec` 同样限制手动等待、交换和保存的总时长。
 
 可选配置示例：
 
@@ -364,10 +376,12 @@ secret、设备码登录，也不读取 Codex 或其他客户端保存的登录�
 | `storage_unavailable` / `unavailable` | 检查当前用户的系统凭据库及状态目录访问；Linux 还需可用的用户 D-Bus 会话和已解锁的 Secret Service。 |
 | `storage_busy` | 等待其他进程的登录、刷新或退出事务结束后重试。 |
 | `storage_corrupt` | 对原注册执行 logout 清理后重新登录；不要手工删除活动索引或锁文件。 |
+| `callback_input_unavailable` | 在支持隐藏输入的交互终端运行 `login --manual`。 |
+| `callback_input_closed` / `callback_input_too_long` | 重新登录，在隐藏输入处提交该次完整回调 URL；总长度不得超过 64 KiB。 |
 
 凭据按配置根、状态根、原始注册名和完整 URL 隔离；改变任一项都不会借用旧登录。
 更名、改 URL 或删除注册前，先对原注册执行 logout。浏览器回调要求运行 CLI 的机器能接收
-本机端口连接；远程终端不能把另一台机器的 `127.0.0.1` 当成本机回调。
+本机端口连接；浏览器与 CLI 不在同一台机器时使用 `--manual` 传回完整回调 URL。
 平台支持与实际验收结果分开记录，操作步骤和记录模板见 [OAuth 验收指南](mcp-oauth-acceptance.md)。
 
 ### 添加 stdio 服务

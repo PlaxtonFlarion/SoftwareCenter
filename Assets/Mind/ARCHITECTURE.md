@@ -384,11 +384,17 @@ model intent
 `infrastructure.mcp.oauth_credentials` 拥有凭据版本、恢复和逐目标跨进程事务；
 `infrastructure.platform.credential_vault` 只适配系统凭据库，不持有 MCP 连接或发起授权。
 显式登录、退出及本地状态读取由 `agent.application.mcp.oauth` 协调存储和
-`agent.ports.mcp_oauth` 授权端口；CLI 只解析选择并展示结果。
+`agent.ports.mcp_oauth` 授权端口；CLI 解析选择、展示结果并提供显式手动输入。
 `infrastructure.config.mcp_oauth` 校验 OAuth 配置及显式认证冲突；
 `infrastructure.mcp.oauth_adapter` 拥有单次发现、注册和授权码交换的 HTTP 客户端，
 `oauth_callback` 拥有该次登录的 loopback 监听、连接任务和一次性回调结果。
 平台浏览器启动由 `infrastructure.platform.browser` 适配，均在组合根注入。
+显式 `login --manual` 通过 `McpOAuthCallbackInput` 借用一次隐藏输入，不自动启动浏览器；
+`frontends.terminal.oauth_input` 拥有输入提示和有界编辑状态，
+`infrastructure.platform.hidden_input` 负责平台终端模式、未完成序列的输入上限及恢复。
+两种回调入口由同一接收器校验地址、state 和 issuer，只消费一次结果；授权 adapter 在
+交换令牌前取消并收束隐藏输入。输入不导航、不回显、不保留历史，所有终态注销
+读取监听、丢弃未消费输入并恢复原终端模式；期限继续由登录用例统一管理。
 登录在浏览器等待期间释放凭据锁，保存时校验开始授权前读取的 generation；退出登录
 留下新版本墓碑，迟到的登录结果不得恢复已删除凭据。只有持久提交完成才能报告登录成功。
 查询中的本地凭据状态不代表实时远端认证状态；凭据不进入展示事件、日志或模型上下文。
