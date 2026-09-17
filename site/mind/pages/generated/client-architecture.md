@@ -374,6 +374,11 @@ model intent
 - `services/`：服务 owner、健康、Helix、Turn 环境和配置宿主；
 - `skills/`、`hooks/`、`sidecars/`、`update/`：对应外部资源的适配与生命周期。
 
+外接 MCP 的 `infrastructure.mcp.stdio_transport` 负责解码前的有界协议帧与 SDK 消息转换，
+`infrastructure.platform.stdio_process` 复用 SDK 公开的跨平台进程启动和进程树关闭能力。
+`ExternalMcpGroup` 的逐连接 owner 在同一任务内进入和退出传输及 session 上下文；HTTP
+初始化重试必须在旧尝试完全关闭后重建，共用上层启动期限，不重试已进入目录读取或工具调用的会话。
+
 外接 MCP OAuth 的身份、凭据快照、绝对过期时间和无机密状态位于
 `agent.domain.mcp_oauth`，访问契约位于 `agent.ports.mcp_credentials`。
 `infrastructure.mcp.oauth_credentials` 拥有凭据版本、恢复和逐目标跨进程事务；
