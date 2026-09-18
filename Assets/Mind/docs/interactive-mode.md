@@ -9,7 +9,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /delete /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -147,6 +147,7 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - `/new [title]`：开始新对话，重置 `cid / sid`，可选保存会话标题，保留模型和本地配置
 - `/resume`：从最近 24 小时内的本地会话游标中恢复对话
 - `/archive`：归档当前会话并退出前台；执行前会请求确认
+- `/delete`：永久删除当前会话及其子会话并退出前台；默认取消，确认前会展示目标身份
 - `/fork`：复制当前对话上下文并切换到新的会话分支
 - `/permissions`：在 `Read Only`、`Auto`、`Full Access` 三个权限预设间切换；分别对应 `read-only + on-request`、`workspace-write + on-request`、`danger-full-access + never`
 - `/model <model-id>`：持久化主模型 ID；写入当前 Provider Profile，下一轮模型请求生效
@@ -195,8 +196,9 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - 菜单中使用 `↑/↓` 滚动，`PgUp/PgDn` 跳转，`Enter` 选择，`q` 取消
 - 适合重启 REPL 后接回某一段对话；如果要开启新上下文，继续使用 `/new`
 
-## `/archive` 与 `/fork` 指令
+## `/archive`、`/delete` 与 `/fork` 指令
 - `/archive`：归档当前会话。确认后会写入归档状态并退出前台；没有已建立的会话时会提示失败。
+- `/delete`：永久删除当前会话及其子会话。菜单默认选择取消，并展示当前 `cid / sid` 与不可撤销警告；确认后会再次核对身份，以唯一请求 ID 等待远端和本地清理完整完成才退出。结果未知或本地清理失败时会保留恢复所需的请求 ID，不显示旧会话恢复提示。
 - `/fork`：请求服务端复制当前对话上下文，成功后切换到新的 `cid / sid`；当前输入和已保存的配置不会被清空。
 - 在 Resume picker 中归档其他会话不需要退出；当前会话必须回到 REPL 使用 `/archive`。
 
