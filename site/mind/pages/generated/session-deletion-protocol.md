@@ -32,8 +32,12 @@
 Effect Journal（独立保存工具 Effect 的 `cid/sid` 归属）和审批 Store。Run outbox 的
 `effect_id` 是本地派发身份，与服务端工具 Effect 不属于同一身份空间，不能用来互相关联。
 协议层不直接操作这些资源。
-根 Harness 和子代理 Runtime 负责封锁新提交及收束 writer、Hook、事件投递和后台 flush；
-关联身份必须保留至远端结果确定且本地清理完成，晚到写入不得恢复旧身份。
+根 Harness 的 `RootConversationSession.delete_current()` 是删除生命周期入口。它先收束子代理、
+关闭当前运行时提交边界，再通过 `ProtocolSessionDeletionAdapter` 提交冻结的正式请求；适配器
+只转换正式 SDK 的请求、回执和拒绝/未知结果，不在协议层发现本地资源。只有远端完整回执确认后，
+才分发 `SessionEnd(reason="deleted")` 并调用本地清理 Store。Hook、事件报告关闭和后台 flush
+仍由各自 owner 负责，清理 Store 取得 Transcript 独占锁并写入持久停写标记后，迟到写入会被
+已有触发器和文件标记拒绝，不能重新创建旧会话记录。
 
 ## 本地持久化删除
 
@@ -71,5 +75,7 @@ Effect Journal 创建时要求明确的会话坐标；旧表仅从保存的正�
 一起移除；单独回收标记会失去旧身份不可重用的保证。用户文件、共享配置、永久权限规则
 及对照会话不属于清理范围。
 
-当前提供协议 SDK 和本地持久化能力，尚未注册 `/delete` 交互命令。前端菜单和 Harness
-接入后才能提供完整用户流程；仅获得远端回执不能作为本地删除成功提示。
+当前已提供正式协议 SDK、本地持久化清理和 Harness 生命周期协调。未知结果会先把完整计划
+写入 `session_deletions`，`recover_delete()` 使用原请求 ID 查询并继续清理；远端已完成而本地
+失败时返回 `local_failed` 并保留同一计划。前端 `/delete` 命令和原生 TTY 菜单仍在后续阶段接入，
+仅获得远端回执不能作为本地删除成功提示。

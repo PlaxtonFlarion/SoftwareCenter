@@ -208,6 +208,11 @@ protocol/client     # chat、review、turn control、tool、effect、fork、comp
 永久身份停写标记，Transcript adapter 持有跨进程文件锁；运行资源的关闭仍归 Harness。
 工具 Effect 账本显式绑定线上会话坐标，与本地 Run outbox 身份独立，不能按相同字段名推断归属。
 
+删除生命周期由 `RootConversationSession.delete_current()` 持有：先封锁根运行时和子代理，
+再提交正式远端删除，确认完整回执后才分发 `deleted` 结束 Hook 并调用本地清理；未知结果
+保留原请求计划，恢复查询不得生成新的删除身份。前端只消费 `SessionDeletionResult`，不得
+直接调用协议客户端或本地 Store。
+
 线上 `event_seq` 在 `cid + sid` 范围内跨 Turn 单调。客户端只在完整处理后推进确认游标，并以
 `turn.completed` 作为唯一逻辑终态。其 `status` 区分 completed、interrupted、failed 和
 cancelled；服务端内部存储标志不得成为第二个公开终态。
