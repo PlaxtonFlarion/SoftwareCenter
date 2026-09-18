@@ -86,3 +86,32 @@ Effect Journal 创建时要求明确的会话坐标；旧表仅从保存的正�
 `/delete recover <请求ID>` 只查询原请求，并复用运行资源关闭与本地清理边界；重启后同样可用。
 本地准备失败与远端确认后的清理失败分别展示，取消等待不等于撤销删除。恢复其他会话成功时
 保留当前会话；已完成请求重复恢复直接返回持久完成事实。
+
+## 真实服务验收
+
+`tests/manual/session_delete_live.py` 从完整 `mind.py` 入口启动原生 TTY，使用用户配置的正式
+服务地址和当前 Provider，在新建的配置、工作区与状态目录中创建对照会话、根会话和真实
+子代理。回环代理只转发正式服务的响应并记录删除身份与状态，不替代 AppServer 或模型。
+
+在仓库根目录激活虚拟环境后，指定尚不存在的隔离目录：
+
+```shell
+python -m tests.manual.session_delete_live --directory build/session-delete-live
+```
+
+脚本验收运行中拒绝、菜单默认取消后的继续对话、确认删除、精确根与子会话范围、同请求
+重放、不存在目标、新进程本地核验、旧会话恢复被拒绝和对照会话恢复。菜单完成帧与冻结的
+Codex 快照比对；远端以正式 `/turn/status` 和删除回执核验。结构化结果只记录本轮身份与
+状态，TTY 画面包含隔离测试对话。用户配置不修改，借用的 Provider 密钥在脚本退出时
+从隔离配置移除。
+
+验收后可先重做独立本地核验，再清理清单记载的测试会话和隔离状态；清理保留脱敏证据，
+并拒绝删除仍有活动轮次的测试会话：
+
+```shell
+python -m tests.manual.session_delete_live --directory build/session-delete-live --verify
+python -m tests.manual.session_delete_live --directory build/session-delete-live --cleanup
+```
+
+失败时保留终端与请求事实供排查，不将未知结果当作删除成功；在活动轮次结束后执行相同
+目录的 `--cleanup`。服务版本按线上 OpenAPI 版本及摘要记录，不从相邻仓库提交推断部署版本。
