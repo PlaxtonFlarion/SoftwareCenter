@@ -32,26 +32,29 @@
 Effect Journal（独立保存工具 Effect 的 `cid/sid` 归属）和审批 Store。Run outbox 的
 `effect_id` 是本地派发身份，与服务端工具 Effect 不属于同一身份空间，不能用来互相关联。
 协议层不直接操作这些资源。
-根 Harness 的 `RootConversationSession.delete_current()` 是删除生命周期入口。它先收束子代理、
-关闭当前运行时提交边界，再通过 `ProtocolSessionDeletionAdapter` 提交冻结的正式请求；适配器
+根 Harness 的 `RootConversationSession.delete_session()` 是删除生命周期入口。它在会话变更锁内
+核验冻结身份、收束子代理并持久化删除意图，再通过 `ProtocolSessionDeletionAdapter` 提交请求；适配器
 只转换正式 SDK 的请求、回执和拒绝/未知结果，不在协议层发现本地资源。只有远端完整回执确认后，
-才分发 `SessionEnd(reason="deleted")` 并调用本地清理 Store。Hook、事件报告关闭和后台 flush
+才退休运行身份，分发 `SessionEnd(reason="deleted")` 并调用本地清理 Store。Hook、事件报告关闭和后台 flush
 仍由各自 owner 负责，清理 Store 取得 Transcript 独占锁并写入持久停写标记后，迟到写入会被
 已有触发器和文件标记拒绝，不能重新创建旧会话记录。
 
 ## 本地持久化删除
 
 `SQLiteSessionDeletionStore` 通过 `SessionDeletionStore` 端口接收 `LocalDeletionPlan`。
-调用方必须先确认远端删除，并通过既有生命周期关闭目标运行资源；该 Store 不发送远端请求，
+调用方在发送前调用 `prepare()`；调用 `delete()` 前必须确认远端删除并关闭目标运行资源；该 Store 不发送远端请求，
 不结束任务或关闭 Hook。阻塞的文件及 SQLite 操作应由调用方调度到工作线程。
 
-计划固定请求身份、完整会话集合和已确认映射的本地 Run Session 身份。CLI/TUI 的确定性
+计划显式固定根身份、请求身份、完整会话集合和已确认映射的本地 Run Session 身份。根身份
+不能从目标排序或当前会话推断；缺少根身份的计划不能恢复。CLI/TUI 的确定性
 本地身份由现有身份派生函数补齐；Run Store 同时核对 Command 中冻结的远端绑定与已持久化
 的远端请求映射，尚未发出请求的 queued Run 也属于清理范围。不能将
 线上 `sid` 当作 Run 的 `session_id`。目标内代理图若仍包含集合外子会话，清理拒绝完成，
 不能静默扩大远端已经确认的范围。
 
-历史库中的 `session_deletions` 在清理前提交计划和所有存储的实际路径。文件适配器校验
+历史库中的 `session_deletions` 在首次网络请求前提交计划和所有存储的实际路径，并在同一事务
+拒绝其他请求占有重叠目标。只有首次提交被明确拒绝时可释放意图；查询失败不能释放它。
+恢复使用原计划和完整回执，即使当前绑定另一会话也不会替换根身份。文件适配器校验
 会话标识、目录及实际路径，拒绝符号链接、Windows 重解析点、硬链接和非普通文件，并先
 取得全部目标的独占锁。Transcript writer 在打开期间持有共享锁；其他进程仍在写入时，
 删除报告占用错误，释放前已取得的锁。进程退出会释放操作系统锁。
@@ -76,7 +79,10 @@ Effect Journal 创建时要求明确的会话坐标；旧表仅从保存的正�
 及对照会话不属于清理范围。
 
 当前已提供正式协议 SDK、本地持久化清理、Harness 生命周期协调，以及 TUI `/delete` 命令。
-命令使用与 `/archive` 相同的原生菜单布局，默认焦点为取消，确认项明确展示会话坐标、子会话
-范围和不可撤销警告；确认后再次核对坐标，再以唯一请求 ID 提交删除。前台等待期间输入被屏障
+命令使用原生菜单布局，按 Codex 确认菜单展示默认取消、子会话范围和不可撤销警告；
+确认后再次核对打开菜单时的坐标，再以唯一请求 ID 提交删除。前台等待期间输入被屏障
 接管，只有完整 `deleted` 回执才退出并抑制旧会话的恢复提示。`rejected`、`unknown`、
-`local_failed` 等结果留在当前界面并显示对应的请求恢复指引，取消菜单不发送远端请求。
+`local_failed` 等结果留在当前界面并显示对应反馈，取消菜单不发送远端请求。
+`/delete recover <请求ID>` 只查询原请求，并复用运行资源关闭与本地清理边界；重启后同样可用。
+本地准备失败与远端确认后的清理失败分别展示，取消等待不等于撤销删除。恢复其他会话成功时
+保留当前会话；已完成请求重复恢复直接返回持久完成事实。
