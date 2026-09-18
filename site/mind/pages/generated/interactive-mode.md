@@ -176,7 +176,7 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - `/helix-stop`：停止本地 Helix 服务
 - `/skills`：打开 Skills 列表，可查看并启用或禁用当前可用 Skill
 - `/shutdown`：退出前台并停止本地运行时
-- `/quit`、`/q`、`quit`、`exit`：安全退出
+- `/quit`、`/q`、`/exit`、`quit`、`exit`：安全退出
 
 `/listen start` 最多等待 30 秒进入 ready；超时会停止本次监听并输出失败状态。
 断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
@@ -304,7 +304,7 @@ base_url = ""
 ## `/shutdown`
 - `/shutdown`：退出前台 Mind，并停止本地运行时
 - 该指令会在退出清理阶段释放本地运行时监听端口
-- 普通 `/quit`、`/q`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止本地运行时
+- 普通 `/quit`、`/q`、`/exit`、`quit`、`exit` 和 `Ctrl+C` 仍只退出前台，不主动停止本地运行时
 
 ## `/compact`
 - `/compact`：请求压缩当前对话上下文，成功后后续请求会基于压缩后的历史继续
@@ -381,9 +381,24 @@ MCP 审批卡片在高度不足时保留服务、工具、脱敏参数摘要和�
 ```text
 /quit
 /q
+/exit
 quit
 exit
 ```
+
+空闲空输入的 Ctrl+D 和确认后的 Ctrl+C 使用同一收尾流程；清除草稿、中断任务或取消菜单不会打印退出摘要。
+收尾成功后，可靠的非零累计用量与恢复指引分别显示，保留前导方格：
+
+```text
+■ Token usage: total=2,701 input=2,687 (+ 14,976 cached) output=14
+■ To continue this session, run:
+  mind resume <sid>
+```
+
+上例数字仅说明排版，实际计数来自服务端已确认用量。尚未确认远端停止时使用 `Token usage so far:`
+并注明远端可能继续运行；部分或未知计数不显示精确用量行。`/delete` 完整成功后只保留适用用量，
+`/archive` 成功显示归档提示，未决删除则保留 `/delete recover <request_id>` 指引。
+退出与删除等待不增加动画、不清除历史滚屏。完整口径见[退出摘要契约](context-usage-protocol.md#退出摘要契约)。
 
 ## 输入约束
 - REPL 当前支持单行和多行输入
