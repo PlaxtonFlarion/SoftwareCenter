@@ -63,8 +63,10 @@ reported_calls 为零时 total 必须为零，明细只能为零或 null。
 `is_complete` 是类型派生属性，不进入 wire：unreported_calls 为零且 input、cached input、
 output 均已知。对象存在而条件不满足就是部分统计；额外的缓存写入或推理明细未知，不阻止
 核心数字完整，但不能伪装成已知零。零次调用的空累计与一次零值报告通过 reported_calls 区分。
-当前本地 `ContextUsageRecord` 尚只保留完整累计的原始 total，部分统计映射为未知，避免旧有
-`used` 展示将小计当作完整总数；完整明细缓存与退出快照尚待接入。
+本地 `ContextUsageRecord.total_token_usage` 使用不可变 `SessionTokenUsageRecord` 保留全部
+八个字段，包括部分统计；adapter 和 SQLite 读取边界均校验计数关系。`used` 只消费完整核心计数，
+不会把部分实报当作完整总数。旧单字段累计缓存无法还原明细，会被作废；历史游标和正文继续保留，
+下一次恢复读取服务端快照，不从旧总数推导未知明细。
 
 计数范围为当前 `cid + sid`，不汇总代理树。主模型、工具循环、截断续写、所有实际重试、失败/
 取消请求、压缩摘要（包括无收益或 CAS 失败）和本 Session 触发的模型校验均应登记；本地校验、
@@ -81,7 +83,7 @@ output 均已知。对象存在而条件不满足就是部分统计；额外的�
 [`session_token_usage.json`](../tests/fixtures/protocol/session_token_usage.json)，覆盖完整、零、
 未知、明细不全、缺报调用和只有总数的情况。服务端持久记录、累计、事件与 outbox 原子提交，
 登记中的调用计入缺报；数据库必须匹配当前完整基线与 schema manifest。SDK 已支持完整结构，
-详细本地投影与退出快照仍待接入。源码推送不代表服务已部署。
+本地投影、完整缓存和退出快照沿同一事实接入。源码推送不代表服务已部署。
 
 ## 提交、压缩和恢复
 
@@ -93,8 +95,9 @@ output 均已知。对象存在而条件不满足就是部分统计；额外的�
 共用空 `turn_id`，须在 `context.compaction.completed` 前到达。客户端在交付压缩终态前关闭
 HTTP 流，用量事件不参与 Item 终态判断。
 
-根会话拥有用量展示投影，订阅跨越单个 OutputSession；Review 和子代理不会写入主会话
-快照。最新记录缓存于本地会话历史库，按 `cid + sid` 和 `event_seq` 单调替换，随历史游标
+根会话拥有用量展示投影，订阅跨越单个 OutputSession；Review 的 Turn 占用和子代理不会写入主会话
+快照，inline Review 的会话级累计事件更新共享 Session。最新记录缓存于本地会话历史库，
+按 `cid + sid` 和 `event_seq` 单调替换，随历史游标
 过期或容量淘汰而删除。缓存是已确认事实的副本，不推进聊天流确认游标。
 
 冷恢复从首屏起隐藏默认 100%，读取目标会话缓存及服务端完整快照；没有可靠值时为 `unknown`。
@@ -112,7 +115,8 @@ Session，以空 `turn_id` 发布累计变化并保留主上下文 last/window/s
 `data.context_usage` 完整事件。分页完成前保持 pending；快照不推进聊天流确认游标。
 此读取有整体超时边界，不增加后台轮询。历史裁剪信号会作废区间内的旧缓存；服务端
 独立保留的权威快照可以早于裁剪水位，客户端在完成恢复后使用它。鉴权、协议或读取失败
-时隐藏用量，不通过重新调用模型补齐显示。
+时隐藏用量，不通过重新调用模型补齐显示。恢复请求返回空值或旧快照时，不覆盖读取期间已收到
+的更新事实。空 `turn_id` 只对正式会话级用量事件放行，其他 Turn 事件及跨会话事件仍严格拒绝。
 
 ## 显示口径
 
@@ -146,8 +150,9 @@ W > B:
 
 ## 退出摘要契约
 
-以下规则规定退出展示接入时的目标行为；当前实现仍只有普通退出的单行恢复提示，尚未接入
-用量行、分行恢复提示和 `/exit` 别名。用量行与恢复指引分别判定：完整、原始 total 非零才显示
+以下规则规定完整退出展示的目标行为。当前 owner 已冻结并交付完整事实，统一收尾后的 renderer
+依据可恢复状态输出单行恢复提示，冷恢复后立即退出也适用；归档、已删及未决删除不输出普通 resume。
+用量行、其余状态文案、分行恢复提示和 `/exit` 别名尚待接入。用量行与恢复指引分别判定：完整、原始 total 非零才显示
 精确用量；可靠可恢复身份独立决定 resume，不用本进程 turn_count 代替持久会话存在性。
 
 与本地 Codex `tui/src/token_usage.rs` 一致，显示 input 为原始 input 减 cached input，显示
@@ -200,14 +205,17 @@ total 为该 input 加 output；reasoning 已在 output 内，不再相加。缓
 | archive/delete成功 | dispatch → conversation 生命周期操作 → 完成事实 → stop → 统一收尾；恢复其他会话不 stop |
 | 所有正式退出 | `frontends/cli/bootstrap.py.finalize_application` → conversation.end → runtime.close → resources.close → 摘要 |
 
-用量 owner 仍为 `RootConversationSession` 持有的应用层投影。退出展示接入必须由该 owner 在
-会话身份锁和现有生命周期内取得不可变快照：普通结束在清空投影前；归档在成功状态清空前；
+用量 owner 仍为 `RootConversationSession` 持有的应用层投影。该 owner 在
+会话身份锁和现有生命周期内取得不可变 `SessionExitSnapshot`：普通结束在清空投影前；归档在成功状态清空前；
 删除在破坏本地资源前保存候选，仅在当前会话远端删除与本地清理完整成功后标记为删除退出。
 候选不等于成功，失败、恢复其他会话和身份切换不得误用；新建、reset、bind、fork 清除不属目标
 身份的候选。删除不可为了摘要保留数据库行，也不能由前端在删除后重建历史。
 
-快照包含身份、最后确认 event_seq、已校验用量、可恢复/归档/删除/未决删除事实与远端是否
-已确认停止，不能只保存格式化文字。通过既有 conversation 边界交给 bootstrap，不建立另一套
+快照的 `record` 保留最后确认 event_seq 及完整明细，另外包含身份、可恢复/归档/删除/未决删除事实
+与远端是否已确认停止；缺失与恢复中的用量为 null。未决删除还携带原 deletion_request_id。
+普通 Turn 只有收到正式远端终态才确认停止，本地取消、断流或冷恢复用量成功不能替代该事实。
+快照通过既有 conversation 边界交给 bootstrap，不建立另一套
 退出状态机。`finalize_application` 持有退出期间的展示值，在所有既有收尾成功且 runtime
 释放终端后调用现有输出入口一次；各个命令不得自行打印摘要。失败不输出正常完成，消费或
-关闭后释放快照。完整字段缓存与该快照生命周期目前尚未实现。
+关闭后释放快照。`take_exit_snapshot` 转移一次所有权；重复结束与消费不重新生成摘要，错误收尾直接
+释放候选，新建、切换及绑定不同身份会清除旧快照。未确认远端创建的新会话不产生普通恢复提示。
