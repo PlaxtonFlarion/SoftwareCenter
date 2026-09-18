@@ -93,6 +93,15 @@ Effect Journal 创建时要求明确的会话坐标；旧表仅从保存的正�
 
 ## 真实服务验收
 
+退出摘要联调使用 `python -m tests.manual.session_delete_live --directory <全新隔离目录> --exit-summary`。
+它通过完整源码入口和真实 Provider 校验服务端累计、全部退出别名、冷恢复、归档、空会话，以及
+服务端删除成功但响应丢失后的跨进程恢复。`--route responses` 只覆盖隔离配置中的 Provider 路由；
+上游未报告缓存明细时保持未知，不能将没有精确用量行误判为显示故障。
+需要删除前核对数据库账本时，增加 `--pause-before-delete`；脚本输出
+`ready_for_database_verification` 后，读取隔离目录的 facts.json 获取测试身份，完成只读核对后在
+该目录创建空文件 `continue-delete`。没有该选项时不暂停。Worker 接管、真实权限拒绝与 SQLite
+收尾失败的运维验收复用 `tests/manual/exit_summary_live.py` 的相应函数，故障范围仅限隔离测试身份。
+
 `tests/manual/session_delete_live.py` 从完整 `mind.py` 入口启动原生 TTY，使用用户配置的正式
 服务地址和当前 Provider，在新建的配置、工作区与状态目录中创建对照会话、根会话和真实
 子代理。回环代理只转发正式服务的响应并记录删除身份与状态，不替代 AppServer 或模型。

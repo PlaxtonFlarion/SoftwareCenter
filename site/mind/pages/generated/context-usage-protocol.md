@@ -153,6 +153,9 @@ W > B:
 owner 在清理前冻结完整事实，renderer 在统一收尾成功后输出一次用量和会话指引，冷恢复后立即退出
 也适用；归档、已删及未决删除不输出普通 resume。用量行与恢复指引分别判定：完整、原始 total 非零才显示
 精确用量；可靠可恢复身份独立决定 resume，不用本进程 turn_count 代替持久会话存在性。
+恢复读取收到服务端明确的 403 拒绝时，不再输出该身份的 resume 指引；临时网络失败和过期查看令牌
+不等同于权限撤销。拒绝状态由后续成功恢复解除，已有流中的用量或终态不能代替新的访问确认；
+旧身份的迟到拒绝不影响新会话。
 
 与本地 Codex `tui/src/token_usage.rs` 一致，显示 input 为原始 input 减 cached input，显示
 total 为该 input 加 output；reasoning 已在 output 内，不再相加。缓存写入保留在 input 中。
