@@ -244,6 +244,12 @@ Application 只产出与 UI 工具包无关的展示值。前端负责交互、�
 异步功能在提交更新时重新读取语言并构造业务展示值，更新仍受 session、view_id 和 generation
 检查约束。默认搜索包含显示标签，并沿用详情或显式搜索键；自定义 matcher、ranker 保留自己的规则。
 
+Resume 专用界面的状态保存本次展示语言快照，控制器在打开和状态更新时从 runtime 注入语言；
+纯渲染据此生成标题、筛选、预览和时间文案。原生 Skills 补全在识别候选类型后派生分类展示，
+原始补全仍负责筛选和插入。复制候选持有内容类型与原文，标签不参与动作判断。
+导出反馈由 `tui.export.result` 在前端 adapter 中附加 `TranscriptExportFeedback` 来源标记；
+该标记只属于当前 TUI 记录生命周期，导出器按类型排除自身反馈，不按展示文本识别正文。
+
 手动压缩的待核对身份属于 `RootConversationSession`，由持久 started 证据重建。恢复通过
 `CompactionRecovery` 读取既有 Session 回放，只写回匹配 Item 的远端终态；读取随会话结束取消，
 不推进聊天确认水位、重提压缩或重放 Hook。本地停止等待只记录观察结束，不能改写远端结果。
