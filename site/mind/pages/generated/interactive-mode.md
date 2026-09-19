@@ -9,7 +9,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /delete /fork /permissions /model /provider /effort /preferences /language /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /delete /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -154,7 +154,6 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - `/provider`：切换当前使用的模型 Provider Profile
 - `/effort`：设置主模型推理强度
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
-- `/language [zh|en]`：切换并保存菜单语言；省略参数时打开中英文选择器
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/hooks`：查看、信任和启停生命周期 Hooks
@@ -183,47 +182,6 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
 
 原生 coding 专项用法见 [原生 coding 链路](playbook.nativecoding.md)。
-
-## `/language` 指令
-
-`/language` 打开 `中文 / English` 选择器，标明当前语言；确认后保存，取消不修改配置。
-也可以直接输入 `/language zh` 或 `/language en`，模型运行期间同样可用。
-
-语言选择写入用户 `config.toml`，立即更新顶层 slash 菜单说明和未知命令提示。
-语言选择器、`/permissions`（含完全访问确认）、`/provider`、`/effort`、`/model` 的设置反馈，
-以及 `/resume`、`/archive`、`/delete`、`/copy`、`/export`、`/skills` 的菜单和操作反馈支持中英文。
-运行管理命令也支持中英文：`/review` 的目标选择、自定义输入和审查状态，`/agent`、`/hooks`、
-`/mcp`、`/listen`、`/mailbox` 与 `/helix-*` 的各级菜单和操作反馈，以及 `/tools`、
-`/ps`、`/stop` 的客户端标签。`/diff` 的标题、空状态、错误和分页提示，`/new`、
-`/fork`、手动 `/compact`、`/raw`、`/preferences`、`/shutdown` 与退出摘要也使用所选语言。
-收件箱详情翻页和操作后刷新读取当前语言，消息正文保留原文。
-`/resume` 包含列表筛选、预览、完整记录翻页和工作目录选择；Skills 包含启停管理及 `@`、`$`
-补全的分类与操作提示。通用菜单的确认、返回、关闭页脚、
-搜索默认提示、无匹配结果及当前/默认标记使用所选语言，按键名称跟随实际快捷键配置。
-新打开或更新的菜单使用当前语言；已经打开的模态菜单继续原有交互，切换不会重复提交选择。
-默认搜索支持显示的中文标签和原有搜索标识。
-
-语言范围包括 slash 命令及子菜单的客户端反馈。配置网页、全局状态栏、启动画面、
-独立审批交互及 MCP elicitation 不属于完整双语覆盖范围；自定义提示保留原文。
-命令名及参数仍使用原名称，例如 `/model`；Provider 名称、模型 ID、Skill 原始说明、路径、
-会话标题和正文、审查目标和模型审查结果、Git 分支与 Diff、MCP 服务键与工具名、
-Hook 事件及命令、子代理和消息标识保留原值。复制和 Markdown 导出正文不随界面语言改写，导出结果提示通过
-记录类型排除，不会因用户消息与提示同文而丢失正文。第三方错误详情保留原文，客户端外层提示
-使用当前语言。异步操作完成后使用当时的语言展示反馈。
-
-```toml
-[tui]
-language = "zh"
-```
-
-支持的配置值为 `zh`、`en`，未配置时默认 `en`。非法值会报告配置错误。
-下次启动读取有效配置；语言属于当前 TUI 实例，`/new`、`/fork`、`/resume` 及工作目录切换
-不会从会话历史覆盖语言选择。
-
-配置优先级沿用 CLI 覆盖高于活动 Profile、活动 Profile 高于用户配置的规则。
-项目配置不能设置 `tui.language`。如果 Profile 或 CLI 覆盖使所选语言无法生效，
-命令会提示检查覆盖设置并保留原配置与当前语言。文件无法写入时也保留当前语言，
-修复写入权限后可重新执行。成功提示使用目标语言，重复选择得到相同配置结果。
 
 ## `/new` 指令
 - `/new` 或 `/new <title>`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`；提供标题时保存为当前会话标题
