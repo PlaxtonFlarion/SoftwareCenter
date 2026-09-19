@@ -9,7 +9,7 @@
 ## 先判断是不是这页的范围
 
 - 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /delete /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
+- 你要查 `/new /resume /archive /delete /fork /permissions /model /provider /effort /preferences /language /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
 - 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
 - 你要理解单次命令行入口，不要先从交互模式文档开始
 - 你只是偶尔跑一条命令，不一定需要先读这页
@@ -154,6 +154,7 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 - `/provider`：切换当前使用的模型 Provider Profile
 - `/effort`：设置主模型推理强度
 - `/preferences`：打开本地 Preferences 页面，用于维护模型、密钥、Base URL 和服务域名配置
+- `/language [zh|en]`：切换并保存顶层命令菜单语言；省略参数时打开中英文选择器
 - `/compact`：压缩当前对话上下文，减少后续请求携带的历史体积
 - `/tools`：查看当前可用 MCP 工具，包含 Mind native、外部 MCP 和已接入 Helix MCP 工具
 - `/hooks`：查看、信任和启停生命周期 Hooks
@@ -182,6 +183,28 @@ Ctrl+Z 不属于可配置编辑动作：Unix 上由终端 adapter 在 UI 分派�
 断线期间 Listener 会清除 ready，Mailbox Auto-run 会等待新连接重新 ready 后再继续。
 
 原生 coding 专项用法见 [原生 coding 链路](playbook.nativecoding.md)。
+
+## `/language` 指令
+
+`/language` 打开 `中文 / English` 选择器，标明当前语言；确认后保存，取消不修改配置。
+也可以直接输入 `/language zh` 或 `/language en`，模型运行期间同样可用。
+
+语言选择写入用户 `config.toml`，立即更新顶层 slash 菜单说明、语言选择器和未知命令提示。
+命令名及参数仍使用原名称，例如 `/model`。功能子菜单、模型回复和第三方内容保留原有语言。
+
+```toml
+[tui]
+language = "zh"
+```
+
+支持的配置值为 `zh`、`en`，未配置时默认 `en`。非法值会报告配置错误。
+下次启动读取有效配置；语言属于当前 TUI 实例，`/new`、`/fork`、`/resume` 及工作目录切换
+不会从会话历史覆盖语言选择。
+
+配置优先级沿用 CLI 覆盖高于活动 Profile、活动 Profile 高于用户配置的规则。
+项目配置不能设置 `tui.language`。如果 Profile 或 CLI 覆盖使所选语言无法生效，
+命令会提示检查覆盖设置并保留原配置与当前语言。文件无法写入时也保留当前语言，
+修复写入权限后可重新执行。成功提示使用目标语言，重复选择得到相同配置结果。
 
 ## `/new` 指令
 - `/new` 或 `/new <title>`：开始一个新的模型对话，并为后续请求生成新的 `cid / sid`；提供标题时保存为当前会话标题
