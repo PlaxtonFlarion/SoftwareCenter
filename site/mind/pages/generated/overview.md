@@ -140,12 +140,14 @@ CLI / TUI / stdio MCP / Subscription
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "@playwright/mcp@latest"]
-allow = ["browser_*"]
-deny = ["browser_evaluate", "browser_file_upload"]
+enabled_tools = ["browser_navigate", "browser_snapshot", "browser_take_screenshot"]
+disabled_tools = ["browser_take_screenshot"]
 ```
 
 - `command` 用于 stdio，`url` 用于远程 SSE 或 Streamable HTTP；同一服务只能配置一种目标
-- `allow` 和 `deny` 按原始工具名进行大小写敏感匹配；修改启动期配置后需要重启 Mind
+- `enabled_tools` 和 `disabled_tools` 与 Codex 一致，按原始工具名精确匹配，区分大小写并保留空白，不支持 glob；不要添加 `mcp__服务名__` 前缀
+- 未设置 `enabled_tools` 时默认允许全部工具，显式 `[]` 不暴露任何工具；`disabled_tools` 优先于允许列表，空禁用列表不额外排除工具
+- 工具过滤控制客户端暴露和调用范围，服务仍会连接并发现工具；`enabled = false` 关闭整个服务。修改启动期配置后需要重启 Mind
 
 查看实时参数使用：
 

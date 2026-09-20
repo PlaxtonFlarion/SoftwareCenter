@@ -267,7 +267,7 @@ mind mcp add dbhub --url https://example.com/mcp `
   --required
 ```
 
-远端服务可以重复使用 `--header`、`--env-http-header`、`--allow` 和 `--deny`。`--startup-timeout-sec` 控制启动和工具发现超时，`--tool-timeout-sec` 控制工具调用超时。
+远端服务可以重复使用 `--header`、`--env-http-header`、`--enabled-tool` 和 `--disabled-tool`。`--startup-timeout-sec` 控制启动和工具发现超时，`--tool-timeout-sec` 控制工具调用超时。
 
 `mcp add` 的选项边界如下：
 
@@ -281,10 +281,30 @@ mind mcp add dbhub --url https://example.com/mcp `
 | `--cwd <DIR>` | stdio | 设置子进程工作目录 |
 | `--disabled` | 两者 | 注册但不在启动时启用 |
 | `--required` | 两者 | 初始化失败时让启动失败 |
-| `--allow/--deny <PATTERN>` | 两者 | 按工具名或 glob 过滤，可重复 |
+| `--enabled-tool <NAME>` | 两者 | 只暴露指定原始工具名，精确匹配，可重复；写入 `enabled_tools` |
+| `--disabled-tool <NAME>` | 两者 | 禁用指定原始工具名，优先于允许列表，可重复；写入 `disabled_tools` |
 | `--approval-mode <MODE>` | 两者 | 设置 `auto`、`prompt`、`writes` 或 `approve` 工具审批模式 |
 | `--startup-timeout-sec <SECONDS>` | 两者 | 启动和工具发现超时 |
 | `--tool-timeout-sec <SECONDS>` | 两者 | 工具请求超时 |
+
+例如，只使用一个服务中的两个工具：
+
+```shell
+mind mcp add docs --url https://example.com/mcp --enabled-tool search --enabled-tool fetch
+```
+
+对应 TOML 配置：
+
+```toml
+[mcp_servers.docs]
+url = "https://example.com/mcp"
+enabled_tools = ["search", "fetch"]
+```
+
+`enabled_tools` / `disabled_tools` 与 Codex 使用相同字段和精确匹配语义：区分大小写，保留名称空白，
+不解释 glob，不添加 `mcp__服务名__` 前缀。未设置允许列表时允许全部工具；显式
+`enabled_tools = []` 不暴露任何工具；禁用列表优先，`disabled_tools = []` 不额外排除工具。
+服务仍会连接并发现工具，整个服务的启动由 `enabled` 控制。逐工具 `approval_mode` 只控制审批。
 
 ### OAuth 浏览器登录
 
