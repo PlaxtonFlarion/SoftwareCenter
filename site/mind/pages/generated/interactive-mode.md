@@ -26,6 +26,8 @@
 - 每轮输入框持续接收目标或 `/` 命令
 - 会话会生成 `cid / sid`，用于链路追踪与调用元数据
 
+终端窗口缩放后，界面会自动重排，无需按键触发；输入草稿和审批卡当前选项保持不变。
+
 一句话理解：
 
 - REPL 是连续交互入口
@@ -366,8 +368,12 @@ OAuth 认证失败时，状态中的 `Authorization` 显示安全错误码。按
 [OAuth 登录与恢复说明](cli-usage.md#oauth-浏览器登录) 在终端重新登录，再从菜单重启对应服务。
 `/mcp` 不会自动打开浏览器；OAuth 登录成功后，工具调用仍遵循原审批设置。
 
-MCP 审批卡片在高度不足时保留服务、工具、脱敏参数摘要和风险；长参数会标记截断。
-默认按 `Ctrl+A` 展开脱敏详情，配置过快捷键时使用 `approval.expand_details` 对应按键。
+外接 MCP 工具审批显示 `Allow … to run tool "…"?`，并按参数名排序展示最多三项脱敏摘要；
+字符串合并空白，每项值最多 60 个 Unicode 文本单元，超出时以 `...` 结尾。
+选项为 `Allow`、策略允许时的 `Allow for this session` / `Always allow`，以及 `Cancel`，各附作用说明。
+上下键选择、Enter 提交，Esc 或 `Cancel` 只取消当前本地 MCP 调用，不取消其他排队审批。
+高度不足时优先保留目标问句和选项；默认按 `Ctrl+A` 展开服务、工具、风险、账号及脱敏参数详情，
+配置过快捷键时使用 `approval.expand_details` 对应按键。
 
 根 Turn、子代理、Subscription、Review 和 MCP Hook 在整个工具使用范围内持有连接引用。
 被占用时，交互 stop/restart 显示带目标范围的 `busy`；全量动作在拆除任何连接前检查全部目标。
