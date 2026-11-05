@@ -58,15 +58,19 @@ mind exec "检查当前项目" -c 'model_providers.openai-main.reasoning_effort=
 
 `-c` 只覆盖本次进程。包含数组、字符串或特殊字符的值应按当前 shell 的规则加引号。
 
-本地 JavaScript REPL 和子 Agent 能力由 `config.toml` 的启动期开关控制：
+本地 JavaScript REPL、桌面观察和子 Agent 能力由 `config.toml` 的启动期开关控制：
 
 ```toml
 [features]
-js_repl = false
+js_repl = true
+computer = true
 subagents = false
 ```
 
-将对应值改为 `true` 才会启用能力。
+`js_repl` 和 `computer` 默认开启，可显式设为 `false` 关闭；`subagents` 默认关闭。
+
+`computer` 注册一个桌面观察与输入工具，Windows 源码运行需先发布独立 C# sidecar。
+构建、审批与使用方式见 [原生桌面 Sidecar](desktop-sidecar.md)。
 
 关闭 `js_repl` 会同时移除 `js_repl` 和 `js_repl_reset`；关闭 `subagents`
 会停止注册全部 Agent 协作工具，并禁止创建或控制子 Agent。`[agents]` 仅保留

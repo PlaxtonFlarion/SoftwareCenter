@@ -35,6 +35,12 @@
       "label": "编码代理约定"
     },
     {
+      "source": "CUA_IMPLEMENTATION_CHECKLIST.md",
+      "target": "cua-implementation-checklist.md",
+      "label": "桌面能力迭代清单",
+      "summary": "原生桌面能力的实施范围、验收场景和后续迭代清单。"
+    },
+    {
       "source": "docs/README.md",
       "target": "docs-index.md",
       "label": "文档索引",
@@ -46,6 +52,13 @@
       "label": "命令行使用参考",
       "category": "入门与入口",
       "summary": "适合查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合规则。"
+    },
+    {
+      "source": "docs/desktop-sidecar.md",
+      "target": "desktop-sidecar.md",
+      "label": "原生桌面 Sidecar",
+      "category": "入门与入口",
+      "summary": "Windows 原生桌面 sidecar 的构建、运行资产、Mind 接入和真实桌面验收说明。"
     },
     {
       "source": "docs/interactive-mode.md",

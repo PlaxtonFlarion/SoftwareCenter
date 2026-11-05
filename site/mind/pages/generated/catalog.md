@@ -17,6 +17,8 @@
 
 - [命令行使用参考](cli-usage.md)
   适合查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合规则。
+- [原生桌面 Sidecar](desktop-sidecar.md)
+  Windows 原生桌面 sidecar 的构建、运行资产、Mind 接入和真实桌面验收说明。
 - [交互模式](interactive-mode.md)
   适合看完整 slash 命令、会话管理和输入约束。
 - [订阅模式](agent-mode.md)
