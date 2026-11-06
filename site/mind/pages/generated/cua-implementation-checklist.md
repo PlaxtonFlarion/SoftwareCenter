@@ -31,9 +31,9 @@
 - [ ] 本轮未重新生成完整 Nuitka 可执行程序，未在第二台无 SDK Windows 机器上验收，macOS 尚无产物。
 - [ ] 清理 `.cache/cua-distribution-build`、`.cache/cua-distribution-check`、`.cache/cua-wheel-installed`；自动审批审查以 `blocked by policy` 拒绝删除，当前保留。
 
-发布身份：AppServer `9603c5d3`；R2 对象为
-`toolkit-store/Mind/Windows/cua-win-x64-1.0.0-f022a88de778bd37.zip`，69,483,986 字节，
-SHA-256 `f022a88de778bd3778cc06ba6edfe695469b2092b52bb80d4fa3c60978918777`。
+发布身份：AppServer `43f2a943`；版本保持 `1.0.0`，由内容摘要区分构建；R2 对象为
+`toolkit-store/Mind/Windows/cua-win-x64-1.0.0-3abc60a457960822.zip`，69,484,231 字节，
+SHA-256 `3abc60a4579608220d1c9d9734c082a00d17ea79cb342949edadab34d76b38d6`。
 内网与公开入口均验证相同 CUA 清单，Helix 原哈希保持一致；部署保留 PostgreSQL/Redis，无 SQL 变更。
 
 验证证据：专项测试 74 passed；扩展桌面/JS/终端集合 419 passed、32 skipped（未启用原生测试开关）；
@@ -70,6 +70,11 @@ wheel 为约 1.7 MiB 的 `py3-none-any` 包，wheel / sdist 均不包含原生�
 - [x] 覆盖层已实现点击穿透、不抢焦点、截图排除和失败清理路径；排除效果、多屏和高 DPI 仍需硬件验收。
 - [x] 指针按渲染回调读取真实鼠标位置，输入路径不逐帧等待 WPF；移动终点与点击反馈同步。
 - [x] 会话内复用蓝光和指针窗口，操作结束隐藏并停止动画，关闭会话销毁；重复操作验证无窗口累积。
+- [x] 指针主体缩小到约 15–18 DIP，按目标逻辑短边在 37.8%–44.8% 比例间适配；热点、阴影与点击反馈同步缩放。
+- [x] 尺寸适配的原生专项 10 passed；大小窗口切换、热点偏移中位数小于 12 物理像素、窗口复用与回收通过。窗口尺寸测试避免起点恰好等于终点造成假失败。
+- [x] 公开与内网清单同步至 `1.0.0-3abc60a457960822`；真实 Mind 首次下载并从该用户缓存目录启动。
+- [x] 新尺寸的真实 Mind 零失败验收：`run_d0afe9e909a542fb95ae9a3b8c36a7c4` 完成 12 次移动、计数 1、完整中文输入，工具失败 0，退出码 0，覆盖层全部销毁；证据 `.cache/cua-pointer-small-confirmed-20261106/result.json`。
+- 首轮 `run_4a798bdf814d47cbabe08611d9b2086e` 虽完成相同动作，但模型误用 move 的 start/end 产生两条失败记录，不计通过。已明确 move 使用 target、仅 drag 使用 start/end；工具专项 23 passed；失败证据 `.cache/cua-pointer-small-20261106/result.json` 保留。
 - [x] 本次渲染改版通过真实 Mind TUI 与模型完成 12 次移动、按钮计数 1 和完整中文输入，工具失败 0 次；覆盖层窗口显示且退出后全部销毁。
 - [x] AppServer 按工具调用身份与附件内容共同去重；不同调用返回相同截图仍交付可见图片，真实模型连续观察未再停在仅有附件元数据的状态。
 
