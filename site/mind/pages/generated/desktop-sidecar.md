@@ -1,11 +1,11 @@
 # 原生桌面 Sidecar
 
 桌面观察端口由 `agent/ports/desktop.py` 定义，进程传输由
-`infrastructure/sidecars/desktop/` 实现。Windows 使用独立 C# 进程，不依赖 Codex。
+`infrastructure/sidecars/desktop/` 实现。Windows 使用独立 C# 进程，macOS 使用独立 Swift 进程。
 现有实现提供窗口枚举、UI Automation 控件树、Windows.Graphics.Capture 截图、目标激活、
 鼠标键盘输入和操作覆盖层。Mind 通过单一 `computer` 工具调用，JS 使用现有 REPL 嵌套调用。
 `computer` 与 `js_repl` 默认开启，仍按本次操作的权限规则审批。
-场景验收范围见根目录[迭代清单](cua-implementation-checklist.md)，macOS 留到最后实施。
+场景验收范围见根目录[迭代清单](cua-implementation-checklist.md)。
 
 ## 构建与验证
 
@@ -296,9 +296,80 @@ WGC 帧池、捕获会话、帧和图像资源按请求释放，并限制等待�
 
 ## macOS
 
-共用端口与传输支持平台能力声明和逻辑屏幕点；Swift 原生 sidecar 尚未实现。
-目标采用 Accessibility、ScreenCaptureKit、Quartz CGEvent 和 AppKit 覆盖层。
-Mac 用户需要授予辅助功能与屏幕录制权限；权限归属、撤销、应用升级和签名须实机验证。
-开发使用 Mac 上的 Swift / Xcode 工具链，运行成品不要求 .NET SDK。
-最低系统版本、arm64 / x86_64 发布目标、Retina、Spaces、Secure Input 与签名公证均须
-按清单验收；Windows 协议测试不替代 Mac 原生编译和桌面测试。
+原生实现位于 `sidecars/cua_macos`，最低 macOS 14.2，仅支持 ARM64。
+构建基线为 Xcode 26.3 / Swift 6.2.4；运行成品使用系统框架，不需要 Swift 或 .NET SDK。
+Intel、Rosetta 下的 x64 Python 和低于 14.2 的系统明确返回 `unsupported_platform`。
+单一 `computer` 工具、审批、JS 嵌套调用和 Harness 会话生命周期保持共用。
+
+在仓库根目录构建开发包与测试夹具：
+
+```sh
+source venv/bin/activate
+swift test --package-path sidecars/cua_macos --scratch-path .cache/cua-macos-swift --disable-sandbox
+python sidecars/cua_macos/build.py --version 0.1.0
+swift build --package-path tests/fixtures/cua_macos --scratch-path .cache/cua-macos-fixture --configuration release --disable-sandbox
+python -m pytest tests/infrastructure/sidecars/desktop/test_macos_native.py --cua-native -q -rs
+```
+
+构建目录不可覆盖；同版本重新构建使用显式 `--output <新目录>`。测试默认使用
+`sidecars/cua_macos/publish/0.1.0/runtime/DesktopSidecar.app/Contents/MacOS/desktop-sidecar`，
+其他产物通过 `--cua-macos-executable <绝对路径>` 指定。未授权 GUI 测试会明确跳过；
+协议、父进程退出、输入租约、背压与真实 bundle 安装测试无需代替系统授权。
+GUI 验收只操作专用测试窗口，执行时停止手动输入。
+
+bundle identity 固定为 `com.axionixlabs.desktop-sidecar`。默认 `--identity -` 生成 ad-hoc
+开发包，不能当作已公证发布包；重编译改变 cdhash，不能承诺 TCC 权限随开发版升级保留。
+正式发布使用同一 Developer ID 团队、bundle identity 和 helper 入口：
+
+```sh
+python sidecars/cua_macos/build.py --version 1.0.0 \
+  --identity 'Developer ID Application: <持有人> (<TEAMID>)' \
+  --notary-profile '<现有钥匙串 profile>'
+```
+
+脚本执行 hardened runtime 签名、notarytool 提交、staple、Gatekeeper 校验，成功后才发布新目录。
+`artifact.json` 记录完整文件清单、版本、架构、签名身份、公证状态和归档 SHA-256；
+`runtime/` 只包含 app bundle，ZIP 不带 SDK、构建缓存或测试夹具。
+当前本机没有 Developer ID 身份，开发包不代表正式分发已完成。
+
+生产工厂查询现有 `service=cua, station=darwin, arch=arm64` 契约，安装到
+`~/.mind/runtimes/cua/macos-arm64/<version>-<hash前16位>/DesktopSidecar.app/Contents/MacOS/desktop-sidecar`。
+显式状态根、下载时限、跨进程安装锁、离线复用、损坏拒绝和活动会话固定版本与 Windows 相同。
+解压后只给固定 Mach-O 入口恢复 0755，完整校验签名后原子发布；不会删除隔离属性或绕过 Gatekeeper。
+正式 ZIP 需经 AppServer 上传到 `toolkit-store/Mind/MacOS/` 并部署对应清单。
+本仓库的开发包不会被生产工厂自动采用，也不会回退到 Windows 资产或仓库 publish。
+
+首次系统授权可显式运行开发包入口 `--request-permissions`，按 macOS 提示打开
+“系统设置 → 隐私与安全性”中的辅助功能、屏幕与系统音频录制、输入监控。
+普通握手只做预检，不主动弹窗。系统验证由用户完成，不修改 TCC 数据库。
+授权后关闭旧会话、reset 并重新握手；`captureSupported` 与 `inputSupported` 分别报告，
+输入还要求事件投递和监控可用。宿主审批不替代 TCC；权限实际归属必须用当前启动链路验证，
+不能仅凭设置开关推断成功。撤销或升级后同样需要重新验证。
+从 IDE 或终端直接启动的进程可能由 macOS 归属给宿主：本机 TCC 日志显示 PyCharm
+为 responsible process，单独授权 sidecar 不生效，需要用户为 PyCharm 授权。
+若系统要求重启宿主，先保存工作再重启；不能通过更换启动归属或私有 entitlement 绕过授权。
+
+AX 窗口以 PID、进程启动时间、AX 身份和 CGWindowID 联合识别；无法唯一匹配的窗口不猜测。
+树限制 256 节点、8 层和软时间预算；AX 单次消息有超时。窗口/显示器/Space/权限修订、
+几何及可见性在观察前后核对；移动再移回仍会使旧观察失效。捕获使用 ScreenCaptureKit
+单窗口过滤，排除独立覆盖层、鼠标和阴影。PNG 超过 1 MiB 时尝试 JPEG；超过像素预算时
+等比例缩小，返回真实宽高。截图不在原生观察缓存中保留。
+
+AX 和 CGEvent 使用左上原点逻辑屏幕点；AppKit 使用按主屏顶部转换的坐标。
+截图坐标依据本次图片宽高映射到本次窗口边界，支持负坐标计算；不能直接乘 `displayScale`。
+`WIN` 在 macOS 映射为 Command，`ALT` 映射为 Option，`CTRL` 为 Control；字母键对应 ANSI
+物理键位，F21–F24 明确拒绝。Unicode 文本逐标量提交，不使用剪贴板，最多 2048 个 UTF-16 单元。
+
+输入前及分段执行中检查焦点、遮挡、最新观察和桌面状态。外部输入由事件 tap 触发锁停；
+用户明确允许后才 reset。已知非控制台、锁屏、Secure Input 和系统安全面板会拒绝输入；
+屏幕共享、远程会话等完整矩阵仍需实机确认。独立守护与 sidecar 使用同一签名入口，
+登记按下状态后才提交事件；EOF、父进程异常退出时释放按键、鼠标和光标隐藏计数。
+操作级租约位于 `/tmp/com.axionixlabs.desktop-sidecar-input-<uid>.lock`，冲突不重试桌面动作。
+每个原生请求最多 25 秒，stdout 写入最多 5 秒；退出或 EOF 后无法清理的系统调用由独立时钟终止，
+宿主仍保留 30 秒请求时限和关闭回收。协议错误、取消及未知结果均不可重放。
+
+AppKit 复用一对点击穿透、不抢焦点的蓝光和小指针窗口，CADisplayLink 采样真实系统指针。
+进入/退出动画期间不调度新移动；失败立即隐藏，空闲停止回调，会话结束销毁窗口。
+可运行入口 `--preview 5` 查看不生成输入、自动退出且允许捕获的预览。
+预览退出测试不等于人工视觉或实际呈现帧率验收；Retina、多屏、捕获排除和 P95/P99
+呈现耗时仍按实施清单逐项留证。
