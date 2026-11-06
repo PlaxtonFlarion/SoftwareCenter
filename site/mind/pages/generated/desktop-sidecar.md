@@ -56,10 +56,10 @@ JS 接入回归运行 `python -m pytest tests/integration/test_computer_integrat
 同一 Mind 进程固定已校验的版本。新进程查询新版本，旧版本保留供活动会话使用，不自动删除。
 离线时可复用最后一次完整安装；401/403/404、非法清单或缓存损坏不回退。如果提示缓存损坏，
 先退出使用 CUA 的所有 Mind 进程，只删除错误中指明的版本目录，再启动 Mind 自动重新下载；
-不要在其他会话使用运行库时删除目录。macOS 产物尚未发布，不能把 Windows 包用于 macOS。
+不要在其他会话使用运行库时删除目录。macOS 与 Windows 使用各自的平台包和发布身份。
 
 原生开发仍使用 `sidecars/cua_windows/publish` 作为上传输入，原生定向测试可直接调用该目录。
-发布命令在 AppServer 仓库执行：`python test.py --service cua --version <版本> --project-root <ProxyMind目录>`。
+Windows 发布命令在 AppServer 仓库执行：`python test.py --service cua --station win32 --version <版本> --project-root <ProxyMind目录>`。
 ZIP 与 Helix 共用 bucket 和 `toolkit-store/Mind/Windows/` 前缀，文件名包含版本和摘要，
 但两者有独立清单项。上传成功后提交清单并部署 AppServer，新 Mind 进程才能选到新版本。
 上传脚本复用服务端 R2 环境凭据，不在源码保存凭据，不上传 PDB、bin/obj 或临时 ZIP。
@@ -329,14 +329,17 @@ python sidecars/cua_macos/build.py --version 1.0.0 \
 脚本执行 hardened runtime 签名、notarytool 提交、staple、Gatekeeper 校验，成功后才发布新目录。
 `artifact.json` 记录完整文件清单、版本、架构、签名身份、公证状态和归档 SHA-256；
 `runtime/` 只包含 app bundle，ZIP 不带 SDK、构建缓存或测试夹具。
-当前本机没有 Developer ID 身份，开发包不代表正式分发已完成。
+ad-hoc 包可以通过下载清单分发用于验证，仍不代表 Developer ID 签名、公证或跨机器运行验收已完成。
 
 生产工厂查询现有 `service=cua, station=darwin, arch=arm64` 契约，安装到
 `~/.mind/runtimes/cua/macos-arm64/<version>-<hash前16位>/DesktopSidecar.app/Contents/MacOS/desktop-sidecar`。
 显式状态根、下载时限、跨进程安装锁、离线复用、损坏拒绝和活动会话固定版本与 Windows 相同。
 解压后只给固定 Mach-O 入口恢复 0755，完整校验签名后原子发布；不会删除隔离属性或绕过 Gatekeeper。
-正式 ZIP 需经 AppServer 上传到 `toolkit-store/Mind/MacOS/` 并部署对应清单。
-本仓库的开发包不会被生产工厂自动采用，也不会回退到 Windows 资产或仓库 publish。
+在 AppServer 仓库执行 `python test.py --service cua --station darwin --version <版本> --project-root <ProxyMind目录>`，
+读取 `sidecars/cua_macos/publish/<版本>/artifact.json` 并校验其 ZIP，原样上传至
+`toolkit-store/Mind/MacOS/`，随后提交并部署清单。上传可在 Windows 执行，不重签名、不重压缩；
+公证状态按构建元数据写入发布说明。Mac 与 Windows 的版本、摘要及发布时间分别保存，互不覆盖。
+生产工厂只采用服务端清单选中的包，不会直接读取仓库 publish 或回退到另一平台资产。
 
 首次系统授权可显式运行开发包入口 `--request-permissions`，按 macOS 提示打开
 “系统设置 → 隐私与安全性”中的辅助功能、屏幕与系统音频录制、输入监控。
@@ -371,4 +374,4 @@ AppKit 复用一对点击穿透、不抢焦点的蓝光和小指针窗口，CADi
 进入/退出动画期间不调度新移动；失败立即隐藏，空闲停止回调，会话结束销毁窗口。
 可运行入口 `--preview 5` 查看不生成输入、自动退出且允许捕获的预览。
 预览退出测试不等于人工视觉或实际呈现帧率验收；Retina、多屏、捕获排除和 P95/P99
-呈现耗时仍按实施清单逐项留证。
+呈现耗时仍需分别保留实机验收记录。
