@@ -5,7 +5,6 @@
 现有实现提供窗口枚举、UI Automation 控件树、Windows.Graphics.Capture 截图、目标激活、
 鼠标键盘输入和操作覆盖层。Mind 通过单一 `computer` 工具调用，JS 使用现有 REPL 嵌套调用。
 `computer` 与 `js_repl` 默认开启，仍按本次操作的权限规则审批。
-场景验收范围见根目录[迭代清单](cua-implementation-checklist.md)。
 
 ## 构建与验证
 

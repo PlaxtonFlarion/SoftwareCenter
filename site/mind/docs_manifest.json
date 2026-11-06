@@ -35,12 +35,6 @@
       "label": "编码代理约定"
     },
     {
-      "source": "CUA_IMPLEMENTATION_CHECKLIST.md",
-      "target": "cua-implementation-checklist.md",
-      "label": "桌面能力迭代清单",
-      "summary": "原生桌面能力的实施范围、验收场景和后续迭代清单。"
-    },
-    {
       "source": "docs/README.md",
       "target": "docs-index.md",
       "label": "文档索引",
