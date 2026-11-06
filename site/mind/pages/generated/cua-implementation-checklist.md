@@ -2,7 +2,7 @@
 
 本文件是 Windows / macOS Computer Use 的实施清单、协议基线和交接入口。它只记录可验证的工程事实与待办，不新增架构事实。职责、依赖方向、状态所有权和生命周期以 [ARCHITECTURE.md](client-architecture.md)、[ARCHITECTURE_SYSTEM.md](system-architecture.md) 为准；稳定使用说明以 [docs/desktop-sidecar.md](desktop-sidecar.md) 为准；服务端字段以 protocol/ 和正式服务端契约为准。
 
-更新日期：2026-11-05
+更新日期：2026-11-06
 当前交接目标：在保留 Windows 可运行基线的前提下，由真实 Mac 完成 Swift sidecar、TCC、Retina、多屏、签名和实机验收。
 
 ## 1. 交接结论
@@ -13,22 +13,51 @@
 | Windows 原生 sidecar         | 可运行基线 | C# / .NET 10 自包含 x64 产物可由 Mind 直接调用，已有真实窗口、输入和视觉证据 |
 | Windows 全场景               | 部分完成   | 多屏混合 DPI、长时间压力、跨应用矩阵和若干人工视觉项仍未收口                 |
 | macOS 原生 sidecar           | 未开始     | 当前没有 Mac；不得用 Windows 协议测试或未编译 Swift 源码勾选完成             |
-| Windows 运行产物             | 已收口     | 当前只保留 Mind 直接调用的 publish；另一台无 SDK 真机和正式跨机分发仍待验收  |
+| Windows 运行产物             | 按需分发已验收 | 独立 R2 下载、用户版本缓存和真实 Mind 验收通过；另一台无 SDK 真机仍待验收 |
 
 交接时以“可运行基线”和“未完成边界”两列为准。任何仅有代码、未在真实系统执行并留下证据的项目都保持未完成。
 
 ## 2. 当前可交付物与证据
 
+### 2.0 按需分发收口
+
+- [x] AppServer 清单按 helix / cua 分别签名，同一 R2 bucket 的平台目录保存独立安装包；不修改数据库。
+- [x] 上传脚本校验自包含运行库，生成带版本和 SHA-256 的不可变 CUA ZIP；上传成功后才更新清单。
+- [x] 首次获准调用按需安装到 `.mind/runtimes/cua/win-x64/<version>-<hash>/`，主包不包含原生运行库。
+- [x] 下载有进度与总时限；校验大小、SHA-256、解压边界和完整运行库后原子发布。
+- [x] 跨进程安装锁、连续取消与崩溃恢复、损坏缓存、离线复用、升级期间旧会话固定版本都有测试。
+- [x] wheel 与源码包实建、独立包资产收集路径及架构/协议回归通过；独立安装 wheel 在仓库外成功启动缓存中的原生进程。
+- [x] 发布真实 R2 包、推送与部署服务端，通过真实 Mind TUI 验收首次安装及缓存复用。
+- [ ] 本轮未重新生成完整 Nuitka 可执行程序，未在第二台无 SDK Windows 机器上验收，macOS 尚无产物。
+- [ ] 清理 `.cache/cua-distribution-build`、`.cache/cua-distribution-check`、`.cache/cua-wheel-installed`；自动审批审查以 `blocked by policy` 拒绝删除，当前保留。
+
+发布身份：AppServer `9603c5d3`；R2 对象为
+`toolkit-store/Mind/Windows/cua-win-x64-1.0.0-f022a88de778bd37.zip`，69,483,986 字节，
+SHA-256 `f022a88de778bd3778cc06ba6edfe695469b2092b52bb80d4fa3c60978918777`。
+内网与公开入口均验证相同 CUA 清单，Helix 原哈希保持一致；部署保留 PostgreSQL/Redis，无 SQL 变更。
+
+验证证据：专项测试 74 passed；扩展桌面/JS/终端集合 419 passed、32 skipped（未启用原生测试开关）；
+客户端架构及相关集合 186 passed；服务端契约、上传与架构集合 197 passed。各集合有重叠，不相加计数。
+wheel 为约 1.7 MiB 的 `py3-none-any` 包，wheel / sdist 均不包含原生运行库，源码包保留 C# 源码。
+
+真实 Mind 入口为本节 2.1 的 Python/Mind 命令，使用用户真实 `.mind` 缓存：
+
+- 首轮旧 300 秒上限在慢网下载中超时，未发布半成品；证据 `.cache/cua-on-demand-cold-20261106/result.json`，不计为通过。
+- 修正为安装总时限 900 秒、网络单次读取 30 秒，失败提示说明原因；首装通过，run `run_8d626012550e464e9771c7e1ec823302`，证据 `.cache/cua-on-demand-fixed-20261106/result.json`。
+- 再次启动命中缓存，首次 list_windows 用时 776 ms、无重新下载；run `run_50fa62c89f5b4206a024b9bba61856f6`，证据 `.cache/cua-on-demand-cached-20261106/result.json`。
+- 两轮均为 12 次移动、工具失败 0、Count: 1、中文输入正确、可见覆盖层 2，退出后覆盖层全部销毁。该采样不等同于呈现帧率或多屏验收。
+- 原生 EXE、coreclr、hostfxr、hostpolicy 实际加载自 `.mind/runtimes/cua/win-x64/1.0.0-f022a88de778bd37/`；下载临时 ZIP 已删除。
+
 ### 2.1 Windows 运行资产
 
 - [x] Mind 入口：D:\Projects\ProxyMind\venv\Scripts\python.exe D:\Projects\ProxyMind\mind.py。
 - [x] 当前默认开启 computer 与 js_repl；两者仍经既有 schema、审批和会话生命周期，不增加平台专用 MCP。
-- [x] 原生资产：sidecars/cua_windows/publish/desktop-sidecar.exe 及同目录自包含运行库。
-- [x] 目录只保留最终运行资产；bin、obj、wheel、空 dist、Python 缓存和 pytest 缓存已清理。
-- [x] publish 当前 245 个文件，约 163 MB；SHA-256：FA0EC7224BC2D42AFEC1E3BBC2AB994921051F7FBB415548B344E9E82DF23504。
+- [x] 原生构建资产：sidecars/cua_windows/publish/desktop-sidecar.exe 及同目录自包含运行库，作为独立上传输入。
+- [x] 主包排除原生 publish、bin、obj 和调试符号；安装位置为用户状态根下 runtimes/cua 的版本目录。
+- [x] 独立 ZIP 包含完整 .NET/WPF 自包含运行库，不能只上传 desktop-sidecar.exe。
 - [x] 运行不依赖 codex.exe、@oai/sky、node_repl.exe 或 Codex 缓存目录。
 - [x] .NET SDK 10.0.403 已在构建机完成安装、版本和 Release 构建验收；这不等同于跨机器运行验收。
-- [ ] 尚未在一台未安装 .NET SDK 的另一台 Windows 真机上启动最终 publish；该项验证的是 self-contained 分发，不是 SDK 安装。
+- [ ] 尚未在一台未安装 .NET SDK 的另一台 Windows 真机上启动下载后的最终运行库；该项验证的是跨机器 self-contained 分发，不是 SDK 安装。
 
 ### 2.2 已完成的 Windows 真实证据
 
@@ -39,9 +68,14 @@
 - [x] 目标窗口移动或几何变化时，柔光边界先同步，随后旧观察失效并停止输入。
 - [x] 真实输入期间隐藏系统光标；独立 manager 替换 Windows 系统光标方案为透明光标，结束路径恢复方案和原显示计数，避免出现两个鼠标。
 - [x] 覆盖层已实现点击穿透、不抢焦点、截图排除和失败清理路径；排除效果、多屏和高 DPI 仍需硬件验收。
+- [x] 指针按渲染回调读取真实鼠标位置，输入路径不逐帧等待 WPF；移动终点与点击反馈同步。
+- [x] 会话内复用蓝光和指针窗口，操作结束隐藏并停止动画，关闭会话销毁；重复操作验证无窗口累积。
+- [x] 本次渲染改版通过真实 Mind TUI 与模型完成 12 次移动、按钮计数 1 和完整中文输入，工具失败 0 次；覆盖层窗口显示且退出后全部销毁。
+- [x] AppServer 按工具调用身份与附件内容共同去重；不同调用返回相同截图仍交付可见图片，真实模型连续观察未再停在仅有附件元数据的状态。
 
 ### 2.3 Windows 尚未收口
 
+- [ ] 本次渲染改版后的主观流畅度与像素外观现场确认；窗口状态采样不替代人工视觉验收。
 - [ ] 多显示器、混合 DPI、负坐标、热插拔和显示器变化。
 - [ ] 单屏 125% / 150% / 200% 的真实截图、控件、输入和覆盖层一致性。
 - [ ] Chromium / Electron、自绘无控件树应用和提升权限目标。
@@ -190,6 +224,7 @@ API 入口核对：Accessibility 权限探测使用 AXIsProcessTrustedWithOption
 ### M6：构建、签名、公证与升级
 
 - [ ] 在真实 Mac 构建 arm64；如支持 Intel，再构建 x86_64 并验证原生资产选择。
+- [ ] 接入独立 CUA 清单与 `toolkit-store/Mind/MacOS/` 下载包；明确架构选择、版本缓存和 TCC 签名身份，不回退到 Windows 运行库或仓库 publish。
 - [ ] 生成 Mind 直接调用的最终目录；删除 DerivedData、build、测试截图和临时压缩包。
 - [ ] 完成 Developer ID 签名、公证、安装、首次启动、升级和卸载验证。
 - [ ] 验证签名 identity、bundle path 或 helper 变化不会意外丢失 TCC 权限。

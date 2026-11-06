@@ -44,12 +44,26 @@ JS 接入回归运行 `python -m pytest tests/integration/test_computer_integrat
 
 ## 在 Mind 中启用
 
-源码运行时先完成上述 publish；资产必须位于
-`sidecars/cua_windows/publish/desktop-sidecar.exe`，相对于应用根定位，不依赖当前工作目录。
-`publish` 是可运行资产，`bin/obj` 是可重建的中间产物。发布前校验目录包含自带运行时，
-`build.py` 显式复制原生资产，wheel 使用相同清单且标记为 `win_amd64`，不携带构建缓存。
-日常直接运行源码时，仅需保留完整 `publish` 目录；其中程序、DLL 和自带运行库共同构成运行资产。
-需要分发时再生成 wheel，验证后可以清理安装包和空 `dist`，不影响源码调用。
+源码与打包版统一在首次获准调用 `computer` 时获取 CUA 清单并下载自包含运行库。
+默认启动路径为 `%USERPROFILE%\.mind\runtimes\cua\win-x64\<version>-<hash前16位>\desktop-sidecar.exe`。
+显式设置 `MIND_STATE_HOME` 时，`runtimes` 位于该状态根；不依赖当前工作目录或仓库中的 publish。
+主 wheel、源码分发和 `build.py` 不再包含原生运行库，用户不需要 SDK 或本地构建。
+
+首次安装展示 CUA 下载进度，安装总时限为 900 秒（包含清单、锁等待、下载与校验），单次网络
+读取超时为 30 秒；安装不计入原生 IPC 请求超时。归档大小、SHA-256、解压路径和完整运行库
+通过校验后才原子发布，临时 ZIP 随后删除。取消时等待解压线程结束再清理，进程崩溃留下的
+暂存目录在下一次持锁安装时回收。跨进程 OS 文件锁阻止重复安装与半成品启动。
+
+同一 Mind 进程固定已校验的版本。新进程查询新版本，旧版本保留供活动会话使用，不自动删除。
+离线时可复用最后一次完整安装；401/403/404、非法清单或缓存损坏不回退。如果提示缓存损坏，
+先退出使用 CUA 的所有 Mind 进程，只删除错误中指明的版本目录，再启动 Mind 自动重新下载；
+不要在其他会话使用运行库时删除目录。macOS 产物尚未发布，不能把 Windows 包用于 macOS。
+
+原生开发仍使用 `sidecars/cua_windows/publish` 作为上传输入，原生定向测试可直接调用该目录。
+发布命令在 AppServer 仓库执行：`python test.py --service cua --version <版本> --project-root <ProxyMind目录>`。
+ZIP 与 Helix 共用 bucket 和 `toolkit-store/Mind/Windows/` 前缀，文件名包含版本和摘要，
+但两者有独立清单项。上传成功后提交清单并部署 AppServer，新 Mind 进程才能选到新版本。
+上传脚本复用服务端 R2 环境凭据，不在源码保存凭据，不上传 PDB、bin/obj 或临时 ZIP。
 已安装的旧版 `mind` 不会自动使用源码改动。
 
 在仓库根目录启动本次源码版本，无需修改全局配置：
@@ -97,6 +111,9 @@ await host.emitImage(desktopObservation);
 ```
 
 所有本地工具的结构化元数据始终从 `result.data` 读取，与是否有图片无关。
+`host.tool` 成功返回的对象没有顶层 `ok`，工具失败会抛异常；不要用 `result.ok` 判断成败。
+坐标以截图左上角为原点，必须满足 `0 <= x < image.width`、`0 <= y < image.height`；
+`bounds.x/y` 是窗口在屏幕上的位置，不应叠加到传入的截图坐标。
 `output` 是展示内容，有图片时为图片内容数组；不要把它当作观察对象或丢弃结果外层。
 `host.emitImage(result)` 只展示显式提交的图片。禁止把 Base64 整段打印到日志。
 JS 交互脚本优先用 `var` 保存结果，避免重复声明 `const/let`；辅助依赖先定义再创建调用它的函数。
@@ -162,6 +179,10 @@ dotnet run --configuration Release -- --preview-glow 45
 
 此独立预览不会生成真实输入，允许被捕获以便视觉验收。`computer` 的操作覆盖层复用同一
 蓝光和指针绘制，按系统指针位置移动，并使用 `WDA_EXCLUDEFROMCAPTURE` 排除捕获。
+真实输入的中间位置由 WPF 渲染回调采样，不再让每个鼠标事件同步等待 UI 线程；只在移动终点
+与点击反馈前同步实际位置。不会排队补播过时坐标，也不会让视觉指针先于真实鼠标到达目标。
+每个原生会话复用一对蓝光和指针窗口；操作结束立即隐藏、解除渲染回调并移除点击动画时钟，
+会话关闭时销毁。下次显示前重新定位，避免旧位置闪现；隐藏窗口不持续驱动动画。
 覆盖层不激活。真实输入期间，sidecar 启动独立的 system cursor manager 子进程，把 Windows
 系统光标方案替换为透明光标，同时在目标输入线程隐藏原生光标；操作终止、sidecar 崩溃或
 父进程退出都会恢复原有光标方案和显示计数，避免出现两个鼠标或遗留隐形光标；
@@ -171,6 +192,18 @@ dotnet run --configuration Release -- --preview-glow 45
 原生测试 `test_glow_preview.py` 验证预览窗口显示、前台保持、
 穿透样式、小窗口尺寸、指针移动与蓝光位置独立、自动关闭及非法时长。
 实际点击穿透、多屏、高 DPI 与截图排除仍需独立验收。
+
+完整模型链路可在 Windows 交互桌面运行：
+
+```powershell
+dotnet build tests/fixtures/cua_windows/Fixture.csproj --configuration Release
+python -m tests.manual.cua_visual_acceptance --directory .cache/cua-visual-acceptance
+```
+
+证据目录必须不存在；先构建原生测试夹具。该脚本通过操作系统 PTY 启动实际 `mind.py`，使用
+当前模型配置和独立运行状态，由模型调用 `computer` 完成移动、点击及中文输入。采样器只读
+专用窗口的计数、文字和覆盖层状态。通过条件包括 12 次成功移动、无工具失败、计数和中文输入
+正确、出现两层覆盖窗口且会话退出后全部销毁。采样记录不等于显示器呈现帧率，主观流畅度仍需现场观察。
 
 ## 私有 IPC v1
 
