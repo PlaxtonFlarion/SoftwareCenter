@@ -146,7 +146,7 @@ W > B:
 输出适配器明确计入 Windows 后端在可绘制宽度之外预留的一列，普通 VT 输出不扣除该列；
 不扩大底层安全写入宽度。排队模式为百分比预留固定宽度，位数变化和恢复隐藏期间不改变
 排队提示的完整或简短版本；仍放不下则隐藏用量。更新隐藏或裁剪掉的用量不请求额外重绘。
-历史搜索、退出确认、回看、菜单和隐藏模式遵循原有表面优先级。
+历史搜索、回看、菜单和隐藏模式遵循原有表面优先级。
 
 ## 退出摘要契约
 
@@ -204,8 +204,8 @@ total 为该 input 加 output；reasoning 已在 output 内，不再相加。缓
 | 空闲退出别名 | `prompting/commands.py` → `session/dispatch.py` → lifecycle.request_stop → DispatchAction.EXIT |
 | 流式执行中的退出或 shutdown | dispatcher → `session/barriers.py.handle_stream_command` → stop/cancel → `session/loop.py` 收束 |
 | 前台等待、删除或恢复删除屏障 | `barriers.py._handle_wait_command` 接受退出/shutdown并取消本地等待；不伪造远端完成 |
-| Ctrl+C | `core/submission.py.interrupt_input` 按草稿、活动中断、退出确认处理 → `loop.py` 捕获中断或消费退出请求 |
-| Ctrl+D | keymap 的空闲空输入过滤 → submission.exit_input → EOF → loop.request_stop |
+| Ctrl+C | 当前表面优先取消；`core/submission.py.interrupt_input` 按草稿、活动中断、空闲直接退出处理 → `loop.py` 捕获中断或消费退出请求 |
+| Ctrl+D | keymap 的主输入区空输入过滤 → submission.exit_input → EOF → loop.request_stop；活动任务期间也可退出本地观察 |
 | 启动恢复/重新附着 | `loop.py` 恢复等待也捕获 TuiInterruptRequested/EOF；流式附着复用 dispatcher；未追平前不显示中间用量 |
 | archive/delete成功 | dispatch → conversation 生命周期操作 → 完成事实 → stop → 统一收尾；恢复其他会话不 stop |
 | 所有正式退出 | `frontends/cli/bootstrap.py.finalize_application` → conversation.end → runtime.close → resources.close → 摘要 |
