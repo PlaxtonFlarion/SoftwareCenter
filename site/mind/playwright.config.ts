@@ -7,7 +7,7 @@ export default defineConfig({
   retries: 0,
   workers: 2,
   timeout: 30_000,
-  reporter: 'list',
+  reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4321',
     channel: process.env.DOCS_BROWSER_CHANNEL,

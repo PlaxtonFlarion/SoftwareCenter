@@ -32,6 +32,7 @@ npm test
 ```
 
 `npm run build` 依次执行正文同步、Astro 类型检查、静态构建、Pagefind 索引和 HTML 校验。
+发布构建使用 `astro build --force` 全量生成正文，确保代码高亮等渲染配置变更后，页面不会引用旧缓存中的资源文件。
 浏览器测试覆盖桌面和手机的深浅主题、中文与命令搜索、键盘焦点、导航、书签、行宽与 WCAG 检查。
 本机已有 Chrome 时，可在启动测试前设置 `DOCS_BROWSER_CHANNEL=chrome`。
 

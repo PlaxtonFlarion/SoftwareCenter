@@ -44,7 +44,20 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
       expressiveCode: {
         themes: ['github-light', 'github-dark'],
-        styleOverrides: { borderRadius: '0.5rem', codeFontSize: '0.875rem', codeLineHeight: '1.7' },
+        styleOverrides: {
+          borderRadius: '0.5rem',
+          borderColor: 'var(--sl-color-gray-5)',
+          codeBackground: 'var(--code-surface)',
+          codeFontFamily: 'var(--sl-font-mono)',
+          codeFontSize: '0.875rem',
+          codeLineHeight: '1.7',
+          frames: {
+            frameBoxShadowCssValue: 'none',
+            terminalBackground: 'var(--code-surface)',
+            terminalTitlebarBackground: 'var(--surface-raised)',
+            terminalTitlebarBorderBottomColor: 'var(--sl-color-gray-5)',
+          },
+        },
       },
       pagination: true,
       disable404Route: true,

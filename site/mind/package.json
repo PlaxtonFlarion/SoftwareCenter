@@ -6,7 +6,7 @@
   "scripts": {
     "sync": "python scripts/sync_docs.py",
     "dev": "npm run sync && astro dev",
-    "build": "npm run sync && astro check && astro build && python scripts/check_site.py",
+    "build": "npm run sync && astro check && astro build --force && python scripts/check_site.py",
     "preview": "astro preview",
     "test": "playwright test"
   },

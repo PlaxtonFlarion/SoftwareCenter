@@ -2,7 +2,7 @@
 import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
 import product from '../generated/product.json';
 ---
-<DefaultFooter />
+{Astro.locals.starlightRoute.entry.data.template !== 'splash' && <DefaultFooter />}
 <div class="site-footer" data-pagefind-ignore>
   <span>© {product.year} {product.name}</span>
   <nav aria-label="页脚链接">
