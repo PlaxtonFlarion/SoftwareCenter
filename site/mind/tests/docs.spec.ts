@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Route } from '@playwright/test';
 
 for (const path of ['/', '/getting-started/', '/generated/cli-usage/', '/generated/desktop-sidecar/']) {
   test(`${path} 阅读布局与无障碍`, async ({ page }) => {
@@ -106,4 +106,54 @@ test('失效页面提供返回入口', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText('页面未找到');
   await page.getByRole('link', { name: '返回文档首页', exact: true }).click();
   await expect(page.locator('.home-hero')).toBeVisible();
+});
+
+test('空闲回调不执行时仍可搜索和访问代码区', async ({ page }) => {
+  await page.addInitScript(() => { window.requestIdleCallback = () => 1; });
+  await page.goto('/generated/desktop-sidecar/');
+  const inaccessible = await page.locator('.expressive-code pre').evaluateAll((blocks) => blocks
+    .filter((block) => block.scrollWidth > block.clientWidth && block.getAttribute('tabindex') !== '0')
+    .map((block) => block.textContent));
+  expect(inaccessible).toEqual([]);
+  await page.locator('button[data-open-modal]').click();
+  const input = page.getByRole('dialog').locator('.pagefind-ui__search-input');
+  await expect(input).toBeFocused();
+  await input.fill('审批');
+  await expect(page.getByRole('dialog').locator('.pagefind-ui__result-link').first()).toBeVisible();
+});
+
+test('搜索资源加载失败时可关闭并重新加载页面', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('button[data-open-modal]')).toBeEnabled();
+  await page.route('**/ui-core.*.js', (route) => route.abort());
+  await page.locator('button[data-open-modal]').click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('status')).toContainText('搜索加载失败');
+  await expect(dialog.getByRole('button', { name: '重新加载页面' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await page.unroute('**/ui-core.*.js');
+  await page.locator('button[data-open-modal]').click();
+  await dialog.getByRole('button', { name: '重新加载页面' }).click();
+  await page.locator('button[data-open-modal]').click();
+  await expect(dialog.locator('.pagefind-ui__search-input')).toBeFocused();
+});
+
+test('关闭搜索后完成加载不会抢焦点或重复创建输入框', async ({ page }) => {
+  await page.goto('/');
+  const requests: Route[] = [];
+  await page.route('**/ui-core.*.js', (route) => { requests.push(route); });
+  const open = page.locator('button[data-open-modal]');
+  await open.click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('status')).toContainText('正在准备搜索');
+  await expect.poll(() => requests.length).toBe(1);
+  await dialog.getByRole('button', { name: '关闭搜索' }).click();
+  await requests[0].continue();
+  await page.unroute('**/ui-core.*.js');
+  await expect(page.locator('.pagefind-ui__search-input')).toHaveCount(1);
+  await expect(open).toBeFocused();
+  await open.click();
+  await expect(dialog.locator('.pagefind-ui__search-input')).toBeFocused();
+  await expect(dialog.locator('.pagefind-ui__search-input')).toHaveCount(1);
 });

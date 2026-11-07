@@ -15,8 +15,8 @@
 | Node.js | `.node-version` 指定的 `24.21.0`；如控制台设置了 `NODE_VERSION`，需与之保持一致 |
 | Python | Python 3.11 或更新版本，`python` 命令可用；无需 pip 依赖 |
 
-现有 Pages 项目的构建命令需改为本表中的命令；仓库文件不会自动修改控制台里保存的构建命令。
-不再使用 MkDocs 构建配置。依赖通过 `package-lock.json` 与 `npm ci` 固定。
+Pages 控制台的构建命令必须与本表一致；仓库文件不会自动修改控制台里保存的构建命令。
+依赖通过 `package-lock.json` 与 `npm ci` 固定。
 
 ## 公开仓库布局
 

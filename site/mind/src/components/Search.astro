@@ -1,0 +1,154 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+const label = Astro.locals.t('search.label');
+---
+<site-search>
+  <button data-open-modal disabled aria-label={label} aria-keyshortcuts="Control+K" aria-haspopup="dialog" aria-controls="document-search">
+    <Icon name="magnifier" />
+    <span class="sl-hidden md:sl-block" aria-hidden="true">{label}</span>
+    <kbd class="sl-hidden md:sl-block" aria-hidden="true">Ctrl K</kbd>
+  </button>
+  <dialog id="document-search" aria-label={label}>
+    <div class="search-frame">
+      <div class="search-heading"><span>{label}</span><button data-close-modal aria-label="关闭搜索">关闭 <kbd aria-hidden="true">Esc</kbd></button></div>
+      <p data-search-status role="status" hidden>正在准备搜索…</p>
+      <button data-reload-search hidden>重新加载页面</button>
+      <div class="search-container"></div>
+    </div>
+  </dialog>
+</site-search>
+
+<script>
+  import type { PagefindUI } from '@pagefind/default-ui';
+  import messages from '../content/i18n/zh-CN.json';
+
+  /** 管理当前页面的搜索加载、弹窗焦点和监听器生命周期。 */
+  class DocumentSearch extends HTMLElement {
+    private controller?: AbortController;
+    private ui?: PagefindUI;
+    private loading?: Promise<void>;
+
+    /** 挂载当前页面的交互，并在首次打开时加载搜索组件。 */
+    connectedCallback() {
+      const openButton = this.querySelector<HTMLButtonElement>('[data-open-modal]');
+      const closeButton = this.querySelector<HTMLButtonElement>('[data-close-modal]');
+      const reloadButton = this.querySelector<HTMLButtonElement>('[data-reload-search]');
+      const status = this.querySelector<HTMLElement>('[data-search-status]');
+      const container = this.querySelector<HTMLElement>('.search-container');
+      const dialog = this.querySelector('dialog');
+      if (!openButton || !closeButton || !reloadButton || !status || !container || !dialog) {
+        throw new Error('搜索组件缺少必要元素');
+      }
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const focusInput = () => container.querySelector('input')?.focus();
+
+      /** 用户打开时立即初始化；关闭或移除组件后不抢夺焦点。 */
+      const initialize = async () => {
+        status.hidden = false;
+        if (import.meta.env.DEV) {
+          status.textContent = '全文搜索请在构建后使用预览服务验证。';
+          return;
+        }
+        container.setAttribute('aria-busy', 'true');
+        try {
+          const { PagefindUI } = await import('@pagefind/default-ui');
+          if (signal.aborted) return;
+          this.ui = new PagefindUI({
+            element: container,
+            bundlePath: `${import.meta.env.BASE_URL}pagefind/`,
+            baseUrl: import.meta.env.BASE_URL,
+            showImages: false,
+            showSubResults: true,
+            translations: {
+              placeholder: messages['search.label'],
+              ...Object.fromEntries(Object.entries(messages)
+                .filter(([key]) => key.startsWith('pagefind.'))
+                .map(([key, value]) => [key.slice('pagefind.'.length), value])),
+            },
+          });
+          status.hidden = true;
+          if (dialog.open) focusInput();
+        } catch {
+          if (signal.aborted) return;
+          status.textContent = '搜索加载失败，请检查网络并重新加载页面。';
+          reloadButton.hidden = false;
+        } finally {
+          if (!signal.aborted) container.removeAttribute('aria-busy');
+        }
+      };
+
+      const open = () => {
+        dialog.showModal();
+        document.body.setAttribute('data-search-modal-open', '');
+        if (this.ui) focusInput();
+        else this.loading ??= initialize();
+      };
+      openButton.addEventListener('click', open, { signal });
+      closeButton.addEventListener('click', () => dialog.close(), { signal });
+      reloadButton.addEventListener('click', () => window.location.reload(), { signal });
+      dialog.addEventListener('close', () => {
+        document.body.removeAttribute('data-search-modal-open');
+        openButton.focus();
+      }, { signal });
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog || (event.target instanceof Element && event.target.closest('a[href]'))) {
+          dialog.close();
+        }
+      }, { signal });
+      window.addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          if (!event.repeat) dialog.open ? dialog.close() : open();
+        }
+      }, { signal });
+      if (/(Mac|iPhone|iPad|iPod)/i.test(navigator.platform)) {
+        openButton.setAttribute('aria-keyshortcuts', 'Meta+K');
+        const shortcut = openButton.querySelector('kbd');
+        if (shortcut) shortcut.textContent = '⌘ K';
+      }
+      openButton.disabled = false;
+    }
+
+    /** 移除监听器并销毁当前页面的搜索实例。 */
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.ui?.destroy();
+      this.ui = undefined;
+      this.loading = undefined;
+      document.body.removeAttribute('data-search-modal-open');
+    }
+  }
+  customElements.define('site-search', DocumentSearch);
+</script>
+
+<style>
+  site-search { display: contents; }
+  button { font: inherit; cursor: pointer; color: var(--sl-color-gray-2); }
+  button[data-open-modal] { display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--sl-color-gray-5); font-size: 0.875rem; }
+  button[data-open-modal]:hover { border-color: var(--sl-color-gray-3); }
+  button[data-open-modal] > kbd { margin-inline-start: auto; }
+  kbd { font: inherit; font-size: 0.75rem; border-radius: 0.2rem; padding: 0.1rem 0.35rem; background: var(--sl-color-gray-6); }
+  dialog { margin: 4rem auto auto; padding: 0; width: min(40rem, calc(100% - 2rem)); max-height: calc(100dvh - 8rem); color: var(--sl-color-gray-1); background: var(--sl-color-black); border: 1px solid var(--sl-color-gray-5); box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 18%); }
+  .search-frame { padding: 1.5rem; }
+  .search-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; font-size: 0.8125rem; }
+  [data-close-modal] { display: flex; align-items: center; gap: 0.5rem; border: 0; background: transparent; min-height: 2rem; }
+  [data-search-status] { padding: 1.5rem 0; font-size: 0.875rem; color: var(--sl-color-gray-2); }
+  [data-reload-search] { background: var(--sl-color-accent-low); border: 1px solid var(--sl-color-gray-5); border-radius: 0.25rem; padding: 0.5rem 0.75rem; }
+  .search-container { --pagefind-ui-primary: var(--sl-color-accent-high); --pagefind-ui-text: var(--sl-color-gray-1); --pagefind-ui-background: var(--sl-color-black); --pagefind-ui-border: var(--sl-color-gray-5); --pagefind-ui-tag: var(--sl-color-gray-6); --pagefind-ui-font: var(--sl-font); --pagefind-ui-border-width: 1px; --pagefind-ui-border-radius: 0.35rem; }
+  @media (max-width: 49.99rem) {
+    dialog { margin: 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; border: 0; }
+    .search-frame { padding: 1rem; }
+    [data-close-modal] { min-height: 2.75rem; }
+    [data-open-modal] { justify-content: center; }
+  }
+</style>
+<style is:global>
+  @import url('@pagefind/default-ui/css/ui.css') layer(starlight.core);
+  [data-search-modal-open] { overflow: hidden; }
+  .search-container .pagefind-ui__search-input { color: var(--sl-color-white); font-weight: 400; }
+  .search-container .pagefind-ui__result-link { text-underline-offset: 0.2em; }
+  .search-container .pagefind-ui__result-title { font-weight: 600; }
+  .search-container .pagefind-ui__result-excerpt { line-height: 1.7; overflow-wrap: anywhere; }
+  .search-container mark { background: var(--sl-color-accent-low); color: var(--sl-color-accent-high); }
+</style>
