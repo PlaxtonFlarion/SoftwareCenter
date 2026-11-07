@@ -23,6 +23,9 @@ export default defineConfig({
       components: {
         Header: './src/components/Header.astro',
         SiteTitle: './src/components/SiteTitle.astro',
+        ThemeSelect: './src/components/ThemeControl.astro',
+        ThemeProvider: './src/components/ThemeProvider.astro',
+        PageTitle: './src/components/PageHeading.astro',
         Hero: './src/components/HomeHero.astro',
         Footer: './src/components/Footer.astro',
       },

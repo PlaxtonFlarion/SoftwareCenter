@@ -14,6 +14,13 @@ const label = Astro.locals.t('search.label');
       <p data-search-status role="status" hidden>正在准备搜索…</p>
       <button data-reload-search hidden>重新加载页面</button>
       <div class="search-container"></div>
+      <nav class="search-shortcuts" aria-label="常用文档">
+        <p>也可以从这里开始</p>
+        <a href="/getting-started/"><span>安装与首次配置</span><span aria-hidden="true">↗</span></a>
+        <a href="/reference/"><span>常用命令与快捷键</span><span aria-hidden="true">↗</span></a>
+        <a href="/generated/cli-usage/#外部-mcp-管理"><span>连接外部 MCP 工具</span><span aria-hidden="true">↗</span></a>
+      </nav>
+      <p class="search-hint">输入任务、命令或关键词，例如「审批」「/resume」。</p>
     </div>
   </dialog>
 </site-search>
@@ -42,6 +49,7 @@ const label = Astro.locals.t('search.label');
       this.controller = new AbortController();
       const { signal } = this.controller;
       const focusInput = () => container.querySelector('input')?.focus();
+      let returnFocus: HTMLElement | null = null;
 
       /** 用户打开时立即初始化；关闭或移除组件后不抢夺焦点。 */
       const initialize = async () => {
@@ -79,6 +87,8 @@ const label = Astro.locals.t('search.label');
       };
 
       const open = () => {
+        if (dialog.open) return;
+        returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : openButton;
         dialog.showModal();
         document.body.setAttribute('data-search-modal-open', '');
         if (this.ui) focusInput();
@@ -89,7 +99,8 @@ const label = Astro.locals.t('search.label');
       reloadButton.addEventListener('click', () => window.location.reload(), { signal });
       dialog.addEventListener('close', () => {
         document.body.removeAttribute('data-search-modal-open');
-        openButton.focus();
+        if (returnFocus?.isConnected) returnFocus.focus();
+        else openButton.focus();
       }, { signal });
       dialog.addEventListener('click', (event) => {
         if (event.target === dialog || (event.target instanceof Element && event.target.closest('a[href]'))) {
@@ -125,17 +136,25 @@ const label = Astro.locals.t('search.label');
 <style>
   site-search { display: contents; }
   button { font: inherit; cursor: pointer; color: var(--sl-color-gray-2); }
-  button[data-open-modal] { display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--sl-color-gray-5); font-size: 0.875rem; }
+  button[data-open-modal] { display: flex; align-items: center; gap: 0.6rem; width: 100%; min-height: 2.75rem; padding: 0.5rem 0.75rem; border: 1px solid var(--sl-color-gray-5); font-size: 0.8125rem; }
   button[data-open-modal]:hover { border-color: var(--sl-color-gray-3); }
   button[data-open-modal] > kbd { margin-inline-start: auto; }
   kbd { font: inherit; font-size: 0.75rem; border-radius: 0.2rem; padding: 0.1rem 0.35rem; background: var(--sl-color-gray-6); }
-  dialog { margin: 4rem auto auto; padding: 0; width: min(40rem, calc(100% - 2rem)); max-height: calc(100dvh - 8rem); color: var(--sl-color-gray-1); background: var(--sl-color-black); border: 1px solid var(--sl-color-gray-5); box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 18%); }
+  dialog { margin: 6rem auto auto; padding: 0; width: min(42rem, calc(100% - 2rem)); max-height: calc(100dvh - 8rem); color: var(--sl-color-gray-1); background: var(--surface-raised); border: 1px solid var(--sl-color-gray-5); box-shadow: var(--shadow-dialog); overscroll-behavior: contain; }
   .search-frame { padding: 1.5rem; }
   .search-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; font-size: 0.8125rem; }
-  [data-close-modal] { display: flex; align-items: center; gap: 0.5rem; border: 0; background: transparent; min-height: 2rem; }
+  [data-close-modal] { display: flex; align-items: center; gap: 0.5rem; border: 0; border-radius: 0.35rem; background: transparent; min-height: 2.75rem; padding-inline: 0.5rem; }
+  [data-close-modal]:hover { color: var(--sl-color-white); background: var(--sl-color-gray-6); }
   [data-search-status] { padding: 1.5rem 0; font-size: 0.875rem; color: var(--sl-color-gray-2); }
   [data-reload-search] { background: var(--sl-color-accent-low); border: 1px solid var(--sl-color-gray-5); border-radius: 0.25rem; padding: 0.5rem 0.75rem; }
-  .search-container { --pagefind-ui-primary: var(--sl-color-accent-high); --pagefind-ui-text: var(--sl-color-gray-1); --pagefind-ui-background: var(--sl-color-black); --pagefind-ui-border: var(--sl-color-gray-5); --pagefind-ui-tag: var(--sl-color-gray-6); --pagefind-ui-font: var(--sl-font); --pagefind-ui-border-width: 1px; --pagefind-ui-border-radius: 0.35rem; }
+  .search-container { --pagefind-ui-primary: var(--sl-color-accent-high); --pagefind-ui-text: var(--sl-color-gray-1); --pagefind-ui-background: var(--surface-raised); --pagefind-ui-border: var(--sl-color-gray-5); --pagefind-ui-tag: var(--sl-color-gray-6); --pagefind-ui-font: var(--sl-font); --pagefind-ui-border-width: 1px; --pagefind-ui-border-radius: 0.5rem; }
+  .search-shortcuts { margin-top: 1.25rem; }
+  .search-frame:has(:global(.pagefind-ui__search-input:not(:placeholder-shown))) .search-shortcuts { display: none; }
+  .search-shortcuts p, .search-hint { color: var(--sl-color-gray-3); font-size: 0.75rem; }
+  .search-shortcuts p { margin-bottom: 0.5rem; }
+  .search-shortcuts a { display: flex; justify-content: space-between; gap: 1rem; color: var(--sl-color-gray-1); padding: 0.75rem; border-radius: 0.4rem; font-size: 0.875rem; text-decoration: none; }
+  .search-shortcuts a:hover { color: var(--sl-color-accent-high); background: var(--sl-color-accent-low); }
+  .search-hint { margin: 1rem 0 0; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-5); }
   @media (max-width: 49.99rem) {
     dialog { margin: 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; border: 0; }
     .search-frame { padding: 1rem; }
@@ -149,6 +168,8 @@ const label = Astro.locals.t('search.label');
   .search-container .pagefind-ui__search-input { color: var(--sl-color-white); font-weight: 400; }
   .search-container .pagefind-ui__result-link { text-underline-offset: 0.2em; }
   .search-container .pagefind-ui__result-title { font-weight: 600; }
+  .search-container .pagefind-ui__search-input:focus { outline: 2px solid var(--sl-color-accent); outline-offset: 2px; }
+  .search-container .pagefind-ui__result-link:hover { color: var(--sl-color-accent-high); }
   .search-container .pagefind-ui__result-excerpt { line-height: 1.7; overflow-wrap: anywhere; }
   .search-container mark { background: var(--sl-color-accent-low); color: var(--sl-color-accent-high); }
 </style>

@@ -1,7 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Route } from '@playwright/test';
+import manifest from '../docs_manifest.json' with { type: 'json' };
+import { readingThemes } from '../src/reading-themes';
 
-for (const path of ['/', '/getting-started/', '/generated/cli-usage/', '/generated/desktop-sidecar/']) {
+for (const path of ['/', '/getting-started/', '/capabilities/', '/reference/', '/generated/cli-usage/', '/generated/desktop-sidecar/']) {
   test(`${path} 阅读布局与无障碍`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -60,14 +62,112 @@ test('键盘关闭搜索后恢复焦点，空结果可重新搜索', async ({ pa
 
 test('主题选择与跨页面持久化', async ({ page }) => {
   await page.goto('/');
-  const select = page.locator('header starlight-theme-select select');
-  await select.selectOption('dark');
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  const themes = page.locator('header reading-theme');
+  const surfaces = new Set<string>();
+  for (const theme of readingThemes) {
+    await themes.getByRole('button', { name: '选择阅读主题' }).click();
+    await expect(themes.getByRole('group', { name: '四款阅读主题' }).getByRole('button')).toHaveCount(4);
+    await themes.getByRole('button', { name: theme.name, exact: true }).click();
+    await expect(page.locator('html')).toHaveAttribute('data-reading-theme', theme.id);
+    await expect(page.locator('html')).toHaveAttribute('data-theme', theme.mode);
+    await expect(themes.getByRole('button', { name: '选择阅读主题' })).toBeFocused();
+    surfaces.add(await page.locator('html').evaluate((element) => getComputedStyle(element).getPropertyValue('--sl-color-black')));
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-reading-theme', theme.id);
+  }
+  expect(surfaces.size).toBe(4);
   await page.getByRole('link', { name: '开始使用' }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await select.selectOption('light');
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'nebula');
+  await themes.getByRole('button', { name: '选择阅读主题' }).click();
+  await expect(themes.getByRole('button', { name: '星河入梦', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
+  await expect(themes.locator('.theme-panel')).toBeHidden();
+  await expect(themes.getByRole('button', { name: '选择阅读主题' })).toBeFocused();
+});
+
+test('首次访问按系统外观选择主题，减少动态效果时不执行展开动画', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
+  await page.goto('/getting-started/');
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'dawn');
+  await page.emulateMedia({ colorScheme: 'dark' });
   await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'forest');
+  const themes = page.locator('header reading-theme');
+  await themes.getByRole('button', { name: '选择阅读主题' }).click();
+  await themes.getByRole('button', { name: '落日熔金', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'amber');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+});
+
+for (const theme of readingThemes) {
+  test(`${theme.name} 首页、正文与主题面板的对比度`, async ({ page }) => {
+    await page.goto('/');
+    const themes = page.locator('header reading-theme');
+    await themes.getByRole('button', { name: '选择阅读主题' }).click();
+    await themes.getByRole('button', { name: theme.name, exact: true }).click();
+    await expect(page.locator('html')).toHaveAttribute('data-reading-theme', theme.id);
+    await themes.getByRole('button', { name: '选择阅读主题' }).click();
+    const home = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(home.violations).toEqual([]);
+    await page.keyboard.press('Escape');
+    await page.getByRole('link', { name: '开始使用', exact: true }).click();
+    const document = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(document.violations).toEqual([]);
+  });
+}
+
+test('全部文档页面保持布局与主题入口一致', async ({ page }) => {
+  test.setTimeout(90_000);
+  const routes = ['/getting-started/', '/capabilities/', '/reference/', '/generated/catalog/',
+    ...manifest.entries.map((entry) => `/generated/${entry.target.replace(/\.md$/, '')}/`)];
+  for (const route of routes) {
+    await test.step(route, async () => {
+      const response = await page.goto(route);
+      expect(response?.status()).toBe(200);
+      await expect(page.locator('.page-heading h1')).toHaveCount(1);
+      await expect(page.locator('header reading-theme .theme-trigger')).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    });
+  }
+});
+
+test('搜索快捷入口、清空查询和原位置焦点恢复', async ({ page }) => {
+  await page.goto('/');
+  const trigger = page.getByRole('link', { name: '开始使用', exact: true });
+  await trigger.focus();
+  await page.keyboard.press('Control+k');
+  const dialog = page.getByRole('dialog');
+  const shortcuts = dialog.getByRole('navigation', { name: '常用文档' });
+  await expect(shortcuts).toBeVisible();
+  const input = dialog.locator('.pagefind-ui__search-input');
+  await input.fill('MCP');
+  await expect(shortcuts).toBeHidden();
+  await dialog.getByRole('button', { name: '清空', exact: true }).click();
+  await expect(shortcuts).toBeVisible();
+  await input.fill('会话');
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await page.keyboard.press('Control+k');
+  await expect(shortcuts).toBeVisible();
+  await shortcuts.getByRole('link', { name: '安装与首次配置' }).click();
+  await expect(page).toHaveURL(/\/getting-started\/$/);
+});
+
+test('窄屏页头操作不重叠且菜单可以打开', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto('/getting-started/');
+  const theme = page.locator('header reading-theme');
+  const menu = page.getByRole('button', { name: '菜单', exact: true });
+  const themeBounds = await theme.boundingBox();
+  const menuBounds = await menu.boundingBox();
+  expect(themeBounds).not.toBeNull();
+  expect(menuBounds).not.toBeNull();
+  if (!themeBounds || !menuBounds) throw new Error('页头操作区域缺失');
+  expect(themeBounds.x + themeBounds.width).toBeLessThanOrEqual(menuBounds.x - 4);
+  await menu.click();
+  await page.getByRole('navigation', { name: '主导航' }).getByRole('link', { name: 'Hooks 配置', exact: true }).click();
+  await expect(page).toHaveURL(/\/generated\/hooks\/$/);
 });
 
 test('中文章节与旧 OAuth 书签', async ({ page }) => {

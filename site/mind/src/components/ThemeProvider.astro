@@ -1,0 +1,20 @@
+---
+import { readingThemes } from '../reading-themes';
+---
+<script is:inline define:vars={{ readingThemes }}>
+  /** 在首次绘制前恢复阅读主题；未选择时按系统外观确定初始配色。 */
+  (() => {
+    let saved = null;
+    try {
+      saved = localStorage.getItem('docs-reading-theme');
+    } catch (error) {
+      if (!(error instanceof DOMException)) throw error;
+    }
+    const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'forest' : 'dawn';
+    const theme = readingThemes.find((item) => item.id === saved)
+      ?? readingThemes.find((item) => item.id === preferred);
+    document.documentElement.dataset.readingTheme = theme.id;
+    document.documentElement.dataset.theme = theme.mode;
+    document.documentElement.style.colorScheme = theme.mode;
+  })();
+</script>

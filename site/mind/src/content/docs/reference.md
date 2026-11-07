@@ -1,9 +1,11 @@
 ---
 title: 常用命令速查
-description: 快速查找会话、模型、权限和工具连接相关的常用命令。
+description: 按目标查找命令，区分终端入口、对话内操作与任务执行中的快捷键。
 ---
 
-这里提供常用入口。完整参数和组合规则见[命令行使用参考](/generated/cli-usage/)，slash 命令的完整行为见[交互模式](/generated/interactive-mode/)。
+`mind …` 命令在系统终端中执行；以 `/` 开头的命令在交互对话中输入。完整参数见[命令行使用参考](/generated/cli-usage/)，对话操作见[交互模式](/generated/interactive-mode/)。
+
+<nav class="reading-path" aria-label="命令分类"><a href="#终端命令">终端命令</a><a href="#对话内操作">对话内操作</a><a href="#常用快捷键">快捷键</a></nav>
 
 ## 终端命令
 
@@ -23,11 +25,25 @@ description: 快速查找会话、模型、权限和工具连接相关的常用�
 | --- | --- |
 | 新建或恢复对话 | `/new`、`/resume` |
 | 归档或分叉会话 | `/archive`、`/fork` |
-| 配置模型与推理强度 | `/model`、`/effort` |
+| 选择 Provider、模型与推理强度 | `/provider`、`/model`、`/effort` |
 | 管理本地配置 | `/preferences` |
 | 调整审批权限 | `/permissions` |
 | 检查外部工具连接 | `/mcp`、`/tools` |
 | 查看 Hook 与技能 | `/hooks`、`/skills` |
+
+## 常用快捷键
+
+以下是主输入区的默认行为；打开菜单、补全或审批时，按键优先作用于当前界面。
+
+| 按键 | 空闲时 | 任务执行时 |
+| --- | --- | --- |
+| <kbd>Enter</kbd> | 提交输入 | 尝试向当前任务补充输入 |
+| <kbd>Tab</kbd> | 提交普通文本 | 将输入排到下一轮 |
+| <kbd>Ctrl+C</kbd> | 先清空草稿，空草稿时退出 | 先清空草稿，空草稿时请求中断 |
+| <kbd>Ctrl+D</kbd> | 空草稿时退出本地 | 空草稿时退出本地观察 |
+| <kbd>Shift+Enter</kbd> | 插入换行 | 插入换行 |
+
+请求中断后，客户端仍需等待远端确认；退出本地观察不会替远端任务声明结束。完整的 Esc、排队与输入恢复行为见[交互模式](/generated/interactive-mode/)。
 
 ## 工具与开发参考
 

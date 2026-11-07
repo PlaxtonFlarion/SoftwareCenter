@@ -1,7 +1,10 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 ---
-<StarlightPage frontmatter={{ title: '页面未找到', description: '该地址没有对应的文档，可以返回首页或搜索所需内容。', editUrl: false, pagefind: false }}>
-  <p>这篇文档可能已经移动，或链接输入有误。</p>
-  <p><a href="/">返回文档首页</a>，或使用顶部搜索查找关键词。</p>
+<StarlightPage frontmatter={{ title: '页面未找到', description: '这个地址没有对应的文档。换个入口，继续找到你需要的内容。', editUrl: false, pagefind: false, tableOfContents: false }}>
+  <div class="error-page">
+    <span class="error-code" aria-hidden="true">404</span>
+    <p>链接可能已经失效，也可能是地址输入有误。你可以使用顶部搜索，或从下面的入口继续。</p>
+    <nav class="reading-path" aria-label="继续浏览"><a href="/">返回文档首页 <span aria-hidden="true">→</span></a><a href="/getting-started/">快速开始</a><a href="/generated/docs-index/">完整文档目录</a></nav>
+  </div>
 </StarlightPage>

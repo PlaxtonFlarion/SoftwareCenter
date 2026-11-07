@@ -1,13 +1,15 @@
 ---
 title: 快速开始
-description: 安装 Mind CLI，检查环境，配置模型并完成第一条任务。
+description: 安装 CLI，连接一个可用的模型，在你的项目中完成第一条任务。
 ---
 
-在 Windows 或 macOS 终端安装 CLI，完成配置后即可开始对话。
+这条入门路径适用于 Windows 和 macOS。你需要 Node.js 18 或更高版本、npm，以及一个可用的模型 Provider 和 API key。
+
+<nav class="reading-path" aria-label="入门步骤"><a href="#安装-cli">01 安装</a><a href="#配置模型">02 配置模型</a><a href="#完成第一条任务">03 开始任务</a></nav>
 
 ## 安装 CLI
 
-准备好 Node.js 与 npm，然后运行：
+在终端运行：
 
 ```bash
 npm install -g @craftline/mind
@@ -18,6 +20,7 @@ npm install -g @craftline/mind
 ## 检查安装
 
 ```bash
+mind --version
 mind --help
 mind doctor
 ```
@@ -36,28 +39,31 @@ mind
 ```
 
 输入 `/preferences` 打开本地配置，填写当前 Provider 的模型、API key 和 Base URL。
-已有配置时，可用 `/model` 选择模型，用 `/effort` 调整推理强度。
 
-配置保存在本地 `config.toml`。完整配置与权限说明见[交互模式](/generated/interactive-mode/)。
+默认用户配置位于 `~/.mind/config.toml`。已有多个 Provider 时，使用 `/provider` 选择，再用 `/model` 和 `/effort` 调整后续任务。完整配置示例见[模型配置](/generated/overview/#model-config)。
+
+配置完成后再发送第一条任务；模型名称、密钥与服务地址需要属于同一个可用的 Provider。
 
 ## 完成第一条任务
 
-在项目目录打开终端，输入一个明确的目标：
+先进入你想处理的项目目录。可以让代理从只读检查开始：
 
 ```bash
 mind exec "概述当前项目的目录结构和主要入口"
 ```
 
-也可以直接运行 `mind`，在对话中持续补充要求。需要结束当前上下文时，用 `/new` 开始新对话；用 `/resume` 恢复已有会话。
+也可以直接运行 `mind`，在对话中持续补充要求。回答会帮助你确认项目入口，再决定下一步修改。用 `/new` 开始新对话，用 `/resume` 恢复已有会话。
+
+单次执行默认使用只读沙箱；交互模式默认允许写入工作区并按需请求审批。需要调整时，在交互模式输入 `/permissions`，详细规则见[沙箱与审批](/generated/overview/#沙箱与审批)。
 
 :::note[中断与退出]
-任务执行时，Ctrl+C 请求中断；空闲且输入为空时，单次 Ctrl+C 退出。
-菜单或审批打开时，Ctrl+C 优先取消当前界面操作。空输入下的 Ctrl+D 可直接退出本地。
+Ctrl+C 会先取消当前菜单或审批；主输入框有草稿时先清空草稿。输入为空时，运行中的任务会收到中断请求，空闲时则直接退出。
+空输入下的 Ctrl+D 可退出本地观察；退出本地不代表远端任务已经结束。
 :::
 
 ## 按需连接工具
 
-原生 coding 工具可以直接使用。外部 MCP 服务需先配置并启用，见 [MCP 管理](/generated/cli-usage/#外部-mcp-管理)。
+代码搜索、命令执行和补丁等原生工具可直接使用。外部 MCP 服务需先配置并启用，见 [MCP 管理](/generated/cli-usage/#外部-mcp-管理)。
 
 需要 Helix 执行能力时，显式接入：
 
@@ -72,9 +78,14 @@ mind --helix api
 
 | 现象 | 检查方向 |
 | --- | --- |
+| 找不到 `mind` 命令 | 重新打开终端，检查 npm 全局可执行文件目录是否在 `PATH` 中。 |
 | 请求超时 | 确认服务地址可达，检查网络、代理与网关是否支持长连接和流式响应。 |
 | 证书校验失败 | 检查系统时间、证书信任链以及代理或抓包工具的 HTTPS 配置。 |
 | 模型或鉴权失败 | 核对当前 Provider 的模型名称、密钥与 Base URL。 |
 | 外部工具不可用 | 查看 `/mcp` 中的启用状态、连接状态和错误信息。 |
 
-继续阅读[运行方式](/capabilities/)、[常用命令](/reference/)或[交互模式](/generated/interactive-mode/)。
+## 接下来
+
+- 想持续修改项目：阅读[交互模式](/generated/interactive-mode/)，了解输入、审批与会话恢复。
+- 想从脚本或其他应用调用：查看[运行方式](/capabilities/)，选择合适的执行入口。
+- 只想查一条命令：打开[常用命令速查](/reference/)。

@@ -5,7 +5,7 @@
       "target": "overview.md",
       "section": "使用指南",
       "label": "项目总览",
-      "summary": "第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。"
+      "summary": "了解产品定位、安装方式、模型配置与工具来源，找到适合当前任务的入口。"
     },
     {
       "source": "ARCHITECTURE_SYSTEM.md",
@@ -32,20 +32,22 @@
       "source": "LICENSE.md",
       "target": "license.md",
       "section": "开发者",
-      "label": "仓库授权"
+      "label": "仓库授权",
+      "summary": "查阅本仓库的授权条款、使用限制与责任说明。"
     },
     {
       "source": "AGENTS.md",
       "target": "agents.md",
       "section": "开发者",
-      "label": "编码代理约定"
+      "label": "编码代理约定",
+      "summary": "修改代码前的检查、类型与依赖约束，以及测试和交付要求。"
     },
     {
       "source": "docs/README.md",
       "target": "docs-index.md",
       "section": "",
       "label": "文档索引",
-      "summary": "完整正文目录入口；已经知道要找什么时，从这里按专题跳文档最快。"
+      "summary": "按任务领域浏览全部文档，快速定位操作指南、协议说明与维护约定。"
     },
     {
       "source": "docs/cli-usage.md",
@@ -53,7 +55,7 @@
       "section": "命令参考",
       "label": "命令行使用参考",
       "category": "入门与入口",
-      "summary": "适合查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合规则。"
+      "summary": "查询终端命令、参数与组合示例，涵盖任务执行、会话恢复、模型配置和 MCP 管理。"
     },
     {
       "source": "docs/desktop-sidecar.md",
@@ -69,7 +71,7 @@
       "section": "使用指南",
       "label": "交互模式",
       "category": "入门与入口",
-      "summary": "适合看完整 slash 命令、会话管理和输入约束。"
+      "summary": "掌握对话输入、工具审批、模型切换与会话恢复，了解每个快捷键和 slash 命令的作用。"
     },
     {
       "source": "docs/context-usage-protocol.md",
@@ -93,7 +95,7 @@
       "section": "工具与集成",
       "label": "Hooks 配置",
       "category": "编排与协议",
-      "summary": "适合看生命周期 Hook 的发现、信任、启用和执行边界。"
+      "summary": "在会话和任务的生命周期中接入自动化脚本，配置发现规则、信任与执行权限。"
     },
     {
       "source": "docs/mcp-server.md",
@@ -101,7 +103,7 @@
       "section": "工具与集成",
       "label": "MCP Server",
       "category": "编排与协议",
-      "summary": "适合看 stdio MCP 服务的 host 配置、工具协议和生命周期。"
+      "summary": "将代理能力接入支持 MCP 的应用，配置 stdio 服务并了解工具调用和关闭流程。"
     },
     {
       "source": "docs/playbook.api.md",
@@ -109,7 +111,7 @@
       "section": "工具与集成",
       "label": "接口实战",
       "category": "编排与协议",
-      "summary": "适合看协议边界、提取、断言和批量请求。"
+      "summary": "从发送请求到提取数据、验证断言，组织可重复执行的接口任务。"
     },
     {
       "source": "docs/playbook.template.md",
@@ -117,7 +119,7 @@
       "section": "工具与集成",
       "label": "模板能力",
       "category": "编排与协议",
-      "summary": "适合看模板表达式、签名前置材料和模板层边界。"
+      "summary": "使用变量与表达式构建请求模板，准备签名材料并明确模板的处理边界。"
     },
     {
       "source": "docs/playbook.security.md",
@@ -125,7 +127,7 @@
       "section": "工具与集成",
       "label": "安全工具",
       "category": "性能与安全",
-      "summary": "适合看摘要、JWT、RSA、AES 和安全层边界。"
+      "summary": "查阅摘要、JWT、RSA 与 AES 工具的用法，区分数据准备、签名和加解密步骤。"
     },
     {
       "source": "docs/playbook.load.md",
@@ -133,7 +135,7 @@
       "section": "使用指南",
       "label": "云端压测与任务收束",
       "category": "性能与安全",
-      "summary": "适合看云端分布式压测、异步任务管理和结果收束边界。"
+      "summary": "组织云端分布式压测，跟踪异步任务，并在结束时核对执行结果。"
     },
     {
       "source": "docs/playbook.device.md",
@@ -141,7 +143,7 @@
       "section": "工具与集成",
       "label": "设备域实战",
       "category": "执行与取证",
-      "summary": "适合看设备能力分层、多设备广播模型和稳定执行建议。"
+      "summary": "连接设备、选择操作能力，并将单设备动作扩展为可控的多设备任务。"
     },
     {
       "source": "docs/playbook.nativecoding.md",
@@ -149,7 +151,7 @@
       "section": "使用指南",
       "label": "原生 coding 链路",
       "category": "执行与取证",
-      "summary": "适合看 shell 诊断、工作区写文件、unified diff patch 和验证收束。"
+      "summary": "检查工作区、运行命令、应用补丁，再通过验证确认代码修改的结果。"
     },
     {
       "source": "docs/playbook.monkey.md",
@@ -157,7 +159,7 @@
       "section": "使用指南",
       "label": "Monkey 扰动",
       "category": "执行与取证",
-      "summary": "适合看随机扰动的全部参数、执行流程和返回结构。"
+      "summary": "配置随机扰动任务，理解执行参数、停止条件与返回结果。"
     },
     {
       "source": "docs/agent-mode.md",
@@ -165,7 +167,7 @@
       "section": "使用指南",
       "label": "订阅模式",
       "category": "入门与入口",
-      "summary": "适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。"
+      "summary": "使用 agent listen 持续接收远端任务，管理连接、会话与中断后的恢复。"
     },
     {
       "source": "docs/playbook.media.md",
@@ -173,7 +175,7 @@
       "section": "工具与集成",
       "label": "多媒体链路",
       "category": "执行与取证",
-      "summary": "适合看抽帧、裁剪、转码、拼接和音频处理。"
+      "summary": "按任务组合视频抽帧、裁剪、转码、拼接与音频处理，整理输出材料。"
     },
     {
       "source": "docs/playbook.performance.md",
@@ -181,7 +183,7 @@
       "section": "使用指南",
       "label": "性能实战",
       "category": "性能与安全",
-      "summary": "适合看视觉真值、资源趋势、稳定性扰动和性能案例。"
+      "summary": "结合画面证据、资源趋势与稳定性扰动，定位性能问题并验证优化结果。"
     },
     {
       "source": "docs/architecture.md",
@@ -189,7 +191,7 @@
       "section": "使用指南",
       "label": "产品背景与能力生态",
       "category": "结构与维护",
-      "summary": "适合了解产品定位、使用入口、可选能力和生态组件，不定义架构事实。"
+      "summary": "了解产品的使用场景、可选能力与生态组件；架构职责以正式架构文档为准。"
     },
     {
       "source": "docs/maintainer-guide.md",
@@ -197,7 +199,7 @@
       "section": "开发者",
       "label": "维护者指南",
       "category": "结构与维护",
-      "summary": "适合在维护文档、官网壳和同步链路时阅读。"
+      "summary": "维护文档事实源、站点导航与发布流程，确保源码和线上内容保持一致。"
     },
     {
       "source": "docs/mcp-oauth-acceptance.md",

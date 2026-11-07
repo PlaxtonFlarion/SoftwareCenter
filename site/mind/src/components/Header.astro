@@ -1,14 +1,15 @@
 ---
-import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro';
 import Search from './Search.astro';
 import SiteTitle from './SiteTitle.astro';
+import ThemeControl from './ThemeControl.astro';
 ---
 <div class="docs-header">
   <SiteTitle />
   <nav class="header-links" aria-label="快捷导航">
     <a href="/getting-started/" aria-current={Astro.url.pathname === '/getting-started/' ? 'page' : undefined}>快速开始</a>
+    <a href="/capabilities/" aria-current={Astro.url.pathname === '/capabilities/' ? 'page' : undefined}>运行方式</a>
     <a href="/reference/" aria-current={Astro.url.pathname === '/reference/' ? 'page' : undefined}>命令参考</a>
   </nav>
   <div class="header-search"><Search /></div>
-  <ThemeSelect />
+  <ThemeControl />
 </div>

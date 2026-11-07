@@ -1,0 +1,140 @@
+---
+import { randomUUID } from 'node:crypto';
+import { readingThemes } from '../reading-themes';
+
+const panelId = `reading-theme-${randomUUID()}`;
+---
+<reading-theme>
+  <button class="theme-trigger" type="button" popovertarget={panelId} aria-label="选择阅读主题" aria-expanded="false" aria-controls={panelId}>
+    <span class="theme-orb" aria-hidden="true"></span><span data-theme-name>阅读主题</span>
+    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </button>
+  <div id={panelId} class="theme-panel" popover="auto" aria-label="阅读配色">
+    <div class="theme-panel-heading"><strong>换一种心境，继续阅读</strong><span>四时有色，文字有光。</span></div>
+    <div class="theme-options" role="group" aria-label="四款阅读主题">
+      {readingThemes.map((theme) => (
+        <button type="button" data-theme-value={theme.id} aria-label={theme.name} aria-pressed="false">
+          <span class="theme-sample" aria-hidden="true"><span></span><span></span><span></span><i>✓</i></span>
+          <strong>{theme.name}</strong><small>{theme.description}</small>
+        </button>
+      ))}
+    </div>
+    <p class="theme-save-status" role="status">选择会在此浏览器中保留</p>
+  </div>
+</reading-theme>
+
+<script>
+  import { readingThemes } from '../reading-themes';
+
+  /** 管理全站四套阅读配色、浏览器偏好与本实例弹层的生命周期。 */
+  class ReadingTheme extends HTMLElement {
+    private controller?: AbortController;
+    private transition?: ViewTransition;
+
+    /** 从首次绘制时的主题恢复控件，并绑定可回收的交互监听。 */
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const trigger = this.querySelector<HTMLButtonElement>('.theme-trigger');
+      const panel = this.querySelector<HTMLElement>('.theme-panel');
+      const label = this.querySelector<HTMLElement>('[data-theme-name]');
+      const status = this.querySelector<HTMLElement>('.theme-save-status');
+      if (!trigger || !panel || !label || !status) return;
+      const buttons = panel.querySelectorAll<HTMLButtonElement>('[data-theme-value]');
+
+      /** 各入口只读取文档当前主题，不维护独立的选中状态。 */
+      const sync = () => {
+        const theme = readingThemes.find((item) => item.id === document.documentElement.dataset.readingTheme);
+        if (!theme) return;
+        label.textContent = theme.name;
+        buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.themeValue === theme.id)));
+      };
+      document.addEventListener('reading-theme-change', sync, { signal });
+      panel.addEventListener('toggle', () => {
+        trigger.setAttribute('aria-expanded', String(panel.matches(':popover-open')));
+      }, { signal });
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const theme = readingThemes.find((item) => item.id === button.dataset.themeValue);
+          if (!theme) return;
+          panel.hidePopover();
+          trigger.focus();
+          if (document.documentElement.dataset.readingTheme === theme.id) return;
+
+          /** 在一次视觉事务中更新配色与偏好，存储不可用时仍允许当前页切换。 */
+          const apply = () => {
+            if (signal.aborted) return;
+            document.documentElement.dataset.readingTheme = theme.id;
+            document.documentElement.dataset.theme = theme.mode;
+            document.documentElement.style.colorScheme = theme.mode;
+            try {
+              localStorage.setItem('docs-reading-theme', theme.id);
+              status.textContent = '选择会在此浏览器中保留';
+            } catch (error) {
+              if (!(error instanceof DOMException)) throw error;
+              status.textContent = '浏览器未允许保存偏好，本次选择仅在当前页生效';
+            }
+            document.dispatchEvent(new Event('reading-theme-change'));
+          };
+          this.transition?.skipTransition();
+          if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            apply();
+            return;
+          }
+          this.transition = document.startViewTransition(apply);
+        }, { signal });
+      });
+      sync();
+    }
+
+    /** 关闭当前组件的监听器与未完成的视觉过渡。 */
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.transition?.skipTransition();
+    }
+  }
+  customElements.define('reading-theme', ReadingTheme);
+</script>
+
+<style>
+  reading-theme { display: inline-flex; flex-shrink: 0; }
+  button { font: inherit; cursor: pointer; }
+  .theme-trigger { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.7rem; min-height: 2.75rem; border: 1px solid var(--sl-color-gray-5); border-radius: 2rem; background: var(--surface-raised); color: var(--sl-color-gray-1); font-size: 0.75rem; white-space: nowrap; }
+  .theme-trigger:hover, .theme-trigger[aria-expanded="true"] { border-color: var(--sl-color-accent); background: var(--sl-color-accent-low); }
+  .theme-orb { width: 1rem; height: 1rem; border-radius: 50%; background: linear-gradient(135deg, var(--sl-color-accent-high) 48%, var(--sl-color-black) 52%); border: 1px solid var(--sl-color-accent); }
+  .theme-trigger svg { transition: transform 160ms; }
+  .theme-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .theme-panel { position: fixed; inset: calc(var(--sl-nav-height) + 0.5rem) 1rem auto auto; margin: 0; padding: 1.2rem; width: min(21rem, calc(100vw - 2rem)); max-height: calc(100dvh - var(--sl-nav-height) - 1.5rem); overflow-y: auto; border: 1px solid var(--sl-color-gray-5); border-radius: 1rem; color: var(--sl-color-gray-1); background: var(--surface-raised); box-shadow: var(--shadow-dialog); }
+  .theme-panel::backdrop { background: transparent; }
+  .theme-panel-heading strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--sl-color-white); }
+  .theme-panel-heading > span { display: block; margin-top: 0.25rem; font-size: 0.75rem; color: var(--sl-color-gray-3); }
+  .theme-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-top: 1rem; }
+  .theme-options button { padding: 0.5rem; text-align: left; border: 1px solid var(--sl-color-gray-5); border-radius: 0.6rem; color: var(--sl-color-gray-1); background: var(--sl-color-black); }
+  .theme-options button:hover, .theme-options button[aria-pressed="true"] { border-color: var(--sl-color-accent); background: var(--sl-color-accent-low); }
+  .theme-options strong { display: block; font-size: 0.8125rem; margin: 0.45rem 0.15rem 0; font-weight: 600; }
+  .theme-options small { display: block; color: var(--sl-color-gray-2); font-size: 0.6875rem; margin: 0.15rem; }
+  .theme-sample { display: flex; align-items: flex-end; gap: 0.25rem; height: 3.5rem; padding: 0.65rem; border-radius: 0.3rem; background: var(--sample-bg); position: relative; }
+  .theme-sample > span { width: 0.8rem; height: 0.8rem; border-radius: 50%; background: var(--sample-accent); }
+  .theme-sample > span:nth-child(2) { opacity: 0.6; }
+  .theme-sample > span:nth-child(3) { opacity: 0.3; }
+  .theme-sample i { display: none; position: absolute; top: 0.35rem; right: 0.5rem; color: var(--sample-accent); font-style: normal; font-size: 0.875rem; }
+  [aria-pressed="true"] .theme-sample i { display: block; }
+  [data-theme-value="dawn"] { --sample-bg: #eff3e7; --sample-accent: #2c633f; }
+  [data-theme-value="forest"] { --sample-bg: #131d18; --sample-accent: #a7dfbd; }
+  [data-theme-value="amber"] { --sample-bg: #fcf0db; --sample-accent: #975021; }
+  [data-theme-value="nebula"] { --sample-bg: #191b30; --sample-accent: #c9b9f4; }
+  .theme-save-status { margin: 0.9rem 0 0; font-size: 0.6875rem; color: var(--sl-color-gray-3); text-align: center; }
+  @media (max-width: 24rem) {
+    .theme-trigger { gap: 0.4rem; padding-inline: 0.55rem; }
+  }
+</style>
+
+<style is:global>
+  ::view-transition-old(root) { animation: none; }
+  ::view-transition-new(root) { animation: theme-reveal 380ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  @keyframes theme-reveal {
+    from { clip-path: circle(0 at calc(100% - 5rem) 2rem); }
+    to { clip-path: circle(150vmax at calc(100% - 5rem) 2rem); }
+  }
+</style>
