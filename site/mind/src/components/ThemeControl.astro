@@ -11,7 +11,7 @@ const panelId = `reading-theme-${randomUUID()}`;
   </button>
   <div id={panelId} class="theme-panel" popover="auto" aria-label="阅读配色">
     <div class="theme-panel-heading"><strong>换一种心境，继续阅读</strong><span>四时有色，文字有光。</span></div>
-    <div class="theme-options" role="group" aria-label="四款阅读主题">
+    <div class="theme-options" role="group" aria-label="阅读主题选项">
       {readingThemes.map((theme) => (
         <button type="button" data-theme-value={theme.id} aria-label={theme.name} aria-pressed="false">
           <span class="theme-sample" aria-hidden="true"><span></span><span></span><span></span><i>✓</i></span>
@@ -26,7 +26,7 @@ const panelId = `reading-theme-${randomUUID()}`;
 <script>
   import { readingThemes } from '../reading-themes';
 
-  /** 管理全站四套阅读配色、浏览器偏好与本实例弹层的生命周期。 */
+  /** 管理全站阅读配色、浏览器偏好与本实例弹层的生命周期。 */
   class ReadingTheme extends HTMLElement {
     private controller?: AbortController;
     private transition?: ViewTransition;
@@ -145,6 +145,10 @@ const panelId = `reading-theme-${randomUUID()}`;
   [data-theme-value="forest"] { --sample-bg: #131d18; --sample-accent: #a7dfbd; }
   [data-theme-value="amber"] { --sample-bg: #fcf0db; --sample-accent: #975021; }
   [data-theme-value="nebula"] { --sample-bg: #191b30; --sample-accent: #c9b9f4; }
+  [data-theme-value="tide"] { --sample-bg: #e7f1f6; --sample-accent: #205a70; }
+  [data-theme-value="rouge"] { --sample-bg: #21171f; --sample-accent: #f4bed3; }
+  [data-theme-value="blossom"] { --sample-bg: #fae9ed; --sample-accent: #8c455e; }
+  [data-theme-value="ink"] { --sample-bg: #171a1e; --sample-accent: #d0dbe5; }
   .theme-save-status { margin: 0.9rem 0 0; font-size: 0.6875rem; color: var(--sl-color-gray-3); text-align: center; }
   @media (max-width: 24rem) {
     .theme-trigger { gap: 0.4rem; padding-inline: 0.55rem; }

@@ -66,7 +66,7 @@ test('主题选择与跨页面持久化', async ({ page }) => {
   const surfaces = new Set<string>();
   for (const theme of readingThemes) {
     await themes.getByRole('button', { name: '选择阅读主题' }).click();
-    await expect(themes.getByRole('group', { name: '四款阅读主题' }).getByRole('button')).toHaveCount(4);
+    await expect(themes.getByRole('group', { name: '阅读主题选项' }).getByRole('button')).toHaveCount(readingThemes.length);
     await themes.getByRole('button', { name: theme.name, exact: true }).click();
     await expect(page.locator('html')).toHaveAttribute('data-reading-theme', theme.id);
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme.mode);
@@ -75,11 +75,13 @@ test('主题选择与跨页面持久化', async ({ page }) => {
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-reading-theme', theme.id);
   }
-  expect(surfaces.size).toBe(4);
+  expect(surfaces.size).toBe(readingThemes.length);
+  const lastTheme = readingThemes.at(-1);
+  if (!lastTheme) throw new Error('阅读主题清单为空');
   await page.getByRole('link', { name: '开始使用' }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'nebula');
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', lastTheme.id);
   await themes.getByRole('button', { name: '选择阅读主题' }).click();
-  await expect(themes.getByRole('button', { name: '星河入梦', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(themes.getByRole('button', { name: lastTheme.name, exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.keyboard.press('Escape');
   await expect(themes.locator('.theme-panel')).toBeHidden();
   await expect(themes.getByRole('button', { name: '选择阅读主题' })).toBeFocused();
@@ -98,6 +100,25 @@ test('首次访问按系统外观选择主题，减少动态效果时不执行�
   await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'amber');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+});
+
+test('短屏主题面板可用键盘滚动到最后一款', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 480 });
+  await page.goto('/getting-started/');
+  const themes = page.locator('header reading-theme');
+  const trigger = themes.getByRole('button', { name: '选择阅读主题' });
+  await trigger.click();
+  const lastTheme = readingThemes.at(-1);
+  if (!lastTheme) throw new Error('阅读主题清单为空');
+  for (const theme of readingThemes) {
+    await page.keyboard.press('Tab');
+    await expect(themes.getByRole('button', { name: theme.name, exact: true })).toBeFocused();
+  }
+  await expect(themes.getByRole('button', { name: lastTheme.name, exact: true })).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', lastTheme.id);
+  await expect(themes.locator('.theme-panel')).toBeHidden();
+  await expect(trigger).toBeFocused();
 });
 
 test('主题动画播放期间仍可再次打开选择器', async ({ page }) => {
