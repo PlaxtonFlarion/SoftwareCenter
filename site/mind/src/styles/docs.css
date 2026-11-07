@@ -272,6 +272,12 @@ footer .meta:empty, .pagination-links:empty { display: none; }
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  body, .header, .sidebar-pane {
+    transition: background-color 200ms ease-out;
+  }
+}
+
 @media (max-width: 24rem) {
   .docs-header { gap: 0.375rem; }
 }

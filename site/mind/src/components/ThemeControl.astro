@@ -30,6 +30,7 @@ const panelId = `reading-theme-${randomUUID()}`;
   class ReadingTheme extends HTMLElement {
     private controller?: AbortController;
     private transition?: ViewTransition;
+    private revision = 0;
 
     /** 从首次绘制时的主题恢复控件，并绑定可回收的交互监听。 */
     connectedCallback() {
@@ -51,6 +52,7 @@ const panelId = `reading-theme-${randomUUID()}`;
         buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.themeValue === theme.id)));
       };
       document.addEventListener('reading-theme-change', sync, { signal });
+      document.addEventListener('reading-theme-request', () => this.cancelTransition(), { signal });
       panel.addEventListener('toggle', () => {
         trigger.setAttribute('aria-expanded', String(panel.matches(':popover-open')));
       }, { signal });
@@ -59,12 +61,13 @@ const panelId = `reading-theme-${randomUUID()}`;
           const theme = readingThemes.find((item) => item.id === button.dataset.themeValue);
           if (!theme) return;
           panel.hidePopover();
-          trigger.focus();
-          if (document.documentElement.dataset.readingTheme === theme.id) return;
+          trigger.focus({ preventScroll: true });
+          document.dispatchEvent(new Event('reading-theme-request'));
+          const revision = this.revision;
 
-          /** 在一次视觉事务中更新配色与偏好，存储不可用时仍允许当前页切换。 */
+          /** 应用当前选择，已撤销或已移除入口的迟到回调不再写入偏好。 */
           const apply = () => {
-            if (signal.aborted) return;
+            if (signal.aborted || revision !== this.revision) return;
             document.documentElement.dataset.readingTheme = theme.id;
             document.documentElement.dataset.theme = theme.mode;
             document.documentElement.style.colorScheme = theme.mode;
@@ -77,21 +80,39 @@ const panelId = `reading-theme-${randomUUID()}`;
             }
             document.dispatchEvent(new Event('reading-theme-change'));
           };
-          this.transition?.skipTransition();
-          if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          if (document.documentElement.dataset.readingTheme === theme.id
+            || !document.startViewTransition
+            || matchMedia('(prefers-reduced-motion: reduce)').matches) {
             apply();
             return;
           }
-          this.transition = document.startViewTransition(apply);
+          document.documentElement.setAttribute('data-theme-transition', '');
+          const transition = document.startViewTransition(apply);
+          this.transition = transition;
+          void transition.finished.finally(() => {
+            if (this.transition !== transition) return;
+            this.transition = undefined;
+            document.documentElement.removeAttribute('data-theme-transition');
+          });
         }, { signal });
       });
       sync();
     }
 
-    /** 关闭当前组件的监听器与未完成的视觉过渡。 */
+    /** 释放当前组件的监听、动画及未提交选择。 */
     disconnectedCallback() {
       this.controller?.abort();
-      this.transition?.skipTransition();
+      this.cancelTransition();
+    }
+
+    /** 撤销旧动画并使其回调失效，保证最后一次选择生效。 */
+    private cancelTransition() {
+      this.revision += 1;
+      const transition = this.transition;
+      this.transition = undefined;
+      if (!transition) return;
+      transition.skipTransition();
+      document.documentElement.removeAttribute('data-theme-transition');
     }
   }
   customElements.define('reading-theme', ReadingTheme);
@@ -131,10 +152,22 @@ const panelId = `reading-theme-${randomUUID()}`;
 </style>
 
 <style is:global>
-  ::view-transition-old(root) { animation: none; }
-  ::view-transition-new(root) { animation: theme-reveal 380ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  @keyframes theme-reveal {
-    from { clip-path: circle(0 at calc(100% - 5rem) 2rem); }
-    to { clip-path: circle(150vmax at calc(100% - 5rem) 2rem); }
+  :root[data-theme-transition] { view-transition-name: none; }
+  :root[data-theme-transition] .main-pane {
+    view-transition-name: reading-content;
+    background-color: var(--sl-color-black);
+  }
+  :root[data-theme-transition] .main-pane,
+  :root[data-theme-transition] .main-pane *,
+  :root[data-theme-transition] .main-pane *::before,
+  :root[data-theme-transition] .main-pane *::after { transition: none !important; }
+  :root[data-theme-transition]::view-transition { pointer-events: none; }
+  :root[data-theme-transition]::view-transition-group(reading-content) { animation: none; }
+  :root[data-theme-transition]::view-transition-old(reading-content),
+  :root[data-theme-transition]::view-transition-new(reading-content) { animation: none; mix-blend-mode: normal; }
+  :root[data-theme-transition]::view-transition-new(reading-content) { animation: theme-dissolve 200ms ease-out both; }
+  @keyframes theme-dissolve {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 </style>

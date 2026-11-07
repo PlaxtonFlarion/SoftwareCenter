@@ -85,7 +85,7 @@ test('主题选择与跨页面持久化', async ({ page }) => {
   await expect(themes.getByRole('button', { name: '选择阅读主题' })).toBeFocused();
 });
 
-test('首次访问按系统外观选择主题，减少动态效果时不执行展开动画', async ({ page }) => {
+test('首次访问按系统外观选择主题，减少动态效果时不执行动画', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
   await page.goto('/getting-started/');
   await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'dawn');
@@ -98,6 +98,71 @@ test('首次访问按系统外观选择主题，减少动态效果时不执行�
   await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'amber');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+});
+
+test('主题动画播放期间仍可再次打开选择器', async ({ page }) => {
+  await page.goto('/generated/mcp-server/');
+  await page.addStyleTag({ content: ':root[data-theme-transition]::view-transition-new(reading-content) { animation-duration: 2s !important; }' });
+  const themes = page.locator('header reading-theme');
+  const trigger = themes.getByRole('button', { name: '选择阅读主题' });
+  await trigger.click();
+  await themes.getByRole('button', { name: '落日熔金', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => document.getAnimations().some(
+    (animation) => animation instanceof CSSAnimation && animation.animationName === 'theme-dissolve',
+  ))).toBe(true);
+  const bounds = await trigger.boundingBox();
+  if (!bounds) throw new Error('主题入口不可见');
+  await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await expect(themes.locator('.theme-panel')).toBeVisible();
+  await themes.getByRole('button', { name: '星河入梦', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'nebula');
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme-transition', '');
+  await expect(trigger).toBeFocused();
+});
+
+test('快照提交前改回原主题时保留最后一次选择', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/generated/mcp-server/');
+  await page.locator('header .theme-trigger').click();
+  const result = await page.evaluate(async () => {
+    const trigger = document.querySelector<HTMLButtonElement>('header .theme-trigger');
+    const forest = document.querySelector<HTMLButtonElement>('header [data-theme-value="forest"]');
+    const dawn = document.querySelector<HTMLButtonElement>('header [data-theme-value="dawn"]');
+    if (!trigger || !forest || !dawn) throw new Error('主题入口缺失');
+    const pending: Promise<void>[] = [];
+    const start = document.startViewTransition.bind(document);
+    document.startViewTransition = (update) => {
+      const transition = start(update);
+      pending.push(transition.finished);
+      return transition;
+    };
+    forest.click();
+    trigger.click();
+    dawn.click();
+    await Promise.all(pending);
+    return {
+      theme: document.documentElement.dataset.readingTheme,
+      saved: localStorage.getItem('docs-reading-theme'),
+      transitioning: document.documentElement.hasAttribute('data-theme-transition'),
+    };
+  });
+  expect(result).toEqual({ theme: 'dawn', saved: 'dawn', transitioning: false });
+});
+
+test('没有快照 API 时可切换并记住显式选择的默认主题', async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(document, 'startViewTransition', { value: undefined }));
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+  const themes = page.locator('header reading-theme');
+  await themes.getByRole('button', { name: '选择阅读主题' }).click();
+  await themes.getByRole('button', { name: '晴岚映雪', exact: true }).click();
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'dawn');
+  await themes.getByRole('button', { name: '选择阅读主题' }).click();
+  await themes.getByRole('button', { name: '星河入梦', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-reading-theme', 'nebula');
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme-transition', '');
 });
 
 for (const theme of readingThemes) {

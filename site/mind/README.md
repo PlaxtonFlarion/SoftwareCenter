@@ -14,6 +14,7 @@
 - `src/components/` 与 `src/styles/docs.css` 负责展示；产品名称与年份来自 `metadata/const.py`。
 - 所有正文共用标题、摘要、导航、表格与代码样式；摘要在 `docs_manifest.json` 中维护，操作细节仍以正文事实源为准。
 - 阅读主题统一为“晴岚映雪”“松风入夜”“落日熔金”“星河入梦”，定义位于 `src/reading-themes.ts`。`ThemeProvider` 在首次绘制前恢复浏览器偏好，`ThemeControl` 持有选择交互与持久化；明暗模式同时用于代码高亮。
+- 主题只对正文区域做 200ms 透明度交叠，导航和主题入口不参与快照，动画播放期间保持可操作。正文快照内不叠加逐元素颜色过渡；连续选择撤销旧动画及未提交选择，结束或移除组件后释放临时样式。减少动态效果或不支持 View Transition 时直接应用主题。
 - `scripts/check_site.py` 校验最终 HTML 的本地资源、文件链接、章节锚点、语言和 canonical。
 
 既有 `generated/<文档名>/` 地址保持稳定。正文保留中文锚点，同时保留旧站已发布的 ASCII 章节书签。
