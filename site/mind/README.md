@@ -1,44 +1,48 @@
-# 官网壳说明
+# Mind 文档中心
 
-这个目录用于承载 `Mind` 的官网展示壳，不直接替代主仓库文档。
+正式地址：<https://www.appserverx.com/>。
 
-职责边界：
-- `ARCHITECTURE_SYSTEM.md` 是 Mind、AppServer 与 Fabric 的系统级架构权威
-- `ARCHITECTURE.md` 是 ProxyMind 客户端内部架构权威，并受系统架构约束
-- `ARCHITECTURE_SCORECARD.md` 是阶段性评审材料，不定义架构事实
-- `README.md` 与 `docs/*.md` 负责入口、解释与教学，不反向定义架构事实
-- 命令事实源固定为 `docs/cli-usage.md` 和 `docs/interactive-mode.md`；README 与官网入口页只保留摘要
-- `website/mind/docs_manifest.json` 负责登记全部 `docs/` 正文的发布目标，以及官网专题目录摘要
-- `docs/README.md` 也由同一份文档清单生成，不再单独手写维护目录
-- `website/mind/pages/` 负责官网入口、导航与站点配置
-- 同步到 `SoftwareCenter` 后，预期映射到 `site/mind/`
-- 工具能力说明与维护约定以 `docs/maintainer-guide.md` 为准，官网壳不单独发明第二套口径
+站点使用 Astro + Starlight，构建为静态 HTML，在 Cloudflare Pages 发布。
+产品说明和使用文档位于本站；AppServer 的 `/docs` 是独立的 API 参考入口。
 
-当前状态：
-- 已建立站点目录骨架
-- 已补首页、快速开始、能力概览和参考文档入口
-- 已补 `requirements.txt` 与 `scripts/sync_docs.py`
-- 已补 `scripts/check_docs.py`，校验实际命令注册表、文档覆盖和生成页内部链接
-- 正文镜像页会生成到 `pages/generated/`
-- `mkdocs.yml` 只保留入口导航，不再重复手写整套正文目录
+## 内容与职责
 
-建议的本地预览方式：
+- 根目录架构文件及 `docs/` 是正文事实源；官网不维护第二份正文。
+- `docs_manifest.json` 登记全部正文的发布目标、标题、摘要和导航分组。
+- `scripts/sync_docs.py` 生成仓库索引、`src/content/docs/generated/` 和产品展示元数据。
+- `src/content/docs/` 下的手写入口页只组织安装路径、运行方式和常用命令。
+- `src/components/` 与 `src/styles/docs.css` 负责展示；产品名称与年份来自 `metadata/const.py`。
+- `scripts/check_site.py` 校验最终 HTML 的本地资源、文件链接、章节锚点、语言和 canonical。
+
+既有 `generated/<文档名>/` 地址保持稳定。正文保留中文锚点，同时保留旧站已发布的 ASCII 章节书签。
+新增页面必须登记清单中的 `section`，按“使用指南、工具与集成、命令参考、开发者”分组；快速开始是独立入口。
+
+## 开发与验收
+
+在仓库虚拟环境中使用 Python，并安装 `.node-version` 指定的 Node.js。
+
 ```bash
+python website/mind/scripts/check_docs.py
+python -m pytest tests/website -q
 cd website/mind
-pip install -r requirements.txt
-python scripts/check_docs.py
-python scripts/sync_docs.py
-python scripts/check_docs.py --generated
-mkdocs serve
+npm ci
+npm run build
+npx playwright install chromium
+npm test
 ```
 
-维护提示：
-- 如果改了两份架构权威、架构评分卡、`README.md` 或 `docs/*.md`，先把源文档改对，再运行 `python scripts/sync_docs.py`
-- 如果改了 CLI 或 TUI 命令注册，先更新对应权威命令文档，再运行 `python scripts/check_docs.py`
-- 如果新增或下线正文文档，同步更新 `website/mind/docs_manifest.json`；默认检查和同步入口都会拒绝遗漏的正文、缺失的源文件及未登记的本地文档链接
-- 文档 PR 会运行回归测试和完整的生成前后校验；合入 `main` 后，只有校验通过才会同步到公共仓库
-- 如果改了工具说明，尤其是 `backend/mcp_tools/automator/` 下的 doc block，记得同步检查官网生成页的描述是否仍然准确
-- 工具说明应按“做什么 / 不做什么 / 前置条件或限制”维护，避免官网和源码出现两套不同口径
+`npm run build` 依次执行正文同步、Astro 类型检查、静态构建、Pagefind 索引和 HTML 校验。
+浏览器测试覆盖桌面和手机的深浅主题、中文与命令搜索、键盘焦点、导航、书签、行宽与 WCAG 检查。
+本机已有 Chrome 时，可在启动测试前设置 `DOCS_BROWSER_CHANNEL=chrome`。
 
-部署到 Cloudflare Pages 时，直接参考：
-- `CLOUDFLARE.md`
+```bash
+npm run dev
+npm run preview -- --host 127.0.0.1 --port 4321
+```
+
+开发服务用于修改页面；全文搜索必须在 `npm run build` 后通过 preview 验证。
+
+## 发布
+
+GitHub Actions 校验通过后，将正文和站点源码同步到 SoftwareCenter；不复制依赖、缓存和构建产物。
+公开仓库无需应用运行时依赖，Python 同步脚本仅使用标准库。完整部署设置见 [Cloudflare Pages](CLOUDFLARE.md)。

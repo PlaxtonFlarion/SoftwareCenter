@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 # Notes: ==== Mind™ ====
 
+import ast
 import json
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import (
+    Path,
+    PurePosixPath,
+    PureWindowsPath,
+)
 from urllib.parse import (
     unquote,
     urlsplit,
@@ -34,9 +39,11 @@ class DocEntry:
     label: str
     category: str = ""
     summary: str = ""
+    section: str = "开发者"
 
 
 def resolve_roots() -> tuple[Path, Path]:
+    """定位源码仓库或公开文档包中的正文与站点目录。"""
     script = Path(__file__).resolve()
     site_root = script.parents[1]
     repo_root = script.parents[3]
@@ -49,27 +56,46 @@ def resolve_roots() -> tuple[Path, Path]:
 
 
 def load_manifest(site_root: Path) -> list[DocEntry]:
+    """读取发布清单并校验文档身份和导航分组。"""
     manifest_path = site_root / "docs_manifest.json"
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    entries = [
-        DocEntry(
-            source=str(entry["source"]),
-            target=str(entry["target"]),
-            label=str(entry["label"]),
-            category=str(entry.get("category") or ""),
-            summary=str(entry.get("summary") or "")
-        )
-        for entry in payload.get("entries", [])
-    ]
+    if not isinstance(payload, dict) or not isinstance(payload.get("entries"), list):
+        raise ValueError("manifest entries must be a list")
+    entries: list[DocEntry] = []
+    for record in payload["entries"]:
+        if not isinstance(record, dict):
+            raise ValueError("manifest entry must be a mapping")
+        fields: dict[str, str] = {}
+        for name in ("source", "target", "label", "section", "category", "summary"):
+            value = record.get(name, "") if name in ("category", "summary") else record.get(name)
+            if not isinstance(value, str):
+                raise ValueError(f"manifest field must be a string: {name}")
+            fields[name] = value
+        entries.append(DocEntry(**fields))
     validate_manifest(entries)
     return entries
 
 
 def validate_manifest(entries: list[DocEntry]) -> None:
+    """拒绝重复身份、越界路径和未知导航分组。"""
     source_seen: set[str] = set()
     target_seen: set[str] = set()
 
     for entry in entries:
+        for path in (entry.source, entry.target):
+            if (
+                not path or PurePosixPath(path).is_absolute() or PureWindowsPath(path).drive
+                or ".." in PurePosixPath(path).parts or "\\" in path
+            ):
+                raise ValueError(f"invalid manifest path: {path}")
+        if Path(entry.target).name != entry.target or not entry.target.endswith(".md"):
+            raise ValueError(f"invalid manifest target: {entry.target}")
+        if entry.section not in ("", "使用指南", "工具与集成", "命令参考", "开发者"):
+            raise ValueError(f"unknown navigation section: {entry.section}")
+        if not entry.section and entry.source != "docs/README.md":
+            raise ValueError(f"navigation section missing: {entry.source}")
+        if not entry.label:
+            raise ValueError(f"document label missing: {entry.source}")
         if entry.source in source_seen:
             raise ValueError(f"duplicate manifest source: {entry.source}")
         if entry.target in target_seen:
@@ -118,26 +144,28 @@ def validate_publication(source_root: Path, entries: list[DocEntry]) -> tuple[st
 
 
 def build_target_map(entries: list[DocEntry]) -> dict[str, str]:
+    """建立正文源路径与发布页面路径之间的映射。"""
     return {entry.source: entry.target for entry in entries}
 
 
 def build_link_map(source_rel: str, entries: list[DocEntry]) -> dict[str, str]:
+    """按当前正文目录解析相邻文档的发布地址。"""
     target_map = build_target_map(entries)
 
     if not source_rel.startswith("docs/"):
         return {
-            source: target
+            source: f"/generated/{Path(target).stem}/"
             for source, target in target_map.items()
             if source != source_rel
         }
 
     links = {
-        Path(source).name: target
+        Path(source).name: f"/generated/{Path(target).stem}/"
         for source, target in target_map.items()
         if source.startswith("docs/")
     }
     links.update({
-        f"../{source}": target
+        f"../{source}": f"/generated/{Path(target).stem}/"
         for source, target in target_map.items()
         if not source.startswith("docs/") and source != "README.md"
     })
@@ -145,10 +173,12 @@ def build_link_map(source_rel: str, entries: list[DocEntry]) -> dict[str, str]:
 
 
 def rewrite_links(text: str, link_map: dict[str, str]) -> str:
+    """将已登记的正文链接改写为保留锚点的站点地址。"""
     if not link_map:
         return text
 
     def repl(match: re.Match[str]) -> str:
+        """改写一个已登记的文档目标。"""
         path = match.group("path")
         suffix = match.group("suffix") or ""
         target = link_map.get(path)
@@ -160,13 +190,42 @@ def rewrite_links(text: str, link_map: dict[str, str]) -> str:
 
 
 def rewrite_content(source_rel: str, text: str, entries: list[DocEntry]) -> str:
-    text = rewrite_links(text, build_link_map(source_rel, entries))
-    text = strip_heading_suffix(text)
-    return text
+    """保留正文和标题，只转换站点中的文档链接。"""
+    return rewrite_links(text, build_link_map(source_rel, entries))
 
 
-def strip_heading_suffix(text: str) -> str:
-    return re.sub(r"^(#{1,6}\s+.+?)\s+[（(][^()（）]+[)）]\s*$", r"\1", text, flags=re.MULTILINE)
+def frontmatter(entry: DocEntry) -> str:
+    """生成页面标题、摘要和固定路由，避免更换渲染器改变公开地址。"""
+    values = [
+        "---",
+        f"title: {json.dumps(entry.label, ensure_ascii=False)}",
+        f"slug: generated/{Path(entry.target).stem}",
+    ]
+    if entry.summary:
+        values.append(f"description: {json.dumps(entry.summary, ensure_ascii=False)}")
+    if entry.source in ("docs/README.md", "LICENSE.md", "AGENTS.md"):
+        values.append("pagefind: false")
+    values.extend(["---", "", ""])
+    return "\n".join(values)
+
+
+def render_site_metadata(source_root: Path, site_root: Path) -> None:
+    """从产品常量生成展示元数据，不导入客户端运行时。"""
+    source = source_root / "metadata" / "const.py"
+    tree = ast.parse(source.read_text(encoding="utf-8"))
+    fields = {"APP_DESC": "name", "APP_CN": "nameZh", "APP_YEAR": "year"}
+    values: dict[str, str] = {}
+    for node in tree.body:
+        if not isinstance(node, ast.Assign) or not isinstance(node.value, ast.Constant):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id in fields and isinstance(node.value.value, str):
+                values[fields[target.id]] = node.value.value
+    if set(values) != set(fields.values()):
+        raise ValueError("product display metadata is incomplete")
+    target = site_root / "src" / "generated" / "product.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(values, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def sync_reference_docs(source_root: Path, site_root: Path, entries: list[DocEntry]) -> None:
@@ -175,8 +234,9 @@ def sync_reference_docs(source_root: Path, site_root: Path, entries: list[DocEnt
     if errors:
         raise ValueError("\n".join(errors))
 
+    render_site_metadata(source_root, site_root)
     render_docs_readme(source_root, entries)
-    target_root = site_root / "pages" / "generated"
+    target_root = site_root / "src" / "content" / "docs" / "generated"
     target_root.mkdir(parents=True, exist_ok=True)
 
     for old in target_root.glob("*.md"):
@@ -191,12 +251,13 @@ def sync_reference_docs(source_root: Path, site_root: Path, entries: list[DocEnt
         raw = source.read_text(encoding="utf-8")
         cooked = rewrite_content(source_rel, raw, entries)
         target = target_root / entry.target
-        target.write_text(cooked, encoding="utf-8")
+        target.write_text(frontmatter(entry) + cooked, encoding="utf-8")
 
     render_catalog(target_root, entries)
 
 
 def group_docs_entries(entries: list[DocEntry]) -> dict[str, list[DocEntry]]:
+    """按正文主题生成仓库索引和站点目录。"""
     grouped_entries: dict[str, list[DocEntry]] = {}
     for entry in entries:
         if not entry.source.startswith("docs/") or entry.source == "docs/README.md":
@@ -206,6 +267,7 @@ def group_docs_entries(entries: list[DocEntry]) -> dict[str, list[DocEntry]]:
 
 
 def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
+    """生成保留既有地址的专题目录。"""
     grouped_entries = group_docs_entries(entries)
     overview = next((entry for entry in entries if entry.source == "README.md"), None)
     docs_index = next((entry for entry in entries if entry.source == "docs/README.md"), None)
@@ -268,10 +330,14 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
         "",
     ])
 
-    (target_root / "catalog.md").write_text("\n".join(lines), encoding="utf-8")
+    links = {entry.target: f"/generated/{Path(entry.target).stem}/" for entry in entries}
+    entry = DocEntry("docs/README.md", "catalog.md", "专题目录")
+    content = frontmatter(entry) + rewrite_links("\n".join(lines), links)
+    (target_root / "catalog.md").write_text(content, encoding="utf-8")
 
 
 def render_docs_readme(source_root: Path, entries: list[DocEntry]) -> None:
+    """由发布清单生成使用仓库相对链接的正文索引。"""
     grouped_entries = group_docs_entries(entries)
 
     lines = [
@@ -323,7 +389,7 @@ def main() -> None:
     source_root, site_root = resolve_roots()
     entries = load_manifest(site_root)
     sync_reference_docs(source_root, site_root, entries)
-    print(f"synced docs from {source_root} -> {site_root / 'pages' / 'generated'}")
+    print(f"synced {len(entries)} documents from {source_root}")
 
 
 if __name__ == "__main__":

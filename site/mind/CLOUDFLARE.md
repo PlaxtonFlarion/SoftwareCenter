@@ -1,131 +1,79 @@
-# Cloudflare Pages 部署说明
+# Cloudflare Pages 部署
 
-这份说明对应当前的 `A` 方案：
-- 私有仓库维护正文与官网壳
-- GitHub Actions 同步到公共仓库 `SoftwareCenter`
-- Cloudflare Pages 直接从公共仓库构建站点
+正式域名为 `https://www.appserverx.com`。ProxyMind 维护正文和站点源码，GitHub Actions 校验后同步到
+公共仓库 `PlaxtonFlarion/SoftwareCenter`，Cloudflare Pages 从公共仓库构建静态站点。
 
-## 目录约定
+## 项目设置
 
-公共仓库中的目标结构：
+| 设置 | 值 |
+| --- | --- |
+| Repository | `PlaxtonFlarion/SoftwareCenter` |
+| Production branch | `main` |
+| Root directory | `site/mind` |
+| Build command | `npm ci && npm run build` |
+| Build output directory | `site` |
+| Node.js | `.node-version` 指定的 `24.21.0`；如控制台设置了 `NODE_VERSION`，需与之保持一致 |
+| Python | Python 3.11 或更新版本，`python` 命令可用；无需 pip 依赖 |
+
+现有 Pages 项目的构建命令需改为本表中的命令；仓库文件不会自动修改控制台里保存的构建命令。
+不再使用 MkDocs 构建配置。依赖通过 `package-lock.json` 与 `npm ci` 固定。
+
+## 公开仓库布局
 
 ```text
 SoftwareCenter/
-├── Assets/
-│   └── Mind/
-│       ├── README.md
-│       └── docs/
-└── site/
-    └── mind/
-        ├── mkdocs.yml
-        ├── requirements.txt
-        ├── scripts/
-        └── pages/
+├── Assets/Mind/
+│   ├── README.md
+│   ├── ARCHITECTURE_SYSTEM.md
+│   ├── ARCHITECTURE.md
+│   ├── ARCHITECTURE_SCORECARD.md
+│   ├── AGENTS.md
+│   ├── LICENSE.md
+│   ├── metadata/const.py
+│   └── docs/
+└── site/mind/
+    ├── astro.config.mjs
+    ├── package.json
+    ├── package-lock.json
+    ├── docs_manifest.json
+    ├── scripts/
+    ├── public/
+    └── src/
 ```
 
-说明：
-- `Assets/Mind/` 是文档事实源
-- `site/mind/` 是官网展示壳
-- Cloudflare Pages 应该指向 `site/mind/`
+`scripts/sync_docs.py` 自动识别此布局，将清单内的正文转换为 Astro 内容集合，并从产品常量提取展示元数据。
+`npm run build` 完成页面、搜索索引和 sitemap 后，校验实际 HTML；失效文件链接或章节锚点会令构建失败。
 
-## 前置条件
+## 域名与入口
 
-在 Cloudflare Pages 接入之前，先确认：
+在 Pages 的 Custom domains 中绑定 `www.appserverx.com`，按控制台要求配置 DNS。
+裸域到 `www` 的跳转使用 Cloudflare Bulk Redirects；Pages 的 `_redirects` 不支持按来源域名匹配。
 
-1. 私有仓库中的同步 workflow 已跑通
-2. 公共仓库中已经存在：
-   - `Assets/Mind/README.md`
-   - `Assets/Mind/docs/*.md`
-   - `site/mind/mkdocs.yml`
-   - `site/mind/docs_manifest.json`
-   - `site/mind/requirements.txt`
-   - `site/mind/scripts/sync_docs.py`
+| Bulk Redirect 设置 | 值 |
+| --- | --- |
+| Source URL | `appserverx.com/` |
+| Target URL | `https://www.appserverx.com/` |
+| Status | `301` |
+| Preserve query string | 开启 |
+| Subpath matching | 开启 |
+| Preserve path suffix | 开启 |
+| Include subdomains | 关闭，避免匹配 `www` 导致循环跳转 |
 
-## Cloudflare Pages 配置
+创建并启用引用该列表的 Bulk Redirect Rule；裸域 DNS 必须开启 Cloudflare 代理，确保请求经过规则。
+若裸域仍返回 522，检查 DNS、代理状态和规则是否生效，站点源码无法代替这些账户设置。
+配置方式见 [Cloudflare 域名重定向说明](https://developers.cloudflare.com/pages/how-to/www-redirect/)，
+这里使用相反的跳转方向，将裸域统一到 `www`。
 
-在 Cloudflare Pages 新建项目时，使用下面这组参数：
+canonical、sitemap 和 robots.txt 均使用 `https://www.appserverx.com`。
+AppServer 首页的 Mind 入口链接到官网；AppServer `/docs` 保持 API 参考职责，并提供官网入口。
+公网文档不硬编码某个内网 IP 作为用户必须访问的服务地址。
 
-- Repository：`PlaxtonFlarion/SoftwareCenter`
-- Production branch：`main`
-- Root directory：`site/mind`
-- Build command：
+## 验收与发布顺序
 
-```bash
-pip install -r requirements.txt && python scripts/sync_docs.py && mkdocs build
-```
+1. PR 检查通过：Python 发布契约、Astro 类型检查、实际构建、HTML 链接和浏览器验收。
+2. 核对 Pages 的构建命令、Node.js 和两个域名设置。
+3. `main` 同步完成后，在 Pages 部署预览中验证首页、正文、中文搜索与旧书签。
+4. 检查正式域名、裸域跳转、静态资源和搜索索引均可访问。
 
-- Build output directory：
-
-```text
-site
-```
-
-## 构建逻辑
-
-Cloudflare Pages 的构建过程分三步：
-
-1. 安装 `MkDocs` 相关依赖
-2. 运行 `scripts/sync_docs.py`
-   - 从 `Assets/Mind/README.md`
-   - 以及 `Assets/Mind/docs/*.md`
-   - 按 `site/mind/docs_manifest.json` 的清单
-   - 生成 `site/mind/pages/generated/*.md`
-3. 运行 `mkdocs build`
-   - 输出静态 HTML 到 `site/`
-
-## 本地预览
-
-如果要在本地先看站点效果：
-
-```bash
-cd website/mind
-pip install -r requirements.txt
-python scripts/sync_docs.py
-mkdocs serve
-```
-
-默认访问：
-
-```text
-http://127.0.0.1:8000
-```
-
-## 首次上线顺序
-
-建议按这个顺序做：
-
-1. 在私有仓库完成正文和官网壳修改
-2. 手动运行 `sync_docs_bundle`
-3. 到公共仓库确认：
-   - `Assets/Mind/` 已更新
-   - `site/mind/` 已更新
-4. 在 Cloudflare Pages 中配置：
-   - repo
-   - root directory
-   - build command
-   - output directory
-5. 先用 `*.pages.dev` 域名验证
-6. 确认无误后再绑定自定义域名
-
-## 常见检查点
-
-- 如果首页更新了但参考文档没更新：
-  - 检查 `scripts/sync_docs.py` 是否已运行
-- 如果站点能构建但正文链接不对：
-  - 检查正文链接是否仍是仓库内相对路径
-- 如果 Cloudflare 构建失败：
-  - 先检查 `requirements.txt`
-  - 再检查 `mkdocs.yml`
-  - 最后检查 `scripts/sync_docs.py` 是否能在公共仓库目录下运行
-
-## 当前边界
-
-这份官网壳当前负责：
-- 首页
-- 快速开始
-- 能力概览
-- 参考文档入口
-
-它不负责：
-- 复制维护完整正文
-- 改写 `Assets/Mind` 的事实源文档
+构建失败时先看 Pages 日志中的具体步骤；若 `npm ci` 失败，核对 Node.js 和 lockfile；若正文生成失败，
+核对 `Assets/Mind` 与清单；若 HTML 校验失败，按报出的页面、资源或锚点修复源文档。

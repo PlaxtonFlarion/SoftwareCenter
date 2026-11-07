@@ -1,0 +1,13 @@
+---
+import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
+import product from '../generated/product.json';
+---
+<DefaultFooter />
+<div class="site-footer" data-pagefind-ignore>
+  <span>© {product.year} {product.name}</span>
+  <nav aria-label="页脚链接">
+    <a href="/generated/license/">许可条款</a>
+    <a href="/generated/docs-index/">文档目录</a>
+    <a href="https://github.com/PlaxtonFlarion/SoftwareCenter">Software Center <span aria-hidden="true">↗</span></a>
+  </nav>
+</div>

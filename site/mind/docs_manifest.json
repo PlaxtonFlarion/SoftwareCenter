@@ -3,46 +3,54 @@
     {
       "source": "README.md",
       "target": "overview.md",
+      "section": "使用指南",
       "label": "项目总览",
       "summary": "第一次进入项目时先读这一页，快速扫入口、模式边界和 CLI 主路径。"
     },
     {
       "source": "ARCHITECTURE_SYSTEM.md",
       "target": "system-architecture.md",
+      "section": "开发者",
       "label": "系统架构",
       "summary": "Mind、AppServer 与 Fabric 的跨系统职责、Authority、生命周期和集成边界。"
     },
     {
       "source": "ARCHITECTURE.md",
       "target": "client-architecture.md",
+      "section": "开发者",
       "label": "客户端架构",
       "summary": "ProxyMind 客户端内部包边界、依赖方向、状态所有权和生命周期。"
     },
     {
       "source": "ARCHITECTURE_SCORECARD.md",
       "target": "architecture-scorecard.md",
+      "section": "开发者",
       "label": "架构评分卡",
       "summary": "阶段性架构评审、成熟度评分与后续验证重点，不定义架构事实。"
     },
     {
       "source": "LICENSE.md",
       "target": "license.md",
+      "section": "开发者",
       "label": "仓库授权"
     },
     {
       "source": "AGENTS.md",
       "target": "agents.md",
+      "section": "开发者",
       "label": "编码代理约定"
     },
     {
       "source": "docs/README.md",
       "target": "docs-index.md",
+      "section": "",
       "label": "文档索引",
       "summary": "完整正文目录入口；已经知道要找什么时，从这里按专题跳文档最快。"
     },
     {
       "source": "docs/cli-usage.md",
       "target": "cli-usage.md",
+      "section": "命令参考",
       "label": "命令行使用参考",
       "category": "入门与入口",
       "summary": "适合查 exec、resume、归档、订阅、图片、模型、stdin、MCP、帮助与补全命令的组合规则。"
@@ -50,6 +58,7 @@
     {
       "source": "docs/desktop-sidecar.md",
       "target": "desktop-sidecar.md",
+      "section": "工具与集成",
       "label": "原生桌面 Sidecar",
       "category": "入门与入口",
       "summary": "Windows 原生桌面 sidecar 的构建、运行资产、Mind 接入和真实桌面验收说明。"
@@ -57,6 +66,7 @@
     {
       "source": "docs/interactive-mode.md",
       "target": "interactive-mode.md",
+      "section": "使用指南",
       "label": "交互模式",
       "category": "入门与入口",
       "summary": "适合看完整 slash 命令、会话管理和输入约束。"
@@ -64,6 +74,7 @@
     {
       "source": "docs/context-usage-protocol.md",
       "target": "context-usage-protocol.md",
+      "section": "开发者",
       "label": "上下文用量客户端契约",
       "category": "编排与协议",
       "summary": "上下文用量事件、压缩与恢复，以及终端余量显示的权威数据口径。"
@@ -71,6 +82,7 @@
     {
       "source": "docs/session-deletion-protocol.md",
       "target": "session-deletion-protocol.md",
+      "section": "开发者",
       "label": "会话删除客户端契约",
       "category": "编排与协议",
       "summary": "正式删除请求、完成回执、未知结果恢复与本地资源所有权边界。"
@@ -78,6 +90,7 @@
     {
       "source": "docs/hooks.md",
       "target": "hooks.md",
+      "section": "工具与集成",
       "label": "Hooks 配置",
       "category": "编排与协议",
       "summary": "适合看生命周期 Hook 的发现、信任、启用和执行边界。"
@@ -85,6 +98,7 @@
     {
       "source": "docs/mcp-server.md",
       "target": "mcp-server.md",
+      "section": "工具与集成",
       "label": "MCP Server",
       "category": "编排与协议",
       "summary": "适合看 stdio MCP 服务的 host 配置、工具协议和生命周期。"
@@ -92,6 +106,7 @@
     {
       "source": "docs/playbook.api.md",
       "target": "playbook.api.md",
+      "section": "工具与集成",
       "label": "接口实战",
       "category": "编排与协议",
       "summary": "适合看协议边界、提取、断言和批量请求。"
@@ -99,6 +114,7 @@
     {
       "source": "docs/playbook.template.md",
       "target": "playbook.template.md",
+      "section": "工具与集成",
       "label": "模板能力",
       "category": "编排与协议",
       "summary": "适合看模板表达式、签名前置材料和模板层边界。"
@@ -106,6 +122,7 @@
     {
       "source": "docs/playbook.security.md",
       "target": "playbook.security.md",
+      "section": "工具与集成",
       "label": "安全工具",
       "category": "性能与安全",
       "summary": "适合看摘要、JWT、RSA、AES 和安全层边界。"
@@ -113,6 +130,7 @@
     {
       "source": "docs/playbook.load.md",
       "target": "playbook.load.md",
+      "section": "使用指南",
       "label": "云端压测与任务收束",
       "category": "性能与安全",
       "summary": "适合看云端分布式压测、异步任务管理和结果收束边界。"
@@ -120,6 +138,7 @@
     {
       "source": "docs/playbook.device.md",
       "target": "playbook.device.md",
+      "section": "工具与集成",
       "label": "设备域实战",
       "category": "执行与取证",
       "summary": "适合看设备能力分层、多设备广播模型和稳定执行建议。"
@@ -127,6 +146,7 @@
     {
       "source": "docs/playbook.nativecoding.md",
       "target": "playbook.nativecoding.md",
+      "section": "使用指南",
       "label": "原生 coding 链路",
       "category": "执行与取证",
       "summary": "适合看 shell 诊断、工作区写文件、unified diff patch 和验证收束。"
@@ -134,6 +154,7 @@
     {
       "source": "docs/playbook.monkey.md",
       "target": "playbook.monkey.md",
+      "section": "使用指南",
       "label": "Monkey 扰动",
       "category": "执行与取证",
       "summary": "适合看随机扰动的全部参数、执行流程和返回结构。"
@@ -141,6 +162,7 @@
     {
       "source": "docs/agent-mode.md",
       "target": "agent-mode.md",
+      "section": "使用指南",
       "label": "订阅模式",
       "category": "入门与入口",
       "summary": "适合看 agent listen 的会话、长链路监听、任务下发和恢复链路。"
@@ -148,6 +170,7 @@
     {
       "source": "docs/playbook.media.md",
       "target": "playbook.media.md",
+      "section": "工具与集成",
       "label": "多媒体链路",
       "category": "执行与取证",
       "summary": "适合看抽帧、裁剪、转码、拼接和音频处理。"
@@ -155,6 +178,7 @@
     {
       "source": "docs/playbook.performance.md",
       "target": "playbook.performance.md",
+      "section": "使用指南",
       "label": "性能实战",
       "category": "性能与安全",
       "summary": "适合看视觉真值、资源趋势、稳定性扰动和性能案例。"
@@ -162,6 +186,7 @@
     {
       "source": "docs/architecture.md",
       "target": "architecture.md",
+      "section": "使用指南",
       "label": "产品背景与能力生态",
       "category": "结构与维护",
       "summary": "适合了解产品定位、使用入口、可选能力和生态组件，不定义架构事实。"
@@ -169,6 +194,7 @@
     {
       "source": "docs/maintainer-guide.md",
       "target": "maintainer-guide.md",
+      "section": "开发者",
       "label": "维护者指南",
       "category": "结构与维护",
       "summary": "适合在维护文档、官网壳和同步链路时阅读。"
@@ -176,6 +202,7 @@
     {
       "source": "docs/mcp-oauth-acceptance.md",
       "target": "mcp-oauth-acceptance.md",
+      "section": "开发者",
       "label": "外接 MCP OAuth 验收",
       "category": "结构与维护",
       "summary": "源码或安装入口、系统凭据库和真实服务的重复验收步骤及脱敏记录模板。"

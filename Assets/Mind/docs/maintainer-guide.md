@@ -73,15 +73,16 @@ Server contract + protocol/schema + protocol/client
 - `docs/cli-usage.md`：全部 CLI 命令、选项和组合规则的权威参考
 - `docs/agent-mode.md`：订阅模式说明
 - `docs/architecture.md`：产品背景、使用入口、可选能力和生态介绍，不定义架构事实
-- `website/mind/pages/`：官网展示壳与站点入口页
+- `website/mind/src/`：Astro + Starlight 展示组件、样式与站点入口页
 - `website/mind/docs_manifest.json`：官网生成层的正文清单与专题摘要
 - `website/mind/scripts/check_docs.py`：命令覆盖、manifest 和生成页链接校验
+- `website/mind/scripts/check_site.py`：实际构建 HTML 的文件、资源、锚点和正式域名校验
 - `website/mind/CLOUDFLARE.md`：Cloudflare Pages 部署说明
 
 维护原则：
 - 用户入口变重时，优先下沉到 `docs/`
 - 维护者说明不要反向塞回 README
-- `website/mind/pages/generated/` 只当生成产物看，不要手改
+- `website/mind/src/content/docs/generated/` 和 `src/generated/` 只当生成产物看，不要手改
 - slash 命令只在 `docs/interactive-mode.md` 维护完整说明，CLI 命令只在 `docs/cli-usage.md` 维护完整说明；README 和官网入口页只保留摘要
 
 ## 文档维护约定
@@ -139,13 +140,16 @@ SoftwareCenter/Assets/Mind/
   ├── ARCHITECTURE_SCORECARD.md
   ├── AGENTS.md
   ├── LICENSE.md
+  ├── metadata/const.py
   └── docs/
 
 SoftwareCenter/site/mind/
-  ├── mkdocs.yml
-  ├── requirements.txt
+  ├── astro.config.mjs
+  ├── package.json
+  ├── package-lock.json
   ├── scripts/
-  └── pages/
+  ├── public/
+  └── src/
 ```
 
 命令或文档变更后的本地校验顺序：默认检查覆盖命令、全部 `docs/` 正文的清单登记及本地文档链接；生成后检查确认实际发布页面可达。
@@ -154,6 +158,11 @@ SoftwareCenter/site/mind/
 python website/mind/scripts/check_docs.py
 python website/mind/scripts/sync_docs.py
 python website/mind/scripts/check_docs.py --generated
+cd website/mind
+npm ci
+npm run build
+npx playwright install chromium
+npm test
 ```
 
 维护要求：
@@ -165,7 +174,7 @@ python website/mind/scripts/check_docs.py --generated
   - 同步后相对路径仍可达
 - 如果改了 `website/mind/`，要确认同步后仍映射到 `SoftwareCenter/site/mind/`
 - 如果改了正文文档结构，记得同步检查 `website/mind/docs_manifest.json`
-- 文档 PR 会运行发布契约回归测试和完整的生成前后校验；PR 校验不使用公共仓库凭据，也不执行同步
+- 文档 PR 会运行发布契约、实际建站、文件与锚点校验，以及桌面和手机深浅主题下的搜索、键盘与无障碍验收；PR 校验不使用公共仓库凭据，也不执行同步
 - `main` 的同步 workflow 依赖文档校验成功，再生成并校验页面、复制官网壳到公共仓库；同步入口在清理旧产物前校验发布清单和源文档链接
 
 ## 变更检查清单

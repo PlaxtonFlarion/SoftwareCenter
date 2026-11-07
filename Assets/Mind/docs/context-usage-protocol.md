@@ -32,7 +32,7 @@ AppServer 的 Provider 适配层已接收每次实际请求的输入、缓存、
 Messages 缺失构成原始总数的缓存计数时整次消耗未知。最近占用可由服务端估算，估算不计入消耗。
 
 配套样例和百分比期望值见
-[`tests/fixtures/protocol/context_usage.json`](../tests/fixtures/protocol/context_usage.json)。
+仓库中的 `tests/fixtures/protocol/context_usage.json`。
 样例的最近占用为 20,000，累计消耗为 250,000，有效窗口为 100,000，显示为 91%。
 此样例包含用于验证累计值不影响百分比的合成账本值；AppServer 事件读取实际调用账本，
 尚无调用登记时 `total_token_usage` 为 `null`。自动压缩阈值仍属于既有模型执行配置，
@@ -80,7 +80,7 @@ output 均已知。对象存在而条件不满足就是部分统计；额外的�
 消耗。累计通过既有用量事件和回放完整替换，客户端从不对快照求和。
 
 双端共享内容的合成样例见
-[`session_token_usage.json`](../tests/fixtures/protocol/session_token_usage.json)，覆盖完整、零、
+仓库中的 `tests/fixtures/protocol/session_token_usage.json`，覆盖完整、零、
 未知、明细不全、缺报调用和只有总数的情况。服务端持久记录、累计、事件与 outbox 原子提交，
 登记中的调用计入缺报；数据库必须匹配当前完整基线与 schema manifest。SDK 已支持完整结构，
 本地投影、完整缓存和退出快照沿同一事实接入。源码推送不代表服务已部署。

@@ -5,8 +5,10 @@
 
 import argparse
 import ast
+import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 
 SCRIPT_ROOT = Path(__file__).resolve().parent
@@ -149,8 +151,8 @@ def _validate_manifest(source_root: Path, site_root: Path) -> list[str]:
 
 
 def _validate_generated_pages(site_root: Path) -> list[str]:
-    """校验官网生成页存在且内部 Markdown 链接可解析。"""
-    target_root = site_root / "pages" / "generated"
+    """校验生成页存在且正文地址指向已生成的页面。"""
+    target_root = site_root / "src" / "content" / "docs" / "generated"
     errors: list[str] = []
     entries = load_manifest(site_root)
 
@@ -170,6 +172,11 @@ def _validate_generated_pages(site_root: Path) -> list[str]:
                 errors.append(
                     f"broken generated link: {page.name} -> {path}"
                 )
+        for path in re.findall(r"\]\((/generated/[^\s)]+)\)", text):
+            route = urlsplit(path).path
+            target = target_root / f"{route.removeprefix('/generated/').rstrip('/')}.md"
+            if not target.is_file():
+                errors.append(f"broken generated route: {page.name} -> {path}")
 
     return errors
 
@@ -200,7 +207,7 @@ def main() -> int:
     parser.add_argument(
         "--generated",
         action="store_true",
-        help="同时校验 pages/generated 中的页面和内部链接",
+        help="同时校验 src/content/docs/generated 中的页面和内部链接",
     )
     arguments = parser.parse_args()
 

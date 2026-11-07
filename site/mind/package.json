@@ -1,0 +1,27 @@
+{
+  "name": "mind-documentation",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.23.4" },
+  "scripts": {
+    "sync": "python scripts/sync_docs.py",
+    "dev": "npm run sync && astro dev",
+    "build": "npm run sync && astro check && astro build && python scripts/check_site.py",
+    "preview": "astro preview",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "7.3.6",
+    "@astrojs/starlight": "0.42.10",
+    "astro": "7.4.7",
+    "hast-util-to-string": "3.0.1",
+    "unist-util-visit": "5.2.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0",
+    "@types/hast": "3.0.5",
+    "typescript": "6.0.3"
+  }
+}
