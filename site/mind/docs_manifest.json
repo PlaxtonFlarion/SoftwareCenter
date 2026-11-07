@@ -33,14 +33,14 @@
       "target": "license.md",
       "section": "开发者",
       "label": "仓库授权",
-      "summary": "查阅本仓库的授权条款、使用限制与责任说明。"
+      "summary": "本仓库附带的 GPL-3.0 许可原文；涉及授权条件时请阅读完整条款。"
     },
     {
       "source": "AGENTS.md",
       "target": "agents.md",
       "section": "开发者",
       "label": "编码代理约定",
-      "summary": "修改代码前的检查、类型与依赖约束，以及测试和交付要求。"
+      "summary": "面向参与修改本仓库的编码代理：按工作前检查、代码约束、验证和安全要求阅读。"
     },
     {
       "source": "docs/README.md",
@@ -63,7 +63,7 @@
       "section": "工具与集成",
       "label": "原生桌面 Sidecar",
       "category": "入门与入口",
-      "summary": "Windows 原生桌面 sidecar 的构建、运行资产、Mind 接入和真实桌面验收说明。"
+      "summary": "通过 computer 观察和操作本机窗口；区分日常启用、Windows/macOS 构建与原生桌面验收。"
     },
     {
       "source": "docs/interactive-mode.md",
@@ -175,7 +175,7 @@
       "section": "工具与集成",
       "label": "多媒体链路",
       "category": "执行与取证",
-      "summary": "按任务组合视频抽帧、裁剪、转码、拼接与音频处理，整理输出材料。"
+      "summary": "准备本地媒体工具与输入文件，完成抽帧、转码和音轨处理；按需接入 Helix 录屏与试听。"
     },
     {
       "source": "docs/playbook.performance.md",

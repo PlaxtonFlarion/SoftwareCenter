@@ -36,7 +36,7 @@ mind exec "检查当前项目，并说明建议先运行哪些验证"
 mind agent listen
 ```
 
-适合持续监听并执行远端下发的任务。连接、会话恢复与退出边界见[订阅模式](/generated/agent-mode/)。
+适合持续接收远端下发的任务。消息先进入当前进程的临时收件箱，默认不会自动执行；在 `/mailbox` 中选择 Run，或显式开启本会话的 Auto-run。连接、恢复与退出行为见[订阅模式](/generated/agent-mode/)。
 
 ## 接入 MCP host
 
@@ -44,11 +44,11 @@ mind agent listen
 mind mcp-server
 ```
 
-将 Mind 作为 stdio MCP server 提供给支持 MCP 的 host。配置、工具协议和生命周期见 [MCP Server](/generated/mcp-server/)。
+将 Mind 作为 stdio MCP server 提供给支持 MCP 的 host（发起调用的应用）。由 host 启动服务，再调用 `mind_exec` 提交任务；直接运行命令会等待协议输入。配置、工具协议和生命周期见 [MCP Server](/generated/mcp-server/)。
 
 ## 选择执行能力
 
-运行入口与工具能力可以分别选择。编码能力来自原生工具；设备、接口、媒体等 Helix 能力需要显式接入对应运行组件。
+运行入口与工具能力可以分别选择。编码能力来自原生工具；设备与接口等 Helix 能力需显式接入。本地文件转码还需准备相应媒体程序，具体条件见各指南。
 
 | 任务 | 指南 |
 | --- | --- |

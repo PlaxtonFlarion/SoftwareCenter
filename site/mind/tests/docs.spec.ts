@@ -126,6 +126,7 @@ test('全部文档页面保持布局与主题入口一致', async ({ page }) => 
       const response = await page.goto(route);
       expect(response?.status()).toBe(200);
       await expect(page.locator('.page-heading h1')).toHaveCount(1);
+      await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('header reading-theme .theme-trigger')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
     });

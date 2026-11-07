@@ -2,23 +2,25 @@
 
 > 权威参考：本页维护全部 REPL slash 命令、参数和行为。README 与官网入口页只保留摘要和跳转链接。
 
-入口页只负责交互入口；REPL 指令、会话管理和输入约束继续看这里。
-重点是讲清进入 REPL 之后能做什么、怎么管理上下文、哪些输入适合留在交互模式里。
-`agent listen` 会在普通 TUI 中启动远端请求监听器，另见 `订阅模式`。
+运行 `mind` 后，会进入可持续对话的终端界面（TUI，也称 REPL）。普通文本用于描述任务，以 `/` 开头的命令用于管理模型、会话和工具。你可以在同一会话中反复补充要求，不必每次重新启动程序。
+
+第一次使用可按这个顺序操作：`/preferences` 配置模型 → 输入一个只读检查目标 → 查看回复与工具记录 → 再提出具体修改。遇到审批时，先核对动作及目标，再决定是否允许。
 
 ## 先判断是不是这页的范围
 
-- 你要连续试多个目标并管理同一会话：看这里
-- 你要查 `/new /resume /archive /delete /fork /permissions /model /provider /effort /preferences /compact /tools /hooks /review /agent /listen /mailbox /diff /copy /export /raw /ps /stop /mcp /helix-link /helix-mode /helix-unlink /helix-home /helix-stop /skills /shutdown /quit` 这些 REPL 指令：看这里
-- 你要理解 `agent listen` 的订阅链路：这页不展开，直接看 `订阅模式`
-- 你要理解单次命令行入口，不要先从交互模式文档开始
-- 你只是偶尔跑一条命令，不一定需要先读这页
+本页面向持续对话、交互审批和会话管理。脚本或单次任务见[命令行参考](cli-usage.md#单次执行)；接收远端任务见[订阅模式](agent-mode.md)。
 
 ## 怎么读这页
 
-- 先看“启动与提示”，建立 REPL 的基本运行心智
-- 再看指令索引，确认管理会话、查看工具和退出的方式
-- 最后看输入约束，判断哪些任务适合继续留在 REPL
+| 当前目标 | 常用入口 |
+| --- | --- |
+| 切换模型或权限 | `/provider`、`/model`、`/effort`、`/permissions` |
+| 新建、恢复或分叉对话 | `/new`、`/resume`、`/fork` |
+| 看工具参数和完整输出 | `Ctrl+T` 打开完整记录 |
+| 检查连接与可用能力 | `/mcp`、`/tools`、`/skills`、`/hooks` |
+| 查某条命令的完整行为 | [指令索引](#指令索引) |
+
+下文的 Turn 指一次任务从提交到结束的完整轮次；Session 指承载多轮任务的会话。中断请求发出后仍需等待本轮确认结束。
 
 ## 启动与提示
 `mind` 进入循环后，会持续读取用户输入并通过统一模型轮次执行。

@@ -1,18 +1,21 @@
 # 接口实战
 
-这页聚焦协议请求、字段边界、批量结构和验收入口。
+本页介绍通过 Helix 的协议工具发送请求、提取响应字段并检查结果。开始时运行 `mind --helix api`，确认连接成功，再用 `/tools` 查看实际可用工具。Mind 客户端负责连接与过滤，具体协议工具及字段以所连接 Helix 提供的 schema 为准。
 
 ## 先判断是不是这页的范围
 
-- 你要发 HTTP、SSE、WebSocket、GraphQL、TCP、UDP、SMTP、IMAP、FTP 请求：看这里
-- 你要先做模板展开或字段校验，再决定是否真的发请求：看这里
-- 你要处理 JWT、RSA、AES、摘要和签名：优先跳到安全工具文档，不要把安全逻辑硬塞进协议层
-- 你只是想确认主入口和能力边界：先回入口页，不必先读完整接口文档
+适用于接口验证、流式响应检查和批量请求。动态参数见[模板能力](playbook.template.md)，签名与加解密见[安全工具](playbook.security.md)，多虚拟用户的云端负载测试见[云端压测](playbook.load.md)。
 
 ## 怎么读这页
-- 先看协议覆盖，确认当前场景是否真的属于协议与校验这一类
-- 再看统一约定和字段边界，用同一套结构组织单请求或批量请求
-- 最后按协议挑样例，不要把所有协议从头读到尾
+先完成一个单请求，再扩展到批量。可以在已连接的对话中描述：
+
+```text
+向我提供的健康检查 URL 发送一次 GET 请求。
+提取 HTTP 状态码和响应 JSON 的 ok 字段，
+要求状态码为 200、ok 为 true，并分别说明请求是否成功、断言是否通过。
+```
+
+把 URL 换成你的实际测试地址。只想检查参数而不访问服务时，要求使用 `render` 或 `validate`。下方 JSON 是工具参数示意，不是系统终端命令。
 
 ## 协议覆盖
 - `HTTP / SSE / WebSocket / GraphQL`
@@ -21,19 +24,14 @@
 - 单请求与批量请求
 - `render / validate / extract / asserts`
 
-一句话理解：
+| 动作 | 实际做什么 | 会发送请求吗 |
+| --- | --- | --- |
+| `render` | 展开模板，并把共享默认值合入当前请求 | 否 |
+| `validate` | 展开后检查必填字段与基础结构 | 否 |
+| `*_request` | 执行一个协议请求 | 是 |
+| `*_batch` | 执行一组同协议请求 | 是 |
 
-- `render / validate`：预执行
-- `*_request`：执行单个请求
-- `*_batch`：执行一组同协议请求
-
-再强调一次边界：
-- `render`：只做模板展开和默认值物化，不执行协议请求
-- `validate`：只做模板展开、默认值物化和基础字段校验，不执行协议请求
-- `*_request`：执行单个协议请求
-- `*_batch`：执行一组同协议请求
-
-如果你只记一条：
+组织参数时遵循下面的分工：
 
 - 单请求的协议原生参数留在 `request`
 - 批量请求的协议原生参数统一写进 `items[].request`
@@ -45,7 +43,6 @@
 - 单请求统一使用：`request`、`template_vars`
 - 单请求的 `render / validate` 可额外接收 `env`，用于预览或校验共享默认值，不会改变正式执行工具的输入边界
 - 批量请求统一使用：`env`、`items`、`template_vars`、`concurrency`、`fail_fast`
-- 不再使用旧的单体 `payload = {...}` 形式，也不再使用 `options.fail_fast` / `vars`
 - 执行边界：
   - 单请求：执行一个协议请求
   - 批量请求：执行一组同协议请求
@@ -91,6 +88,8 @@ items = [
 - 如果你要真实发请求，才用执行入口
 
 ### SSE 批量硬性约束
+
+下方使用一个接收 `user_input` 和 `current_time` 的业务接口说明字段放置。这两个名称是示例服务的 JSON 字段，不是所有 SSE 服务的必填项；对接其他服务时使用其真实请求结构。
 - SSE 单条场景走单请求执行
 - SSE 多条独立用例走批量执行
 - `1` 条 case = `items` 中的 `1` 个独立 item，其协议字段写在 `item.request`
@@ -104,6 +103,7 @@ items = [
 - 若出现参数校验错误，必须修正字段类型或结构，不要通过删除字段绕过校验
 
 ### SSE 批量字段放置规则
+
 - `env` 只放所有 `items` 共享且不随 case 变化的默认参数
 - `items[].request` 只放当前 case 的差异字段
 - `user_input` 必须写入 `items[].request.json.user_input`
@@ -127,34 +127,34 @@ items = [
 ```text
 执行方式：SSE 批量执行
 args:
-  concurrency: 5
+  concurrency: 2
   fail_fast: true
   env:
     method: POST
-    url: http://10.0.80.65:8081/light1d/light/sse/generate
+    url: https://api.example.com/events/generate
     timeout: 60
     headers:
       Accept: text/event-stream
       Content-Type: application/json
-      Authorization: Bearer es_fuzzy_search_token_2024
+      Authorization: Bearer <YOUR_TEST_TOKEN>
     json:
-      user_id: dage
-      device_id: SS20250029_588C810F0842
+      user_id: example-user
+      device_id: example-device
       type: text
       language: zh
       zone: GMT+8
-      sku: PD20250029
+      sku: example-product
       platform: Android
       conversation_id: 0
   items:
     - request:
         json:
           user_input: 第一条 case 的原文
-          current_time: 第一条 case 的毫秒时间戳
+          current_time: 1710000000000
     - request:
         json:
           user_input: 第二条 case 的原文
-          current_time: 第二条 case 的毫秒时间戳
+          current_time: 1710000001000
 ```
 
 错误示意 1：
@@ -361,13 +361,13 @@ request = {
 }
 ```
 
-下面是一条**合法 JSON** 示意（根为对象，便于校验器 / `JSON.parse` 整段解析）。单请求 Nexus 工具通常把 `request`、`extract`、`asserts` 作为并列顶层参数传入，文档里合并写在一起仅为避免「`"extract":` 单独成段」这种**非法 JSON** 片段。
+下面的 JSON 将请求、提取与断言放在一起，便于完整检查参数形状。替换 URL 后，按实际工具 schema 提交。
 
 ```json
 {
   "request": {
     "method": "GET",
-    "url": "/health"
+    "url": "https://api.example.com/health"
   },
   "extract": {
     "status": "response.status",
@@ -385,7 +385,7 @@ request = {
 
 当前支持的 `op`（全小写，与 `AssertionService` 一致）：`eq`、`ne`、`gt`、`ge`、`lt`、`le`、`contains`、`in`（`value` 须为 JSON 数组）、`exists`（不要求 `value`）、`empty`、`not_empty`、`regex`（`value` 为正则字符串）。路径从 `pack.data` 起算，例如 `ok`、`request`、`response.status`、`response.events.first.data`；可在 `path` 字符串中用 `|json`、`|pick:子路径` 等与提取相同的后缀（见实现侧 `ExtractService`）。
 
-这已经够表达断言和提取的最小结构了，后面不再重复展开长样例。
+读取结果时先区分两种情况：请求失败表示尚未取得可用响应；请求完成但断言失败表示实际结果与预期不一致。提取到了字段，也不代表断言已经通过。
 
 建议：
 

@@ -1,8 +1,6 @@
 # 原生 coding 链路
 
-这页讲的是：Mind 内置的原生 coding 工具链如何在工作区内执行命令、应用 patch，并汇总结果。
-
-重点不是背工具清单，而是形成一条稳定的工程闭环：
+原生 coding 是 Mind 自带的代码工作流：读取项目、定位问题、修改文件，再运行验证。无需连接 Helix。通常先运行 `mind`，由你描述目标，代理选择下面的工具完成操作。
 
 ```text
 shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
@@ -10,7 +8,17 @@ shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
 
 ## 先判断是不是这页的范围
 
-- 你要用内置编码工具做可见的搜索、阅读、修改、验证和收束闭环：看这里
+如果你要理解或修改当前项目，使用这条路径。浏览器、数据库和设备任务需要相应的外部工具，见[工具来源](../README.md#tool-sources)。
+
+可以从一个明确的小任务开始：
+
+```text
+先定位项目中读取配置的入口，说明调用关系。
+确认原因后修复配置缺失时的报错，并运行相关测试。
+最后列出修改文件、测试结果和没有验证到的部分。
+```
+
+默认交互模式允许写入工作区并按需审批；`mind exec` 默认只读。只读模式下可以检查项目，但 `apply_patch` 会拒绝写入。权限选择见[沙箱与审批](../README.md#沙箱与审批)。
 
 ## 使用心智模型
 
@@ -27,20 +35,21 @@ shell 诊断 -> apply_patch 修改文件 -> 执行验证 -> 汇总结果
   -> 最终回复
 ```
 
-它的核心优势是可见、可审计、可插入审批。每一步都会进入工具 trace，失败也会返回结构化 reason 和 recommended next step。
+工具调用和结果会显示在终端中，`Ctrl+T` 可查看完整记录。检查最终回复时，区分“补丁已应用”“命令已退出”和“测试已通过”：三者需要各自的结果证据。
 
 ## 工具分层
 
 ### 1. Shell 诊断
 
-当前直接暴露的命令执行能力是 `shell_command`：
+命令工具分为三种，均使用当前工作区和权限设置：
 
-- 批量执行工作区内 shell 命令。
-- 每项包含 `command`，可带 `cwd` 和 `timeout_sec`。
-- 适合搜索、列目录、读取文件片段、运行测试、构建和脚本。
-- 不应用它通过 `echo`、`tee`、`sed -i` 或重定向来创建/覆盖/局部修改文件。
+| 工具 | 适合场景 | 关键输入与结果 |
+| --- | --- | --- |
+| `shell_command` | 一条能够在超时内结束的诊断或测试命令 | 必填 `command`，可指定 `cwd`、`timeout_sec`；一次调用执行一条命令，没有 `items` 参数 |
+| `exec_command` | 长时间构建、持续输出或交互式程序 | 必填 `command`；尚未结束时返回命令 `session_id`，需要伪终端时设 `tty=true` |
+| `write_stdin` | 继续观察或控制已有命令 | 传原命令 `session_id`；`stdin` 为空时读取增量输出，非空时发送输入 |
 
-当前执行环境的工作区根目录由 `exec_env.workspace.root` 提供。
+这些是代理工具名，不是需要在终端直接输入的 CLI 子命令。工具参数的完整声明位于 `agent/application/tools/coding_schemas.py`。
 
 `shell_command` 和 `exec_command` 的 `sandbox_permissions` 省略或为 `use_default` 时，
 沿用当前会话权限。Full Access 对应 `danger-full-access + never`，默认命令直接使用宿主执行环境。
@@ -53,15 +62,15 @@ JavaScript 的 `host.tool(...)` 嵌套命令遵循相同规则。
 - 先用文件名或关键词缩小范围，例如 `rg --files`、`rg`
 - 再按错误文本、函数名、调用点多轮搜索
 - 搜到候选后只读相关窗口，避免把大文件整段塞进上下文
-- 多个只读诊断命令可以放进同一次 `shell_command.items`
+- 多条诊断命令分别提交；先根据上一步结果确定下一步需要读取的内容
 
 ### 2. 修改文件
 
 当前直接暴露的工作区文件修改能力是 `apply_patch`：
 
-- 支持严格 patch 语法。
+- 接受 `patch` 字符串，支持专用补丁格式、标准 unified diff 和 git diff。
 - 支持多文件、多 hunk、新建/删除文件、上下文校验和按文件 SHA256 基线保护。
-- patch 必须以 `*** Begin Patch` 开始，以 `*** End Patch` 结束。
+- 使用专用补丁格式时，以 `*** Begin Patch` 开始，以 `*** End Patch` 结束。
 - 文件段使用 `*** Add File:`、`*** Update File:`、`*** Delete File:`，重命名使用 `*** Move to:`。
 
 建议：
@@ -72,20 +81,13 @@ JavaScript 的 `host.tool(...)` 嵌套命令遵循相同规则。
 
 ### 3. 执行
 
-执行仍通过 `shell_command` 完成。
-
-当前执行层会做命令审计和 runtime resolution：
-
-- Python / Node / Java / Go 等常见运行时会先解析真实可执行文件
-- 版本类命令可走较轻的 metadata audit
-- 测试类命令保留更完整的文件审计
-- 缺失 runtime 时返回明确的诊断和建议
+短测试可用 `shell_command`；持续输出的构建或测试使用 `exec_command`，再用 `write_stdin` 读取后续结果。返回命令 `session_id` 表示进程仍需跟进，不表示验证完成。这里的 ID 只标识命令进程，不能传给 `mind resume` 恢复对话。
 
 建议：
 
 - 验证命令优先用项目现有测试命令
-- 如果是打包环境，避免假设 `python` 一定是真 Python；看返回里的 runtime 诊断
-- destructive 命令必须走审批，不要绕过文件工具
+- 先确认命令使用了项目要求的解释器和依赖；安装 Mind 不会自动安装目标项目的全部开发环境
+- 删除、覆盖或其他有副作用的操作遵循当前权限与审批策略，不通过 Shell 绕过文件修改约束
 
 ### 4. 收束
 
@@ -116,7 +118,7 @@ JavaScript 的 `host.tool(...)` 嵌套命令遵循相同规则。
 常见原因：
 
 - old text 和当前文件不完全一致
-- patch 缺少 `*** Begin Patch` / `*** End Patch`
+- 专用补丁格式缺少 `*** Begin Patch` / `*** End Patch`
 - hunk 行数不匹配
 - 上下文不唯一或上下文已变化
 - patch 带了 UI 行号
@@ -126,7 +128,7 @@ JavaScript 的 `host.tool(...)` 嵌套命令遵循相同规则。
 - 先重新读取当前文件内容
 - 小范围改动重新生成最小 patch
 - 多文件改动使用多个文件段
-- 失败 reason 已返回时，按 `suggested_next_action` 调整
+- 按返回的错误原因核对路径、上下文和文件基线，不重复提交相同的失效补丁
 
 ### 命令执行失败
 
@@ -139,11 +141,12 @@ JavaScript 的 `host.tool(...)` 嵌套命令遵循相同规则。
 
 处理方式：
 
-- 先看命令执行结果返回的 `exit_code / stdout / stderr / runtime`
-- runtime 缺失时不要反复执行同一命令
-- 需要云端 sandbox 时只在策略层明确接管的场景下切换；不可用时返回依赖缺失和本地替代建议
+- 先看退出码、标准输出和错误输出；持续命令还需要确认是否已经退出
+- 解释器或依赖缺失时，先解决环境问题，再运行同一条验证命令
+- 当前目录错误时重新指定 `cwd`；网络或权限失败时按实际错误处理，不把它们归为代码测试失败
 
 ## 使用建议
 
-- 需要可见、可控、可审计的编码闭环时，走原生 coding
-- 在调试 patch engine、shell runtime、tool trace、synthetic tool call 时，必须走原生 coding
+- 任务说明写清目标、允许修改的范围和预期验证方式。
+- 先检查工作区已有改动，避免覆盖与当前任务无关的文件。
+- 继续了解[交互模式](interactive-mode.md)和[命令行参考](cli-usage.md)中的会话、权限及执行选项。

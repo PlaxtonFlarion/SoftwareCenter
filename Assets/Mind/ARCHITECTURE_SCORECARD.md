@@ -6,15 +6,17 @@
 > [ARCHITECTURE_SYSTEM.md](ARCHITECTURE_SYSTEM.md) 为准，ProxyMind 客户端内部架构以
 > [ARCHITECTURE.md](ARCHITECTURE.md) 为准。
 
+**如何阅读这份评分卡**：它记录某一阶段的架构判断，用于识别优点、待补验证和后续工作。分数不是线上服务状态、平台支持承诺或测试通过证明。判断当前行为时，应继续核对架构文档、实际实现和对应版本的验收结果。
+
 > **System Architecture · Runtime Architecture · Durability · Compute**
 
 ### Architecture Grade
 
-# **A+**
+#### **A+**
 
 ### Overall Architecture Score
 
-# **9.6 / 10**
+#### **9.6 / 10**
 
 ```text
 ███████████████████▎  9.6 / 10
@@ -81,7 +83,7 @@ System Architecture 已经明确区分三套 Runtime 的 Authority、Identity、
 
 ---
 
-# 02 · Architecture Score
+## 02 · Architecture Score
 
 | Architecture Dimension         |   Score | Grade | Assessment                                        |
 |--------------------------------|--------:|:-----:|---------------------------------------------------|
@@ -115,11 +117,11 @@ Observability            ██████████████████�
 E2E Proof                ██████████████████    9.0
 ```
 
-# **Overall · 9.6 / 10**
+#### **Overall · 9.6 / 10**
 
 ---
 
-# 03 · Mind Runtime
+## 03 · Mind Runtime
 
 ## **9.7 / 10**
 
@@ -211,7 +213,7 @@ Presentation Projection
 
 ---
 
-# 04 · AppServer
+## 04 · AppServer
 
 ## **9.8 / 10**
 
@@ -295,7 +297,7 @@ Turn termination
 
 ---
 
-# 05 · Fabric
+## 05 · Fabric
 
 ## **9.3 / 10**
 
@@ -365,7 +367,7 @@ Other Cloud Compute Runtime
 
 ---
 
-# 06 · Authority Model
+## 06 · Authority Model
 
 ## **9.9 / 10**
 
@@ -427,7 +429,7 @@ System Architecture 还进一步禁止通过修 Bug 的方式逐渐引入这些�
 
 ---
 
-# 07 · Identity Architecture
+## 07 · Identity Architecture
 
 ## **9.8 / 10**
 
@@ -485,7 +487,7 @@ Reconciliation
 
 ---
 
-# 08 · Durable Lifecycle
+## 08 · Durable Lifecycle
 
 ## **9.8 / 10**
 
@@ -564,7 +566,7 @@ Observe
 
 ---
 
-# 09 · Recovery Architecture
+## 09 · Recovery Architecture
 
 ## **9.7 / 10**
 
@@ -620,7 +622,7 @@ retry / reconcile
 
 ---
 
-# 10 · Effect Safety
+## 10 · Effect Safety
 
 ## **9.7 / 10**
 
@@ -664,7 +666,7 @@ Retry
 
 ---
 
-# 11 · Presentation Architecture
+## 11 · Presentation Architecture
 
 ## **9.5 / 10**
 
@@ -715,11 +717,11 @@ Turn completed
 
 ---
 
-# 12 · Complexity Assessment
+## 12 · Complexity Assessment
 
 ### Runtime Complexity
 
-# **8.5 / 10**
+#### **8.5 / 10**
 
 > 此分数表示系统本身复杂度，不代表质量高低。
 
@@ -781,13 +783,13 @@ Invariant
 
 ### Complexity Quality
 
-# **9.3 / 10**
+#### **9.3 / 10**
 
 > 系统虽然复杂，但复杂性已经基本做到 **可命名、可定位、可解释、可测试**。
 
 ---
 
-# 13 · Architecture Maturity
+## 13 · Architecture Maturity
 
 可以把 Agent 系统成熟度划成五级：
 
@@ -840,7 +842,7 @@ Agent Runtime Platform
 
 ## Current Maturity
 
-# **L4.7 / L5**
+### **L4.7 / L5**
 
 已经具备：
 
@@ -869,7 +871,7 @@ Operational Experience
 
 ---
 
-# 14 · Architecture Risk
+## 14 · Architecture Risk
 
 现在最大的架构风险已经不是：
 
@@ -908,7 +910,7 @@ Invariant
 
 ---
 
-# 15 · Verification Gate
+## 15 · Verification Gate
 
 完整系统级验收应该继续围绕：
 
@@ -965,7 +967,7 @@ Unknown Effect Retry = 0
 
 ---
 
-# 16 · Architecture Laws
+## 16 · Architecture Laws
 
 整个 Mind Agent Runtime 可以最终压缩成这些不变量：
 
@@ -1044,7 +1046,7 @@ Source of Truth
 
 ---
 
-# 17 · Final Score
+## 17 · Final Score
 
 ```text
 ╔════════════════════════════════════════════╗
@@ -1075,7 +1077,7 @@ Source of Truth
 
 ---
 
-# Final Verdict
+## Final Verdict
 
 > **Mind Agent Runtime 的核心架构已经成熟。**
 
@@ -1137,4 +1139,4 @@ New Global State
 
 ### Final Rating
 
-# **A+ · 9.6 / 10**
+#### **A+ · 9.6 / 10**

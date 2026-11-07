@@ -1,5 +1,16 @@
 # Hooks 配置
 
+Hook 是在指定事件发生时运行的脚本或 MCP 工具。例如，在工具执行前检查命令，在执行后记录结果。Hook 是否已发现、是否可信、是否启用是三个独立状态；仅把文件写进项目并不会使它执行。
+
+**先完成一个最小 Hook**
+
+1. 在项目中准备可独立运行的检查脚本，例如 `scripts/check_tool.py`。下面的配置只引用脚本，不会替你创建它。
+2. 在可信项目的 `.mind/hooks.json` 中保存下方示例，或使用对应的 TOML 配置；同一层选择一种表示。
+3. 打开 `/hooks`，查看发现错误、审核脚本内容，再信任并启用该项。
+4. 发起一次匹配事件，检查 Hook 输出。若修改脚本或配置，重新核对信任状态。
+
+先读配置与[信任与启用状态](#信任与启用状态)即可开始；需要让 Hook 阻止操作或改写输入时，再读[退出码与控制输出](#退出码与控制输出)。
+
 Hooks 可以写入配置层的 `config.toml`，也可以放在同目录的独立
 `hooks.json`。用户层对应 `~/.mind/config.toml` 和 `~/.mind/hooks.json`；可信
 项目对应 `.mind/config.toml` 和 `.mind/hooks.json`。同一层同时使用两种表示时会
@@ -55,7 +66,9 @@ Hook state；profile 或 project 配置中的 state 不能为自身授权。`ena
 - `modified`：保存过信任摘要，但当前内容已经变化，不执行。
 - `untrusted`：没有保存当前 Hook 的信任摘要，不执行。
 
-每个事件包含多个 MatcherGroup，每组使用一个可选的 `matcher`，并按声明顺序
+## 处理器参数
+
+每个事件包含多个匹配组（MatcherGroup），每组使用一个可选的 `matcher`，并按声明顺序
 包含多个命令处理器：
 
 ```toml
@@ -94,7 +107,7 @@ Hook discovery 按匹配组和处理器分别容错：非法 matcher 只跳过�
 不会进入 installed、trust、catalog 或 runtime。warning 会写入 Hook 观察日志，并
 显示在 `/hooks` 汇总界面。
 
-Matcher 规则与工具名称：
+## 匹配规则与工具名称
 
 - 未填写、空字符串和 `*` 匹配全部。
 - 非法正则会产生 warning 并跳过当前 MatcherGroup。
@@ -117,7 +130,9 @@ Matcher 规则与工具名称：
 `/hooks` 使用 `client-full`、`server-approval-only`、`approval-events` 和
 `client-only` 标签显示这些边界。Hook 已启用不代表同名服务端工具受完整控制。
 
-命令从 stdin 接收一个符合事件 schema 的 JSON 对象。公共字段使用 Codex
+## 输入事件与会话记录
+
+命令从标准输入（stdin）接收一个符合事件 schema 的 JSON 对象。公共字段使用 Codex
 canonical 名称：`session_id`、`transcript_path`、`cwd`、`hook_event_name` 和
 `model`；按事件补充 `turn_id`、`permission_mode`、Agent 字段或工具字段。
 工具事件使用 `tool_name`、`tool_use_id`、`tool_input`，后置事件使用
@@ -160,6 +175,8 @@ POSIX 平台通过当前 `$SHELL -lc` 执行命令，未设置 `$SHELL` 时回�
 Codex 内部 rollout/transcript 格式。依赖 Codex 内部记录结构的 Hook 需要适配上述
 JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook 可以直接使用。
 
+## 退出码与控制输出
+
 退出码 `0` 表示正常完成。只有 `PreToolUse`、`PermissionRequest`、
 `PostToolUse`、`UserPromptSubmit`、`Stop` 和 `SubagentStop` 可以用退出码 `2`
 表达业务阻断，而且原因必须写入 stderr；其他事件的退出码 `2` 与其余非零
@@ -174,6 +191,8 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 结构化输出中的 `systemMessage` 会记录为 Hook warning，不会注入模型请求；需要
 提供模型可见内容时使用受支持事件的 `additionalContext`。
 过大的输出或附加上下文会写入会话临时文件，并在会话结束时清理。
+
+### 执行前检查
 
 `PreToolUse` 使用嵌套控制输出：
 
@@ -197,6 +216,8 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 `permissionDecision: "ask"`、顶层 `decision: "approve"` 以及该事件的
 `continue: false`、`stopReason`、`suppressOutput: true` 会使当前 Hook 运行失败。
 
+### 审批请求
+
 `PermissionRequest` 的决定必须使用嵌套结构。多个 Hook 中 deny 优先；没有
 决定时继续走普通审批：
 
@@ -217,6 +238,8 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 运行失败；`continue: false`、`stopReason` 和 `suppressOutput: true` 同样不受
 支持。
 
+### 执行后反馈
+
 `PostToolUse` 只在工具成功完成时执行；工具返回失败、执行异常或取消时均不执行。
 它的控制和模型反馈语义彼此独立：
 
@@ -231,6 +254,8 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 多个停止或阻断反馈按 Hook 顺序合并。未声明字段（包括结果替换字段）会使当前 Hook
 运行失败。`PostCompact` 只接受通用输出字段，
 不接受 `hookSpecificOutput`。
+
+### 会话与压缩事件
 
 `SessionStart` 返回 `continue: false` 时会停止当前轮次启动，不再执行
 `UserPromptSubmit` 或模型请求；同一批结果中的 `additionalContext` 会保留给

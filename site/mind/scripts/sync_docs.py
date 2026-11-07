@@ -24,11 +24,11 @@ CATEGORY_ORDER = [
     "结构与维护",
 ]
 CATEGORY_GUIDES = {
-    "入门与入口": "适合补齐交互入口、REPL 切换、订阅和输入约束。",
-    "编排与协议": "适合处理协议校验、模板层和批量执行结构。",
-    "执行与取证": "适合处理设备动作、多媒体证据链和端侧执行收束。",
-    "性能与安全": "适合处理性能回归、稳定性诊断、签名和加解密链路。",
-    "结构与维护": "适合继续读系统骨架、站点同步链路和维护约定。",
+    "入门与入口": "选择终端、桌面或订阅入口，了解启动方式、会话管理和连接准备。",
+    "编排与协议": "配置工具与自动化流程，组织请求参数，并核对结果和状态。",
+    "执行与取证": "完成代码、设备和媒体任务，保存可复核的文件、画面或日志。",
+    "性能与安全": "设计性能与稳定性检查，按服务协议处理签名、令牌和密文。",
+    "结构与维护": "理解产品组成，维护文档发布，并执行平台与服务验收。",
 }
 
 
@@ -167,7 +167,7 @@ def build_link_map(source_rel: str, entries: list[DocEntry]) -> dict[str, str]:
     links.update({
         f"../{source}": f"/generated/{Path(target).stem}/"
         for source, target in target_map.items()
-        if not source.startswith("docs/") and source != "README.md"
+        if not source.startswith("docs/")
     })
     return links
 
@@ -275,9 +275,9 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
         "# 专题目录",
         "",
         "## 先按阅读状态进入",
-        "- 还没跑起最小命令：先看 `项目总览`，不要一上来就翻长文",
-        "- 已经知道要补哪条链路：直接跳到下面对应专题分组",
-        "- 只是想确认完整目录：直接走 `文档索引`，按标题检索最快",
+        "- 第一次使用：从[快速开始](/getting-started/)完成安装、模型配置和第一条任务。",
+        "- 已有明确目标：按下方专题选择代码、设备、接口或媒体指南。",
+        "- 查一条具体命令：打开[常用命令速查](/reference/)，再进入完整参考。",
         "",
         "## 入口页",
     ]
@@ -324,9 +324,9 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
 
     lines.extend([
         "## 阅读建议",
-        "- 先用入口页确认任务形态，再按专题分组进入长正文，不要把专题目录当百科首页",
-        "- 如果你已经知道要找什么，直接走 `文档索引` 会更快；如果还在判断方向，就先停在这里筛掉无关长文",
-        "- repo 内的 `docs/README.md` 和这里是同一套清单，只是一个面向仓库阅读，一个面向官网跳转",
+        "- 操作指南先说明前置条件与步骤；字段、协议和维护细节供需要时查阅。",
+        "- 示例中的尖括号内容和 example.com 地址需要替换；自然语言任务说明不等同于固定工具参数。",
+        "- 遇到陌生术语，可使用顶部搜索；返回完整目录时使用页脚的“文档目录”入口。",
         "",
     ])
 
@@ -339,10 +339,14 @@ def render_catalog(target_root: Path, entries: list[DocEntry]) -> None:
 def render_docs_readme(source_root: Path, entries: list[DocEntry]) -> None:
     """由发布清单生成使用仓库相对链接的正文索引。"""
     grouped_entries = group_docs_entries(entries)
+    has_overview = any(entry.source == "README.md" for entry in entries)
 
     lines = [
         "# 正文目录",
-        "按主题分组跳转正文；这里只做目录，不再承担导流说明。",
+        (
+            "第一次使用先读[项目总览](../README.md#quick-start)；已经有明确目标时，按下方分组选择对应指南。"
+            if has_overview else "按当前任务选择下方指南，先完成操作步骤，再按需查询参数与实现细节。"
+        ),
         "",
         "## 按任务方向阅读",
     ]

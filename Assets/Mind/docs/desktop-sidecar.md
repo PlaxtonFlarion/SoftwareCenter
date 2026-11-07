@@ -1,9 +1,18 @@
 # 原生桌面 Sidecar
 
+Sidecar 是由 Mind 启动和关闭的独立桌面进程，用来枚举窗口、观察界面、截图和发送鼠标键盘输入。普通用户通过 `computer` 工具使用它；开发者才需要关心构建命令与私有进程协议。
+
+| 你要做什么 | 从哪里开始 |
+| --- | --- |
+| 让 Mind 观察或操作本机桌面 | [在 Mind 中启用](#在-mind-中启用)，无需先安装开发 SDK |
+| 在 JavaScript 中组织多步操作 | [JS 用法与 skill 指引](#js-用法与-skill-指引) |
+| 修改或验证 Windows 原生实现 | [构建与验证](#构建与验证) |
+| 核对 macOS 支持范围和系统授权 | [macOS](#macos) |
+| 接入或排查进程通信 | [私有 IPC v1](#私有-ipc-v1) |
+
 桌面观察端口由 `agent/ports/desktop.py` 定义，进程传输由
 `infrastructure/sidecars/desktop/` 实现。Windows 使用独立 C# 进程，macOS 使用独立 Swift 进程。
-现有实现提供窗口枚举、UI Automation 控件树、Windows.Graphics.Capture 截图、目标激活、
-鼠标键盘输入和操作覆盖层。Mind 通过单一 `computer` 工具调用，JS 使用现有 REPL 嵌套调用。
+两种平台均提供窗口枚举、界面观察、截图和输入；Windows 的观察与截图分别使用 UI Automation 和 Windows.Graphics.Capture，macOS 使用系统辅助功能与 ScreenCaptureKit，具体差异见文末平台章节。Mind 通过单一 `computer` 工具调用，JS 使用现有 REPL 嵌套调用。
 `computer` 与 `js_repl` 默认开启，仍按本次操作的权限规则审批。
 
 TUI 将相邻 `computer` 调用合并为一个两行区块：操作期间显示 `Using computer` 和当前动作，
