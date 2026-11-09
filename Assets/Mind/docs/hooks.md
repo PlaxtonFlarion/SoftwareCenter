@@ -88,12 +88,16 @@ hooks = [
 | `command` | string | 必填 | 默认平台执行的 shell 命令 |
 | `commandWindows` | string | 无 | Windows 上覆盖 `command`；也接受 `command_windows` |
 | `statusMessage` | string | 无 | 命令执行期间显示的临时状态 |
-| `timeout` | integer | `600` | 超时秒数；`SessionEnd` 默认 `1`，超过 `3` 时钳制为 `3` 并警告 |
+| `timeout` | integer | `600` | 超时秒数；`SessionEnd` 和 `Interrupt` 默认 `1`，超过 `3` 时钳制为 `3` 并警告 |
 | `async` | boolean | `false` | 仅 command 支持后台执行；异步 Hook 不阻塞主流程且不产生控制效果，`SessionEnd` 强制同步 |
 | `additionalContextLimit` | integer | `2500` | 附加上下文近似 token 上限，`0` 不限制 |
 
 `mcp_tool` 使用 `server`、`tool` 和可选的 JSON object `input` 字段，调用现有 MCP
 runtime 中已经注册的 server/tool；MCP Hook 始终同步执行。
+
+TUI 中运行超过 300ms 的 Hook 使用临时呼吸圆点显示状态，与 Thinking 和工具调用共用
+活动区域。无输出的成功 Hook 完成后直接撤下；有输出或异常的完成结果保留在记录中。
+取消当前轮次会立即撤下所属 Hook 状态，旧轮迟到输出不会重新占用新轮画面。
 
 `additionalContextLimit` 同时用于 Stop 和 SubagentStop 的续跑提示。超过限制时保留
 头尾摘要和完整内容的临时文件路径，不会静默截断。
@@ -265,3 +269,6 @@ JSONL 事件；只依赖路径存在、逐行 JSON 或生命周期顺序的 Hook
 `additionalContext`。多个 `Stop` Hook 中任意一个返回
 `continue: false` 时停止结果优先；只有没有停止结果时，才会聚合
 `decision: "block"` 的原因并创建续跑 Prompt。
+
+轮次中断执行 `Interrupt`，不再执行 `Stop` 或创建停止 Hook 续轮。提交前取消会停止本地
+准备及其同步 Hook；请求已提交后，由远端权威终态确认中断，再完成本地清理。
