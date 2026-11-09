@@ -132,6 +132,8 @@ stores / capabilities / adapters / infrastructure / frontends
 4. CLI、TUI、MCP 和 Subscription 接收已组装的 host、factory 或 port。
 5. `ProcessResourceOwner` 依序关闭前台 Turn、后台任务、MCP、Sidecar、服务、Sandbox、
    Store 和观测资源；单项清理失败不得跳过后续资源。
+   Hook 后台任务由 `HookAsyncTaskOwner` 在客户端关闭时取消并回收，包括尚未取得并发
+   名额的协程；子进程及输出清理由原执行器完成，不等待后台命令自然结束。
 
 跨前端传递的完整组合对象统一命名为 `host`。进入 feature 或 application 后继续收窄为
 实际消费的端口，不把应用宿主当作通用服务定位器。业务模块不得通过全局变量、Controller、
@@ -251,6 +253,9 @@ Application 只产出与 UI 工具包无关的展示值。前端负责交互、�
 `Thinking`、`Calling` 与 `Using computer` 共用前景时钟的呼吸指示符，固定为常规字重的单列 `•`，
 只改变颜色亮度。`Thinking` 保留标题扫光，工具标题保持稳定。
 工具执行阶段每 1.35 秒呼吸一次，模型思考及结果等待阶段为 1.8 秒，切换时保留相位并平滑变速。
+Hook 复用活动时钟，延迟显示并按单次运行的单调时钟计时；后台 Hook 只补充主活动，
+不得遮盖工具、重试与恢复状态。运行状态撤下与结果提交属于同一视觉事务；成功且只有
+模型上下文的 Hook 不产生 TUI 记录，模型上下文不进入任何 TUI 展示文本。
 展示记录更新保留圆点样式，动画阶段只跟随活动投影。主循环阻塞后限制呼吸相位的追赶步长，
 活动耗时仍按真实时间累计。
 审批、重试与回放期间暂停呼吸时钟。色阶由会话冻结主题解析，ANSI 256 色量化，基础 ANSI、
