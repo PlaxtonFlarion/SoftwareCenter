@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Notes: ==== Mind™ ====
+
 """校验实际构建的 HTML、章节锚点和本地资源。"""
 
 import argparse

@@ -122,7 +122,7 @@ Session，以空 `turn_id` 发布累计变化并保留主上下文 last/window/s
 审查响应的最近占用仍留在 Review Turn。detached Review 只更新自身 Session，
 不使根会话最近占用从未知变为已知。
 
-客户端通过既有 `/reports/open` 取得会话查看授权，并分页读取 `/mind-replay` 的
+客户端通过既有 `/sessions/view-access` 取得会话查看授权，并分页读取 `/mind-replay` 的
 `data.context_usage` 完整事件。分页完成前保持 pending；快照不推进聊天流确认游标。
 此读取有整体超时边界，不增加后台轮询。历史裁剪信号会作废区间内的旧缓存；服务端
 独立保留的权威快照可以早于裁剪水位，客户端在完成恢复后使用它。鉴权、协议或读取失败
